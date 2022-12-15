@@ -34,15 +34,19 @@ void shuffle(int* arr, int s_min, int s_max){
     }
 }
 
-/* Generates a random subgraph with a number of edges for each vertex between min_edges and max_edges */
-void generateRandomSubGraph(SubGraph* subgraph, int min_edges, int max_edges){
-    int *array = (int*)malloc(subgraph->nV*sizeof(int));
+void initSubGraph(SubGraph* subgraph){
     /* Init matrix */
     for (int i = 0; i < subgraph->nV; i++) {
         for (int j = 0; j < subgraph->nE; j++) {
             subgraph->adj[i*subgraph->nE+j] = 0;
         }
     }
+}
+
+/* Generates a random subgraph with a number of edges for each vertex between min_edges and max_edges */
+void generateRandomSubGraph(SubGraph* subgraph, int min_edges, int max_edges){
+    int *array = (int*)malloc(subgraph->nV*sizeof(int));
+    initSubGraph(subgraph);
 
     /* Number of edges for each vertex */
     int i,j = min_edges;
@@ -86,6 +90,7 @@ void destroySubGraph(SubGraph* subgraph){
 /* Adds an edge to a subgraph */
 void addEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
+    //printf("vertex1: %d, vertex2: %d", vertex1, vertex2);
     assert(vertex1 >= 0 && vertex1 <= subgraph->nE);
     assert(vertex2 >= 0 && vertex2 <= subgraph->nE);
     subgraph->adj[vertex1*subgraph->nE + vertex2] = 1;

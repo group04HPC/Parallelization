@@ -13,6 +13,7 @@ typedef struct {
 SubGraph* createSubGraph(int n_vertices, int n_edges, int rank); /* Genartes a random subgraph with a number of edges for each vertex between min_edges and max_edges */
 void swap(int* a, int* b); /* Swaps two integers */
 void shuffle(int* array, int min, int max); /* Shuffles an array of integers */
+void initSubGraph(SubGraph* subgraph); /* Initializes a subgraph */
 void generateRandomSubGraph(SubGraph* subgraph, int min_edges, int max_edges); /* Generates a random subgraph with a number of edges for each vertex between min_edges and max_edges */
 void destroySubGraph(SubGraph* subgraph); /* Frees the memory allocated for a subgraph */
 void printSubGraph(SubGraph* subgraph); /* Prints a subgraph */

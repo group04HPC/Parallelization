@@ -6,6 +6,7 @@
 #include "../DataStructures/SCCResult.h"
 #include "../Tarjan/Tarjan.h"
 #include "../Constants.h"
+#include "utils.h"
 
 #define NUM_VERTICES 5
 
@@ -54,6 +55,12 @@ int rank, size;
     if (rank == 0){
         printf("Rescaled SCC Result:\n");
         SCCResultPrint(newResult);
+    }
+
+    SubGraph* updated = updateSubGraph(sub, newResult, rank);
+    if(rank == 0){
+        printf("Updated Graph:\n");
+        printSubGraph(updated);
     }
 
     destroySubGraph(sub);
