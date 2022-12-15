@@ -5,13 +5,13 @@
 #include "SubGraph.h"
 
 /* Create a new subgraph */
-SubGraph* createSubGraph(int n_verices, int n_edges, int offset){
+SubGraph* createSubGraph(int n_vertices, int n_edges, int rank){
     SubGraph *g = malloc(sizeof(SubGraph));
     assert(g != NULL);
-    g->offset = offset;
-    g->nV = n_verices;
+    g->offset = rank*n_vertices;
+    g->nV = n_vertices;
     g->nE = n_edges;
-    g->adj = (int*)malloc(sizeof(int)*n_verices*n_edges);
+    g->adj = (int*)malloc(sizeof(int)*n_vertices*n_edges);
     assert(g->adj != NULL);
     return g;
 }

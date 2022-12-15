@@ -10,7 +10,7 @@ typedef struct {
     int *adj; /* Adjacency Matrix */
 } SubGraph;
 
-SubGraph* createSubGraph(int n_verices, int n_edges, int offset); /* Genartes a random subgraph with a number of edges for each vertex between min_edges and max_edges */
+SubGraph* createSubGraph(int n_vertices, int n_edges, int rank); /* Genartes a random subgraph with a number of edges for each vertex between min_edges and max_edges */
 void swap(int* a, int* b); /* Swaps two integers */
 void shuffle(int* array, int min, int max); /* Shuffles an array of integers */
 void generateRandomSubGraph(SubGraph* subgraph, int min_edges, int max_edges); /* Generates a random subgraph with a number of edges for each vertex between min_edges and max_edges */
