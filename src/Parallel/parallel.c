@@ -40,9 +40,20 @@ int rank, size;
     if (rank == 0){
         printf("Original Graph:\n");
         printSubGraph(sub);
-        SCCResult* result = SCC(sub);
-        printf("\nSCC:\n");
+    }
+
+    SCCResult* result = SCC(sub);
+
+    if (rank == 0){
+        printf("SCC Result:\n");
         SCCResultPrint(result);
+    }
+
+    SCCResult* newResult = SCCResultRescale(result);
+
+    if (rank == 0){
+        printf("Rescaled SCC Result:\n");
+        SCCResultPrint(newResult);
     }
 
     destroySubGraph(sub);
