@@ -41,7 +41,6 @@ SCCResult *SCCResultRescale(SCCResult* result){
         if(*result->vertices[j] != NULL){
             newResult->vertices[i] = result->vertices[j];
             newResult->nMacroNodes++;
-            newResult->nV++;
             i++;
         }
     }
