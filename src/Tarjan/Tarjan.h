@@ -7,6 +7,6 @@
 
 TArray* matrixToArray(SubGraph* g, int i);
 void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
-void SCC(SubGraph *g);
+SCCResult *SCC(SubGraph *g);
 
 #endif

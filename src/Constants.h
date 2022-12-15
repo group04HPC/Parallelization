@@ -1,0 +1,8 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define MIN_FILENAME_LENGTH 20
+#define MEDIUM_FILENAME_LENGTH 30
+#define MAX_FILENAME_LENGTH 40
+
+#endif

@@ -79,7 +79,7 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
 /**
  * The function to do DFS traversal, by means of the SCCUtil().
  */
-void SCC(SubGraph *g){
+SCCResult* SCC(SubGraph *g){
     int V = g->nV, disc[V], low[V], stackMember[V];
     TArray *st = stackCreate(V);
 
@@ -97,6 +97,5 @@ void SCC(SubGraph *g){
         if (disc[i] == NIL)
             SCCUtil(g, i, disc, low, st, stackMember, result);
 
-    printf("\nSCC:\n");
-    SCCResultPrint(result);
+    return result;
 }
