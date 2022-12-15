@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "DataStructures/SubGraph.h"
-#include "Tarjan.h"
+#include "Tarjan/Tarjan.h"
 
 #define NUM_VERTICES 5
 #define MIN_EDGES 2
