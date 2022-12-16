@@ -11,7 +11,7 @@
  */
 TArray* matrixToArray(SubGraph* g, int i){
     TArray* array = stackCreate(g->nE);
-    for (int j = 0; j < g->nE; j++) {
+    for (int j = g->offset; j < g->offset+g->nV; j++) {
         if (g->adj[i*g->nE+j] != 0){
             stackPush(array, j);
         }
@@ -21,7 +21,7 @@ TArray* matrixToArray(SubGraph* g, int i){
 
 /**
  * A recursive function that finds and prints strongly connected components using DFS traversal.
- * g -> the SuubGraph
+ * g -> the SubGraph
  * u --> The vertex to be visited next
  * disc[] --> Stores discovery times of visited vertices
  * low[] -- >> earliest visited vertex (the vertex with minimum discovery time) that can be reached from subtree rooted with current vertex
@@ -33,6 +33,13 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     /* A static variable is used for simplicity, we can avoid the use of static variable by passing a pointer.*/
     static int time = 0;
 
+    if(u < g->offset || u >= g->offset+g->nV){
+        disc[u] = NIL;
+        low[u] = NIL;
+        printf("Error: Vertex %d is out of bounds\n", u);
+        return;
+    }
+        
     /* Initialize discovery time and low value */
     disc[u] = low[u] = ++time;
     stackPush(st, u);
@@ -41,9 +48,14 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     /* Go through all vertices adjacent to this */
     TArray *values = matrixToArray(g, u);
 
+    for(int i=0; i<values->size; i++){
+        printf("%d ", values->arr[i]);
+    }
+    printf("\n");
+
     for (int i = 0; i < values->size; ++i){
         int v = arrayGet(values, i); /* v is the current adjacent of 'u' */
-
+        printf("low: %d, \t disc: %d\n", low[u], disc[v]);
         /* If v is not visited yet, then recur for it */
         if (disc[v] == -1){
             SCCUtil(g, v, disc, low, st, stackMember,result);
@@ -66,11 +78,13 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     if (low[u] == disc[u]){
         while (stackTop(st) != u){
             w = (int)stackPop(st);
-            SCCResultInsert(result, u, w);
+            printf("-----%d------%d-------\n", u, g->offset);
+            SCCResultInsert(result, u-g->offset, w-g->offset);
             stackMember[w] = FALSE;
         }
         w = (int)stackPop(st);
-        SCCResultInsert(result, u, w);
+        printf("-----%d------%d-------\n", u, g->offset);
+        SCCResultInsert(result, u-g->offset, w-g->offset);
         stackMember[w] = FALSE;
         return;
     }
@@ -80,11 +94,11 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
  * The function to do DFS traversal, by means of the SCCUtil().
  */
 SCCResult* SCC(SubGraph *g){
-    int V = g->nV, disc[V], low[V], stackMember[V];
+    int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
 
     /* Initialize disc and low, and stackMember arrays */
-    for (int i = 0; i < V; i++){
+    for (int i = 0; i < g->nE; i++){
         disc[i] = NIL;
         low[i] = NIL;
         stackMember[i] = FALSE;
@@ -93,7 +107,7 @@ SCCResult* SCC(SubGraph *g){
     SCCResult* result = SCCResultCreate(V);
 
     /* Call the recursive helper function to find strongly connected components in DFS tree with vertex 'i' */
-    for (int i = 0; i < V; i++)
+    for (int i = g->offset; i < g->offset+V; i++)
         if (disc[i] == NIL)
             SCCUtil(g, i, disc, low, st, stackMember, result);
 

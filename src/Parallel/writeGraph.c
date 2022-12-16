@@ -4,6 +4,7 @@
 #include <mpi.h>
 #include "../Constants.h"
 #include "../DataStructures/SubGraph.h"
+
 #define D 5
 
 int main(int argc, char* argv[]){
@@ -17,14 +18,14 @@ int main(int argc, char* argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     SubGraph* sub = createSubGraph(D, D*size, rank);
-    generateRandomSubGraph(sub, 2, 3);
+    generateRandomSubGraph(sub, 18, 20);
     int* edges = getEdges(sub, 0);
 
-    char filename[MAX_FILENAME_LENGTH], num[MEDIUM_FILENAME_LENGTH-MIN_FILENAME_LENGTH];
+    char filename[20], num[2];
     strcpy(filename, "file");
     sprintf(num, "%d", rank);
-    strncat(filename, num, MEDIUM_FILENAME_LENGTH);
-    strncat(filename, ".bin",MAX_FILENAME_LENGTH);
+    strncat(filename, num, 10);
+    strncat(filename, ".bin",14);
 
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);

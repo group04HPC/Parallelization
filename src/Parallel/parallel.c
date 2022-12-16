@@ -8,7 +8,7 @@
 #include "../Constants.h"
 #include "utils.h"
 
-#define NUM_VERTICES 5
+#define D 5
 
 int main(int argc, char* argv[]){
 
@@ -21,50 +21,38 @@ int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    SubGraph* sub = createSubGraph(NUM_VERTICES, NUM_VERTICES*size, rank);
+    SubGraph* sub = createSubGraph(D, D*size, rank);
     int* edges = getEdges(sub, 0);
 
-    char filename[MAX_FILENAME_LENGTH], num[MEDIUM_FILENAME_LENGTH-MIN_FILENAME_LENGTH];
+    char filename[20], num[2];
     strcpy(filename, "file");
     sprintf(num, "%d", rank);
-    strncat(filename, num, MEDIUM_FILENAME_LENGTH);
-    strncat(filename, ".bin",MAX_FILENAME_LENGTH);
+    strncat(filename, num, 10);
+    strncat(filename, ".bin",14);
 
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);
     MPI_File_open(file_comm, filename, MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh);
-    MPI_File_seek(fh, NUM_VERTICES*NUM_VERTICES*size, MPI_SEEK_SET);
-    MPI_File_read(fh, edges, NUM_VERTICES*NUM_VERTICES*size, MPI_INT, &status);
+    MPI_File_seek(fh, D*D*size, MPI_SEEK_SET);
+    MPI_File_read(fh, edges, D*D*size, MPI_INT, &status);
     MPI_File_close(&fh);
     MPI_Comm_free(&file_comm);
 
-    if (rank == 0){
-        printf("Original Graph:\n");
+    if (rank == 2){
+        SCCResult* result = SCC(sub);
         printSubGraph(sub);
-    }
-
-    SCCResult* result = SCC(sub);
-
-    if (rank == 0){
-        printf("SCC Result:\n");
         SCCResultPrint(result);
-    }
-
-    SCCResult* newResult = SCCResultRescale(result);
-
-    if (rank == 0){
-        printf("Rescaled SCC Result:\n");
-        SCCResultPrint(newResult);
-    }
-
-    SubGraph* updated = updateSubGraph(sub, newResult, rank);
-    if(rank == 0){
-        printf("Updated Graph:\n");
-        printSubGraph(updated);
+        printf("\n");
+        SCCResult* rescaled = SCCResultRescale(result);
+        SCCResultPrint(rescaled);
+        /*SubGraph* newSub = updateSubGraph(sub, result, rank);
+        printSubGraph(newSub);
+        SCCResultDestroy(result);
+        destroySubGraph(newSub);*/
     }
 
     destroySubGraph(sub);
     MPI_Finalize();
-    return 0;
 
+    exit(EXIT_SUCCESS);
 }
