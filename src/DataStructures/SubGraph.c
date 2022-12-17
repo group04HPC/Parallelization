@@ -115,7 +115,8 @@ void removeEdge(SubGraph* subgraph, int vertex1, int vertex2){
 /* Returns the edges of a vertex in a subgraph */
 int* getEdges(SubGraph* subgraph, int vertex){
     assert(subgraph->adj != NULL);
-    assert(vertex >= 0 && vertex <= subgraph->nV);
+    printf("vertex: %d, nV: %d, nE: %d\n", vertex, subgraph->nV, subgraph->nE);
+    assert(vertex >= 0 && vertex <= subgraph->nV+subgraph->offset);
     return &subgraph->adj[vertex*subgraph->nE];
 }
 

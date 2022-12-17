@@ -45,7 +45,7 @@ int rank, size;
         printf("\n");
         SCCResult* rescaled = SCCResultRescale(result);
         SCCResultPrint(rescaled);
-        SubGraph *newGraph = rescaleGraph(new,rescaled,rank);
+        SubGraph *newGraph = rescaleGraph(sub,rescaled,rank);
         printf("Rescaled graph:\n");
         printSubGraph(newGraph);
 
