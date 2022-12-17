@@ -16,5 +16,6 @@ bool SCCResultInsert(SCCResult* result, int key, int value); /* Inserts a macron
 SCCResult *SCCResultRescale(SCCResult* result); /* Rescales the SCCResult structure */
 void SCCResultPrint(SCCResult* result); /* Prints the SCCResult structure */
 int getMacronodeFromVertex(SCCResult* result, int vertex); /* Returns the macronode associated to the vertex */
+TList *getVerticesFromMacronode(SCCResult *result, int macronode); /* Returns the veritces associated to the macronode */
 
 #endif

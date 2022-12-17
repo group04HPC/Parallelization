@@ -90,25 +90,25 @@ void destroySubGraph(SubGraph* subgraph){
 /* Adds an edge to a subgraph */
 void addEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
-    //printf("vertex1: %d, vertex2: %d", vertex1, vertex2);
-    assert(vertex1 >= 0 && vertex1 <= subgraph->nE);
-    assert(vertex2 >= 0 && vertex2 <= subgraph->nE);
+    //printf("vertex1: %d, vertex2: %d\n", vertex1, vertex2);
+    assert(vertex1 >= 0 && vertex1 < subgraph->nV);
+    assert(vertex2 >= 0 && vertex2 < subgraph->nE);
     subgraph->adj[vertex1*subgraph->nE + vertex2] = 1;
 }
 
 /* Checks if a subgraph has an edge between two vertices */
 bool hasEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
-    assert(vertex1 >= 0 && vertex1 <= subgraph->nV);
-    assert(vertex2 >= 0 && vertex2 <= subgraph->nE);
+    assert(vertex1 >= 0 && vertex1 < subgraph->nV);
+    assert(vertex2 >= 0 && vertex2 < subgraph->nE);
     return subgraph->adj[vertex1*subgraph->nE + vertex2] == 1;
 } 
 
 /* Removes an edge from a subgraph */
 void removeEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
-    assert(vertex1 >= 0 && vertex1 <= subgraph->nV);
-    assert(vertex2 >= 0 && vertex2 <= subgraph->nE);
+    assert(vertex1 >= 0 && vertex1 < subgraph->nV);
+    assert(vertex2 >= 0 && vertex2 < subgraph->nE);
     subgraph->adj[vertex1*subgraph->nE + vertex2] = 0;
 }
 
