@@ -69,3 +69,9 @@ int getMacronodeFromVertex(SCCResult* result, int vertex){
     }
     return -1;
 }
+
+/* Returns the veritces associated to the macronode */
+TList *getVerticesFromMacronode(SCCResult *result, int macronode){
+    assert(macronode<result->nMacroNodes);
+    return result->vertices[macronode];
+} 

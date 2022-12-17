@@ -57,3 +57,4 @@ Tarjan/run.bat
 .vscode/c_cpp_properties.json
 .DS_Store
 src/.DS_Store
+src/DataStructures/TestGraph.c

@@ -45,6 +45,11 @@ int rank, size;
         printf("\n");
         SCCResult* rescaled = SCCResultRescale(result);
         SCCResultPrint(rescaled);
+        SubGraph *newGraph = rescaleGraph(new,rescaled,rank);
+        printf("Rescaled graph:\n");
+        printSubGraph(newGraph);
+
+        //A questo punto si possono inviare entrambe le strutture riscalate su mpi
         /*SubGraph* newSub = updateSubGraph(sub, result, rank);
         printSubGraph(newSub);
         SCCResultDestroy(result);
