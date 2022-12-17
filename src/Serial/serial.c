@@ -3,6 +3,7 @@
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
 #include "../Tarjan/Tarjan.h"
+#include "../Parallel/utils.h"
 
 #define NUM_VERTICES 5
 #define MIN_EDGES 2
@@ -17,6 +18,9 @@ int main(int argc, char* argv[]){
         SCCResult* result = SCC(sub);
         printf("\nSCC:\n");
         SCCResultPrint(result);
+        SubGraph* sub2 = updateSubGraph(sub, result, 0);
+        printf("\nUpdated Graph:\n");
+        printSubGraph(sub2);
     } else {
         printf("Invalid number of edges. Please choose a number of edges between %d and %d.", 0, NUM_VERTICES);
     }

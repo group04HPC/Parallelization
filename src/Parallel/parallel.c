@@ -38,7 +38,7 @@ int rank, size;
     MPI_File_close(&fh);
     MPI_Comm_free(&file_comm);
 
-    if (rank == 2){
+    if (rank == 1){
         SCCResult* result = SCC(sub);
         printSubGraph(sub);
         SCCResultPrint(result);

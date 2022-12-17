@@ -74,17 +74,17 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     }
 
     /* Head node found, pop the stack and print an SCC */
-    int w = 0; /* To store stack extracted vertices */
+    int w = g->offset; /* To store stack extracted vertices */
     if (low[u] == disc[u]){
         while (stackTop(st) != u){
             w = (int)stackPop(st);
             printf("-----%d------%d-------\n", u, g->offset);
-            SCCResultInsert(result, u-g->offset, w-g->offset);
+            SCCResultInsert(result, u-g->offset, w);
             stackMember[w] = FALSE;
         }
         w = (int)stackPop(st);
         printf("-----%d------%d-------\n", u, g->offset);
-        SCCResultInsert(result, u-g->offset, w-g->offset);
+        SCCResultInsert(result, u-g->offset, w);
         stackMember[w] = FALSE;
         return;
     }

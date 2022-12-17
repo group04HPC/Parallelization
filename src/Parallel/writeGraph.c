@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     SubGraph* sub = createSubGraph(D, D*size, rank);
-    generateRandomSubGraph(sub, 18, 20);
+    generateRandomSubGraph(sub, 9, 10);
     int* edges = getEdges(sub, 0);
 
     char filename[20], num[2];
