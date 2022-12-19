@@ -11,11 +11,9 @@
  */
 TArray* matrixToArray(SubGraph* g, int i){
     TArray* array = stackCreate(g->nE);
-    for (int j = g->offset; j < g->offset+g->nV; j++) {
-        if (g->adj[i*g->nE+j] != 0){
+    for (int j = g->offset; j < g->offset+g->nV; j++)
+        if (g->adj[i*g->nE+j] != 0)
             stackPush(array, j);
-        }
-    }
     return array;
 }
 
@@ -48,14 +46,10 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     /* Go through all vertices adjacent to this */
     TArray *values = matrixToArray(g, u);
 
-    for(int i=0; i<values->size; i++){
-        printf("%d ", values->arr[i]);
-    }
-    printf("\n");
-
     for (int i = 0; i < values->size; ++i){
+
         int v = arrayGet(values, i); /* v is the current adjacent of 'u' */
-        printf("low: %d, \t disc: %d\n", low[u], disc[v]);
+
         /* If v is not visited yet, then recur for it */
         if (disc[v] == -1){
             SCCUtil(g, v, disc, low, st, stackMember,result);
@@ -78,12 +72,10 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     if (low[u] == disc[u]){
         while (stackTop(st) != u){
             w = (int)stackPop(st);
-            printf("-----%d------%d-------\n", u, g->offset);
             SCCResultInsert(result, u-g->offset, w);
             stackMember[w] = FALSE;
         }
         w = (int)stackPop(st);
-        printf("-----%d------%d-------\n", u, g->offset);
         SCCResultInsert(result, u-g->offset, w);
         stackMember[w] = FALSE;
         return;
@@ -94,6 +86,7 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
  * The function to do DFS traversal, by means of the SCCUtil().
  */
 SCCResult* SCC(SubGraph *g){
+
     int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
 
@@ -114,56 +107,40 @@ SCCResult* SCC(SubGraph *g){
     return result;
 }
 
-/* Rescales the graph, merging all the SCC in a macronode */
+/**
+ *  Rescales the graph, merging all the SCC in a macronode 
+ */
 SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
-    int mergedNodes=old->nV-result->nV,numEdges=old->nE;
-    SubGraph* new=createSubGraph(result->nV,old->nE-mergedNodes, rank);
+
+    int mergedNodes = old->nV - result->nV, numEdges = old->nE;
+    SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, rank);
     
-    for(int i=0;i<result->nV;i++){
+    for(int i=0; i<result->nV; i++){
+
         TList *curr = getVerticesFromMacronode(result, i);
+
         int *nodes = listToArray(*curr),
             length = listCount(*curr);
 
-        //Appena il grafo sarà inizializzato a 0 si potrà cambiare tutto con
-        // matrixToArray e inserire nel nuovo i vslori che restituisce la funzione
-        for(int j=0;j< length;j++){
-            int * edges=getEdges(old,nodes[j]);
+        // Appena il grafo sarà inizializzato a 0 si potrà cambiare tutto con
+        // matrixToArray e inserire nel nuovo i valori che restituisce la funzione
+        for(int j=0; j< length; j++){
+            int *edges = getEdges(old,nodes[j]);
 
-            // Scaling nodes that come before the scc part
-            for(int k=0;k<old->offset;k++){
-                if(edges[k]){
-                    addEdge(new,i,k);
-                }else{  //Per ora che il grafo non viene inizializzato
-                    removeEdge(new,i,k);
-                }
-            }
+            /* Scaling nodes that come before the scc part */
+            for(int k=0;k<old->offset;k++)
+                if(edges[k]) addEdge(new,i,k);
 
-            // Scaling nodes that are inside the scc part
-            for(int k=old->offset;k<old->offset+old->nV;k++){
-                // Non facciamo leggere questo ad Auletta altrimenti si spara
-                if (edges[k])
-                {
-                    addEdge(new, i, getMacronodeFromVertex(result,k));
-                }
-                else
-                { // Per ora che il grafo non viene inizializzato
-                    removeEdge(new, i, getMacronodeFromVertex(result, k));
-                }
-            }
+            /* Scaling nodes that are inside the scc part */
+            for(int k=old->offset; k<old->offset+old->nV; k++)
+                /* Non facciamo leggere questo ad Auletta altrimenti si spara */
+                if (edges[k]) addEdge(new, i, getMacronodeFromVertex(result, k));
 
-            // Scaling nodes that come after the scc part
-            for (int k = old->offset + old->nV;k<old->nE;k++){
-                if (edges[k])
-                {
-                    addEdge(new, i, k-mergedNodes);
-                }
-                else
-                { 
-                    removeEdge(new, i, k-mergedNodes);
-                }
-            }
+            /* Scaling nodes that come after the scc part */
+            for (int k=old->offset + old->nV; k<old->nE; k++)
+                if (edges[k])addEdge(new, i, k-mergedNodes);
         }
+        
     }
-
     return new;
 }

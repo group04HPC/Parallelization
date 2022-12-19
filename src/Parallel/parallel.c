@@ -6,13 +6,12 @@
 #include "../DataStructures/SCCResult.h"
 #include "../Tarjan/Tarjan.h"
 #include "../Constants.h"
-#include "utils.h"
 
 #define D 5
 
 int main(int argc, char* argv[]){
 
-int rank, size;
+    int rank, size;
     MPI_Status status;
     MPI_File fh;
     MPI_Offset offset;
@@ -38,26 +37,30 @@ int rank, size;
     MPI_File_close(&fh);
     MPI_Comm_free(&file_comm);
 
-    if (rank == 1){
-        SCCResult* result = SCC(sub);
-        printSubGraph(sub);
-        SCCResultPrint(result);
-        printf("\n");
-        SCCResult* rescaled = SCCResultRescale(result);
-        SCCResultPrint(rescaled);
-        SubGraph *newGraph = rescaleGraph(sub,rescaled,rank);
-        printf("Rescaled graph:\n");
-        printSubGraph(newGraph);
+    SCCResult* result = SCC(sub);
+    SCCResult* rescaled = SCCResultRescale(result);
+    SubGraph* newGraph = rescaleGraph(sub,rescaled,rank);
 
+    if (rank == 2){
+        
+        printf("Original graph:\n");
+        printSubGraph(sub);
+        printf("\nOriginal result:\n");
+        SCCResultPrint(result);
+        printf("\nRescaled result:\n");
+        SCCResultPrint(rescaled);
+        printf("\nRescaled graph:\n");
+        printSubGraph(newGraph);
         //A questo punto si possono inviare entrambe le strutture riscalate su mpi
-        /*SubGraph* newSub = updateSubGraph(sub, result, rank);
-        printSubGraph(newSub);
-        SCCResultDestroy(result);
-        destroySubGraph(newSub);*/
+
     }
 
+    SCCResultDestroy(result);
+    //SCCResultDestroy(rescaled);
+    destroySubGraph(newGraph);
     destroySubGraph(sub);
-    MPI_Finalize();
+    //free(edges);
 
+    MPI_Finalize();
     exit(EXIT_SUCCESS);
 }

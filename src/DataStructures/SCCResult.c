@@ -26,7 +26,6 @@ void SCCResultDestroy(SCCResult* result){
 
 /* Inserts a macronode-to-node match into the SCCResult structure */
 bool SCCResultInsert(SCCResult* result, int key, int value){
-    printf("Inserting %d into %d\n", value, key);
     if (key >= result->nV || key < 0) return false;
     if(*result->vertices[key] == NULL){
         result->nMacroNodes++;

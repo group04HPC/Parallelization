@@ -13,6 +13,7 @@ SubGraph* createSubGraph(int n_vertices, int n_edges, int rank){
     g->nE = n_edges;
     g->adj = (int*)malloc(sizeof(int)*n_vertices*n_edges);
     assert(g->adj != NULL);
+    initSubGraph(g);
     return g;
 }
 
@@ -46,7 +47,6 @@ void initSubGraph(SubGraph* subgraph){
 /* Generates a random subgraph with a number of edges for each vertex between min_edges and max_edges */
 void generateRandomSubGraph(SubGraph* subgraph, int min_edges, int max_edges){
     int *array = (int*)malloc(subgraph->nV*sizeof(int));
-    initSubGraph(subgraph);
 
     /* Number of edges for each vertex */
     int i,j = min_edges;
@@ -90,7 +90,6 @@ void destroySubGraph(SubGraph* subgraph){
 /* Adds an edge to a subgraph */
 void addEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
-    //printf("vertex1: %d, vertex2: %d\n", vertex1, vertex2);
     assert(vertex1 >= 0 && vertex1 < subgraph->nV);
     assert(vertex2 >= 0 && vertex2 < subgraph->nE);
     subgraph->adj[vertex1*subgraph->nE + vertex2] = 1;
@@ -115,7 +114,6 @@ void removeEdge(SubGraph* subgraph, int vertex1, int vertex2){
 /* Returns the edges of a vertex in a subgraph */
 int* getEdges(SubGraph* subgraph, int vertex){
     assert(subgraph->adj != NULL);
-    printf("vertex: %d, nV: %d, nE: %d\n", vertex, subgraph->nV, subgraph->nE);
     assert(vertex >= 0 && vertex <= subgraph->nV+subgraph->offset);
     return &subgraph->adj[vertex*subgraph->nE];
 }
