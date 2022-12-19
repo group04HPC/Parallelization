@@ -1,9 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
-#include "../DataStructures/SubGraph.c"
-#include "../DataStructures/SCCResult.c"
-#include "../DataStructures/TList.c"
 #include "Communication.h"
+#include "../DataStructures/TList.h"
 
 /*
  * Function:  send_all
