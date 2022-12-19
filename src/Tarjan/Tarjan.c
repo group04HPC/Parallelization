@@ -122,8 +122,6 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
         int *nodes = listToArray(*curr),
             length = listCount(*curr);
 
-        // Appena il grafo sarà inizializzato a 0 si potrà cambiare tutto con
-        // matrixToArray e inserire nel nuovo i valori che restituisce la funzione
         for(int j=0; j< length; j++){
             int *edges = getEdges(old,nodes[j]);
 

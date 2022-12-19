@@ -23,7 +23,6 @@ int stackTop(TArray *a){
 }
 
 void stackPush(TArray *a, int value){
-    // a->arr=realloc(a->arr,sizeof(int)*(++a->size));
     a->arr[a->size] = value;
     a->size++;
 }
