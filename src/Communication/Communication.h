@@ -1,5 +1,5 @@
-#ifndef COMUNICATION_H
-#define COMUNICATION_H
+#ifndef COMMUNICATION_H
+#define COMMUNICATION_H
 
 void send_all(SubGraph *graph, SCCResult *result, int dest);
 void recv_all(SubGraph **graph, SCCResult **result, int source);

@@ -3,7 +3,7 @@
 #include "../DataStructures/SubGraph.c"
 #include "../DataStructures/SCCResult.c"
 #include "../DataStructures/TList.c"
-#include "Comunication.h"
+#include "Communication.h"
 
 /*
  * Function:  send_all
@@ -15,7 +15,7 @@
  *  *lengths: the lengths of each array of internal vertexes
  *  v: the number of vertexes of the graph
  *  k: the number of adjacent vertexes
- *  dest: the receiver of the comunication
+ *  dest: the receiver of the communication
  */
 void send_all(SubGraph *graph, SCCResult *result, int dest)
 {
@@ -30,7 +30,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
 
     // Then we prepare a buffer that will contain the graph's matrix togheter
     //   with the length of the internal array for each macrovertex.
-    // We also count the sum of all the lengths for the next comunication
+    // We also count the sum of all the lengths for the next communication
     int send_buf[v * (k + 1)];
     int sum = 0, length[v];
     int *adjacent;
@@ -74,7 +74,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
  *  **lengths: a reference to the lengths of each array of internal vertexes
  *  *v: a reference to the number of vertexes of the graph
  *  *k: a reference to the number of adjacent vertexes
- *  source: the sender of the comunication
+ *  source: the sender of the communication
  */
 void recv_all(SubGraph **graph, SCCResult **result, int source)
 
