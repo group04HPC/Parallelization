@@ -27,7 +27,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
     MPI_Send(size, 2, MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     // Then we prepare a buffer that will contain the graph's matrix togheter
-    //   with the length of the internal array for each macrovertex.
+    // with the length of the internal array for each macrovertex.
     // We also count the sum of all the lengths for the next communication
     int send_buf[v * (k + 1)];
     int sum = 0, length[v];
@@ -46,8 +46,8 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
     MPI_Send(send_buf, v * (k + 1), MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     // In the end we collapse all the arrays of internal vertexes in one array of,
-    //   at this point, known size and we send it to the receiver. It's his job to rebuild
-    //   the structure one it arrives
+    // at this point, known size and we send it to the receiver. It's his job to rebuild
+    // the structure one it arrives
     int adj[sum];
     for (int i = 0, count = 0; i < v; i++)
     {
