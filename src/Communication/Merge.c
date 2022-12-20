@@ -22,20 +22,13 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 // Merges two subgraphs and their SCCResult into a SubGraph
 SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
 {
-    // Reorders the graphs in case that g1 follows g2
+    // Firstly we reorder the graphs in case that g1 follows g2
     if(g1->offset>g2->offset){
         printf("Switched\n");
         SubGraph* temp=g1;
         g1=g2;
         g2=temp;
     }
-
-    //numEdges è quasi sicuramente sbagliato
-    int numEdges=g1->nE;
-    if(g1->nE>g2->nE)
-        numEdges=g2->nE;
-
-    SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset);
 
     // The result's adjacency matrix should look like this:
     //
@@ -54,8 +47,14 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
     //   we can d the same thing but for the V2:V2 square and at the end we can siply
     //   copy the remeining edges. 
     // Here we'll do all of above splitting the elaboration for the two input graphs
-
-    int other_node;
+    
+    int numEdges = g1->offset + g1->nV + g2->nE - g2->offset,other_node;
+    SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset);
+    int reduced_nodes_1= g2->offset-g1->offset-g1->nV;
+    //int reduced_nodes_2= g1->nE-g2->nE-2*(g2->offset-g2->nV);
+    int reduced_nodes_2 = g1->nE - g2->nE + g2->nV;
+    
+    //printf("1~%d\t2~%d\n",reduced_nodes_1,reduced_nodes_2);
 
     // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1 
     for (int i = 0; i < g1->nV; i++)
@@ -83,12 +82,12 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
             if (other_node != -1)
                 addEdge(res, i, other_node);
             else
-                addEdge(res, i, j);
+                addEdge(res, i, j+reduced_nodes_2);
         }
     }
-    // Verificare che non serva calcolare uno sfasamento fra i due grafi
-    //   es: sfasamento_1= offset2-offset1-nV1  -> se g1 si è rimpicciolito durante tarjan
-    //       sfasamento_2= nE1-nE2
+    // Verificare che non serva calcolare uno reduced_nodes fra i due grafi
+    //   es: reduced_nodes_1= offset2-offset1-nV1  -> se g1 si è rimpicciolito durante tarjan
+    //       reduced_nodes_2= nE1-nE2-2*(off2-v2)
 
     // Graph 2 - Copy of the edges contained in V2:offset1
     for (int i = 0; i < g2->nV; i++)
@@ -117,7 +116,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
             if (other_node != -1)
                 addEdge(res, g1->nV + i, other_node);
             else
-                addEdge(res, g1->nV + i, j);
+                addEdge(res, g1->nV + i, j+reduced_nodes_1);
         }
     }
 
