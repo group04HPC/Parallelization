@@ -22,60 +22,87 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 // Merges two subgraphs and their SCCResult into a SubGraph
 SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
 {
-    // Reorders the graphs in case that g1 comes after g2
+    // Reorders the graphs in case that g1 follows g2
     if(g1->offset>g2->offset){
         printf("Switched\n");
         SubGraph* temp=g1;
         g1=g2;
         g2=temp;
     }
+
+    //numEdges è quasi sicuramente sbagliato
     int numEdges=g1->nE;
     if(g1->nE>g2->nE)
         numEdges=g2->nE;
 
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset);
 
-    //printf("%d %d %d\n",res->nE,res->nV,res->offset);
-    // The first part of both adjacences matrixes should be copied as
-    //   it is because Tarjan's algo only worked in the midddle piece of the subgraph
+    // The result's adjacency matrix should look like this:
+    //
+    //     \   offset1          V1            V2          remaining
+    //      \___________|_______________|_____________|______________
+    //      |           |               |             |             |
+    //   V1 |           |               |             |             |
+    //  ____|___________|_______________|_____________|_____________|
+    //      |           |               |             |             |
+    //   V2 |           |               |             |             |
+    //      |           |               |             |             |
+    //      |___________|_______________|_____________|_____________|
+    //
+    // To obtain this result we can copy for both g1 and g2 the offset1 section,
+    //   then copy the V1:V1 square and retrace the edges between g1 and g2, then
+    //   we can d the same thing but for the V2:V2 square and at the end we can siply
+    //   copy the remeining edges. 
+    // Here we'll do all of above splitting the elaboration for the two input graphs
 
-    int *matrix=g1->adj;
-    for (int i = 0; i < res->nV; i++)
+    int other_node;
+
+    // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1 
+    for (int i = 0; i < g1->nV; i++)
     {
-        for (int j = 0; j < g1->offset; j++)
+        for (int j = 0; j < g1->offset+g1->nV; j++)
         {
-            if (i < g1->nV && g1->adj[i * g1->nE + j]){
-                addEdge(res, i, j);
-            }
-
-            if (i >= g1->nV && g2->adj[(i - g1->nV) * g2->nE + j])
-            {
+            if (g1->adj[i * g1->nE + j]){
                 addEdge(res, i, j);
             }
         }
     }
 
-    // Now we have to merge the modified part of the graph
-    
-    int other_node;
+    // Graph 1 - Retrace of the edges contained V1:V2 edges and copy of the remaining ones
     for (int i = 0; i < g1->nV; i++)
     {
-        other_node = 0;
-        for (int j = g1->offset; j < g1->nE; j++)
-        {   
+        other_node=0;
+        for (int j = g1->offset+g1->nV; j < g1->nE; j++)
+        {
             // If the previous result of getMacronodeFromVertex is -1 it means that
-            //   we've surpassed the part in which tarjan has been executed, 
-            //   so we can avoid recalling that function
-            if(other_node!=-1)
+            //   we've surpassed the part in which tarjan has been executed,
+            //   so we only have to copy the remaining edges
+            if (other_node != -1)
                 other_node = getMacronodeFromVertex(r2, j);
-            
-            if (other_node!=-1)
+
+            if (other_node != -1)
                 addEdge(res, i, other_node);
             else
                 addEdge(res, i, j);
         }
     }
+    // Verificare che non serva calcolare uno sfasamento fra i due grafi
+    //   es: sfasamento_1= offset2-offset1-nV1  -> se g1 si è rimpicciolito durante tarjan
+    //       sfasamento_2= nE1-nE2
 
+    // Graph 2 - Copy of the edges contained in V2:offset1
+    for (int i = 0; i < g2->nV; i++)
+    {
+        for (int j = 0; j < g1->offset; j++)
+        {
+            if (g2->adj[i * g1->nE + j])
+            {
+                addEdge(res, g1->nV+i, j);
+            }
+        }
+    }
+
+    // Graph 2 - Retrace of the edges contained V2:V1 edges and copy of all the remaining ones
     for (int i = 0; i < g2->nV; i++)
     {
         other_node = 0;
@@ -83,14 +110,14 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
         {
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
-            //   so we can avoid recalling that function
+            //   so we only have to copy the remaining edges
             if (other_node != -1)
                 other_node = getMacronodeFromVertex(r1, j);
 
             if (other_node != -1)
-                addEdge(res, i, other_node);
+                addEdge(res, g1->nV + i, other_node);
             else
-                addEdge(res, i, j);
+                addEdge(res, g1->nV + i, j);
         }
     }
 
