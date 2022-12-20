@@ -6,6 +6,8 @@
 #include "../DataStructures/SCCResult.h"
 #include "../Tarjan/Tarjan.h"
 #include "../Constants.h"
+#include "../Communication/Merge.h"
+#include "../Communication/Communication.h"
 
 int main(int argc, char* argv[]){
 
@@ -39,7 +41,7 @@ int main(int argc, char* argv[]){
     SCCResult* rescaled = SCCResultRescale(result);
     SubGraph* newGraph = rescaleGraph(sub,rescaled,rank);
 
-    if (rank == 1){
+    if (rank == 0){
         
         printf("Original graph:\n");
         printSubGraph(sub);
@@ -51,6 +53,22 @@ int main(int argc, char* argv[]){
         printSubGraph(newGraph);
         //A questo punto si possono inviare entrambe le strutture riscalate su mpi
 
+    }
+
+    if(rank == 0){
+        send_all(newGraph, rescaled, 1);
+    }
+
+    if(rank == 1){
+        SubGraph* receivedGraph;
+        SCCResult* receivedResult;
+        recv_all(&receivedGraph, &receivedResult, 0);
+        SCCResult* mergedResult = mergeResults(receivedResult, rescaled);
+        SubGraph* mergedGraph = mergeGraphs(receivedGraph, newGraph, receivedResult, rescaled);
+        printf("\nMerged graph:\n");
+        printSubGraph(mergedGraph);
+        printf("\nMerged result:\n");
+        SCCResultPrint(mergedResult);
     }
 
     SCCResultDestroy(result);

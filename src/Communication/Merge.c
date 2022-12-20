@@ -1,6 +1,5 @@
+#include <stdio.h>
 #include "Merge.h"
-#include "../DataStructures/SubGraph.h"
-#include "../DataStructures/SCCResult.h"
 
 SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 {
