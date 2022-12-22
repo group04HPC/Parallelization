@@ -30,6 +30,6 @@ TList listInsertHead(TList l, int value);
 TList listInsert(TList l, int value);
 int listCount(TList list);
 int *listToArray(TList list);
-void listCopy(TList source, TList dest);
+void listCopy(TList source, TList *dest);
 
 #endif
