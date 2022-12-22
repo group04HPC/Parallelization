@@ -53,32 +53,38 @@ int main(int argc, char* argv[]){
     SubGraph* newGraph = rescaleGraph(sub,rescaled,rank);
 
     /* debug print to check if it's all ok */
-    // if (rank == 0){
+    if (rank == 0){
         
-    //     printf("Original graph:\n");
-    //     printSubGraph(sub);
-    //     printf("\nOriginal result:\n");
-    //     SCCResultPrint(result);
-    //     printf("\nRescaled result:\n");
-    //     SCCResultPrint(rescaled);
-    //     printf("\nRescaled graph:\n");
-    //     printSubGraph(newGraph);
+        printf("Original graph:\n");
+        printSubGraph(sub);
+        printf("\nOriginal result:\n");
+        SCCResultPrint(result);
+        printf("\nRescaled result:\n");
+        SCCResultPrint(rescaled);
+        printf("\nRescaled graph:\n");
+        printSubGraph(newGraph);
         
-    // }
+    }
 
-    int start = 0, stop = size/2;
+    int start = 0, stop = even ? size/2 : (size-1)/2;
     SubGraph* receivedGraph;
     SCCResult* receivedResult;
 
     /* All the processes will be considered */
-    for (int i = 0; i < size/2 && start<=stop; i++){
+    int i=0; 
+    while(rank >= start && start != stop){
+        
+        printf("INVIO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= start, rank < stop);
         if (rank >= start && rank < stop){
+            printf("INVIO-------i:%d, start: %d, stop: %d, rank:%d\n", i, start, stop, rank);
             /* These ranks will send */
             send_all(newGraph, rescaled, rank+(stop-start));
         }
-        
-        if (rank >= stop && rank < size){
+
+        printf("RICEVO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= stop, rank < size);
+        if (rank >= stop && rank < stop+(stop-start)){
             /* These ranks will receive */
+            printf("RICEVO-------i:%d, start: %d, stop: %d, rank:%d\n",i, start, stop, rank);
             if (receivedGraph != NULL){
                 destroySubGraph(receivedGraph);
             }
@@ -89,27 +95,33 @@ int main(int argc, char* argv[]){
             printf("\nReceived graph:\n");
             printSubGraph(receivedGraph);
         }
+
+        if ((even ? size : size-1) == stop+1) {
+            break;
+        }
+
         start = stop;
-        stop += (size-stop)/2;
+        
+        stop += ((even ? size : size-1) - stop)/2;
+
+        i++;
     }
 
-    if (rank == size-2){
-        send_all(newGraph, rescaled, rank+(stop-start));
-    }
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    if(rank == size-1){
-        if (receivedGraph != NULL){
-        destroySubGraph(receivedGraph);
+    if (!even && size > 1){
+        
+        if (rank == size - 2){
+            printf("INVIO-------rank:%d\n", rank);
+            send_all(newGraph, rescaled, size-1);
         }
-        if (receivedResult != NULL){
-            SCCResultDestroy(receivedResult);
+        if (rank == size - 1){
+            printf("RICEVO-------rank:%d\n", rank);
+            recv_all(&receivedGraph, &receivedResult, size-2);
+            printf("\nReceived graph:\n");
+            printSubGraph(receivedGraph);
         }
-        recv_all(&receivedGraph, &receivedResult, rank-(stop-start));
-        printf("\nReceived graph:\n");
-        printSubGraph(receivedGraph);
     }
-
-    printf("okok %d\n", rank);
 
     SCCResultDestroy(result);
     //SCCResultDestroy(rescaled);
