@@ -107,8 +107,6 @@ int main(int argc, char* argv[]){
         i++;
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-
     if (!even && size > 1){
         
         if (rank == size - 2){
