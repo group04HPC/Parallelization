@@ -146,3 +146,15 @@ int *listToArray(TList list)
     }
     return res;
 }
+
+
+void listCopy(TList source, TList dest)
+{
+    TList curr = source;
+
+    while (curr != NULL)
+    {
+        listInsert(dest, curr->value);
+        curr = curr->link;
+    }
+}
