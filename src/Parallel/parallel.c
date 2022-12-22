@@ -10,8 +10,6 @@
 #include "../Communication/Merge.h"
 #include "../Communication/Communication.h"
 
-int power(int base, int exp);
-
 int main(int argc, char* argv[]){
 
     /* MPI init */
@@ -54,7 +52,7 @@ int main(int argc, char* argv[]){
     SubGraph* newGraph = rescaleGraph(sub,rescaled,rank);
 
     /* debug print to check if it's all ok */
-    if (rank == 0){
+    if (rank == 1){
         
         printf("Original graph:\n");
         printSubGraph(sub);
@@ -68,92 +66,123 @@ int main(int argc, char* argv[]){
     }
 
     int start = 0, stop = even ? size/2 : (size-1)/2;
-    SubGraph* receivedGraph;
-    SCCResult* receivedResult;
+    SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
+    SCCResult *receivedResult = NULL, *mergedResult = NULL, *retracedResult=NULL;
 
-    // /* All the processes will be considered */
-    // int i=0; 
-    // while(rank >= start && start != stop){
+    /* All the processes will be considered */
+    int i=0; 
+    while(rank >= start && start != stop){
         
-    //     printf("INVIO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= start, rank < stop);
-    //     if (rank >= start && rank < stop){
-    //         printf("INVIO-------i:%d, start: %d, stop: %d, rank:%d\n", i, start, stop, rank);
-    //         /* These ranks will send */
-    //         send_all(newGraph, rescaled, rank+(stop-start));
-    //     }
-
-    //     printf("RICEVO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= stop, rank < size);
-    //     if (rank >= stop && rank < stop+(stop-start)){
-    //         /* These ranks will receive */
-    //         printf("RICEVO-------i:%d, start: %d, stop: %d, rank:%d\n",i, start, stop, rank);
-    //         if (receivedGraph != NULL){
-    //             destroySubGraph(receivedGraph);
-    //         }
-    //         if (receivedResult != NULL){
-    //             SCCResultDestroy(receivedResult);
-    //         }
-    //         recv_all(&receivedGraph, &receivedResult, rank-(stop-start));
-    //         printf("\nReceived graph:\n");
-    //         printSubGraph(receivedGraph);
-    //     }
-
-    //     if ((even ? size : size-1) == stop+1) {
-    //         break;
-    //     }
-
-    //     start = stop;
+        if (rank == 5){
+            printf("Sono 5  %d\n", i);
+        }
         
-    //     stop += ((even ? size : size-1) - stop)/2;
+        printf("INVIO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= start, rank < stop);
+        if (rank >= start && rank < stop){
+            printf("INVIO-------i:%d, start: %d, stop: %d, rank:%d\n", i, start, stop, rank);
+            /* These ranks will send */
+            if (rank == 5){
+                printf("Sono 5 e ho sto per inviare - %d\n", i);
+            }
+            send_all(newGraph, rescaled, rank+(stop-start));
+            if (rank == 5){
+                printf("Sono 5 e ho inviato - %d\n", i);
+            }
+        }
 
-    //     i++;
-    // }
+        printf("RICEVO-----i:%d, rank:%d, prima condizione: %d, seconda condizione: %d\n", i, rank, rank >= stop, rank < stop+(stop-start));
+        if (rank >= stop && rank < stop+(stop-start)){
+            /* These ranks will receive */
+            printf("RICEVO-------i:%d, start: %d, stop: %d, rank:%d\n",i, start, stop, rank);
+            if (receivedGraph != NULL){
+                destroySubGraph(receivedGraph);
+            }
 
-    // MPI_Barrier(MPI_COMM_WORLD);
+            if (rank == 5){
+                printf("SONO 5 E distruggo il grafo - %d\n", i);
+            }
+            
+            if (receivedResult != NULL){
+                SCCResultDestroy(receivedResult);
+            }
 
-    // if (!even && size > 1){
+            if (rank == 5){
+                printf("SONO 5 E  distruggo il result - %d\n", i);
+            }
+
+            printf("RANK: %d\n", rank-(stop-start));
+            recv_all(&receivedGraph, &receivedResult, rank-(stop-start));
+
+            if (rank == 5){
+                printf("SONO 5 E faccio la merge - %d\n", i);
+            }
+
+            mergedGraph = mergeGraphs(receivedGraph, newGraph, receivedResult, rescaled);
+            mergedResult = mergeResults(receivedResult, rescaled);
+            
+            if (rank == 5){
+                printf("SONO 5 E faccio Tarjan - %d\n", i);
+            }
+            result = SCC(mergedGraph);
+            if (rank == 5){
+                printf("SONO 5 E ho fatto Tarjan - %d\n", i);
+            }
+            rescaled = SCCResultRescale(result);
+            if (rank == 5){
+                printf("SONO 5 E ho riscalato Tarjan - %d\n", i);
+            }
+            retracedResult = retraceResult(rescaled, mergedResult, rank);
+
+            if (rank == 5){
+                printf("SONO 5 E ho ritracciato il grafo - %d\n", i);
+            }
+            newGraph = rescaleGraph(mergedGraph, rescaled, rank);
+
+            if (rank == 5){
+                printf("SONO 5 e ho finito - %d\n", i);
+            }
+        }
+
+        if ((even ? size : size-1) == stop+1) {
+            break;
+        }
+
+        start = stop;
         
-    //     if (rank == size - 2){
-    //         printf("INVIO-------rank:%d\n", rank);
-    //         send_all(newGraph, rescaled, size-1);
-    //     }
-    //     if (rank == size - 1){
-    //         printf("RICEVO-------rank:%d\n", rank);
-    //         recv_all(&receivedGraph, &receivedResult, size-2);
-    //         printf("\nReceived graph:\n");
-    //         printSubGraph(receivedGraph);
-    //     }
-    // }
+        stop += ((even ? size : size-1) - stop)/2;
 
-    if(rank == 0){
-        send_all(newGraph, rescaled, 1);
+        i++;
     }
 
-    if(rank == 1){
-        SubGraph* receivedGraph;
-        SCCResult* receivedResult;
-        recv_all(&receivedGraph, &receivedResult, 0);
-        SCCResult* mergedResult = mergeResults(receivedResult, rescaled);
-        SubGraph* mergedGraph = mergeGraphs(receivedGraph, newGraph, receivedResult, rescaled);
-        printf("\nMerged graph:\n");
-        printSubGraph(mergedGraph);
-        printf("\nMerged result:\n");
-        SCCResultPrint(mergedResult);
+    printf("SONO FUORI DAL WHILE %d\n", rank);
+
+    if (!even && size > 1){
+        if (rank == size - 2){
+            printf("INVIO-------rank:%d\n", rank);
+            printf("SONO QIO DENTRO");
+            send_all(newGraph, rescaled, size-1);
+        }
+        if (rank == size - 1){
+            printf("RICEVO-------rank:%d\n", rank);
+            recv_all(&receivedGraph, &receivedResult, size-2);
+
+            mergedGraph = mergeGraphs(receivedGraph, newGraph, receivedResult, rescaled);
+            mergedResult = mergeResults(receivedResult, rescaled);
+            
+            result = SCC(mergedGraph);
+            rescaled = SCCResultRescale(result);
+            retracedResult = retraceResult(rescaled, mergedResult, rank);
+            
+            newGraph = rescaleGraph(mergedGraph, rescaled, rank);
+        }
     }
 
     SCCResultDestroy(result);
-    //SCCResultDestroy(rescaled);
+    SCCResultDestroy(rescaled);
     destroySubGraph(newGraph);
     destroySubGraph(sub);
     //free(edges);
 
     MPI_Finalize();
     exit(EXIT_SUCCESS);
-}
-
-int power(int base, int exp){
-    int result = 1;
-    for (int i = 0; i < exp; i++){
-        result *= base;
-    }
-    return result;
 }

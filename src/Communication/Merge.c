@@ -1,6 +1,17 @@
 #include <stdio.h>
 #include "Merge.h"
 
+void printBella(SubGraph* g){
+    for(int i=0;i<g->nV;i++){
+        for(int j=0;j<g->nE;j++){
+            if(j==g->offset|| j==g->offset+g->nV)
+                printf("| ");
+            printf("%d ",g->adj[i*g->nE+j]);
+        }
+        printf("\n");
+    }
+}
+
 SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 {
     SCCResult *result = SCCResultCreate(r1->nV + r2->nV);
@@ -50,9 +61,18 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
     
     int numEdges = g1->offset + g1->nV + g2->nE - g2->offset,other_node;
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset);
+    // printf("Grafo 1:\n");
+    // printBella(g1);
+    // printSubGraph(g1);
+    // printf("Grafo 2:\n");
+    // printBella(g2);
+    // printSubGraph(g2);
+
     int reduced_nodes_1= g2->offset-g1->offset-g1->nV;
     //int reduced_nodes_2= g1->nE-g2->nE-2*(g2->offset-g2->nV);
-    int reduced_nodes_2 = g1->nE - g2->nE + g2->nV;
+    int reduced_nodes_2 = g1->nE + g2->nV + g2->offset - g1->nV - g1->offset - g2->nE - reduced_nodes_1;
+    // printf("Reduced nodes: %d\t%d\n",reduced_nodes_1,reduced_nodes_2);
+    // printf("Edges: %d\n",numEdges);
     
     //printf("1~%d\t2~%d\n",reduced_nodes_1,reduced_nodes_2);
 
@@ -76,13 +96,13 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
-            if (other_node != -1)
-                other_node = getMacronodeFromVertex(r2, j);
+
+            other_node = getMacronodeFromVertex(r2, j);
 
             if (other_node != -1)
                 addEdge(res, i, other_node);
             else
-                addEdge(res, i, j+reduced_nodes_2);
+                addEdge(res, i, j-reduced_nodes_2);
         }
     }
     // Verificare che non serva calcolare uno reduced_nodes fra i due grafi
@@ -110,13 +130,13 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,SCCResult *r1, SCCResult *r2)
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
-            if (other_node != -1)
-                other_node = getMacronodeFromVertex(r1, j);
+
+            other_node = getMacronodeFromVertex(r1, j);
 
             if (other_node != -1)
                 addEdge(res, g1->nV + i, other_node);
             else
-                addEdge(res, g1->nV + i, j+reduced_nodes_1);
+                addEdge(res, g1->nV + i, j-reduced_nodes_1);
         }
     }
 

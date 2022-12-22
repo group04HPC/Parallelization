@@ -22,6 +22,7 @@ void SCCResultDestroy(SCCResult* result){
         listDestroy(*result->vertices[i]);
     }
     free(result->vertices);
+    free(result);
 }
 
 /* Inserts a macronode-to-node match into the SCCResult structure */
@@ -35,38 +36,41 @@ bool SCCResultInsert(SCCResult* result, int key, int value){
 }
 
 /* Rescales the SCCResult structure */
-SCCResult *SCCResultRescale(SCCResult* result){
-    SCCResult* newResult = SCCResultCreate(result->nMacroNodes);
-    int i = 0;
-    for(int j = 0; j < result->nV; j++){
-        if(*result->vertices[j] != NULL){
-            newResult->vertices[i] = result->vertices[j];
-            newResult->nMacroNodes++;
-            i++;
+SCCResult* SCCResultRescale(SCCResult* result){
+    
+    SCCResult* temp = SCCResultCreate(result->nMacroNodes);
+
+    int j=0;
+
+    for (int i=0; i<result->nV; i++)
+        if(*result->vertices[i] != NULL){
+            listCopy(*result->vertices[i], temp->vertices[j]);
+            j++;
         }
-    }
-    return newResult;
+
+    temp->nMacroNodes = result->nMacroNodes;
+
+    SCCResultDestroy(result);
+
+    return temp;
 }
 
 /* Prints the SCCResult structure */
 void SCCResultPrint(SCCResult* result){
     for(int i = 0; i < result->nV; i++){
-        if(result->vertices[i] != NULL){
-            printf("MacroNode %d: ", i);
-            listPrint(*result->vertices[i]);
-            printf("\n");
-        }
+        printf("MacroNode %d: ", i);
+        listPrint(*result->vertices[i]);
+        printf("\n");
     }
 }
 
 /* Returns the macronode associated to the vertex */
 int getMacronodeFromVertex(SCCResult* result, int vertex){
-    for(int i = 0; i < result->nV; i++){
-        if(result->vertices[i] != NULL){
+    for(int i = 0; i < result->nV; i++)
+        if(*result->vertices[i] != NULL){
             TNode* node = listSearch(*result->vertices[i], vertex);
             if(node != NULL) return i;
         }
-    }
     return -1;
 }
 

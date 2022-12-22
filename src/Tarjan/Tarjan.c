@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../DataStructures/TList.h"
 #include "Tarjan.h"
 
 #define NIL -1
@@ -146,15 +147,32 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
 /**
  *  Retraces the SCCResult, including in each macronode its internal nodes
  */
-SCCResult *retraceResult(SCCResult *res,SCCResult* original){
+SCCResult *retraceResult(SCCResult *res,SCCResult* original, int rank){
+
+    if (rank == 5){
+        printf("Sono dentro\n");
+        SCCResultPrint(res);
+        SCCResultPrint(original);
+    }
+
     SCCResult *result=SCCResultCreate(res->nV);
-    
+
+    if (rank == 5){
+        printf("ho creato il result\n");
+    }
+
     for(int i=0;i<res->nV;i++){
-        TList curr=res->vertices[i];
+        if (rank == 5) printf("i = %d\n",i);
+        TList curr = *res->vertices[i];
+        if (rank == 5) printf("ho preso la lista\n");
         while(curr!=NULL){
-            copyAll(original->vertices[curr->value],result->vertices[i]);
+            if (rank == 5) printf("curr->value = %d\n",curr->value);
+            //listCopy(*original->vertices[curr->value],result->vertices[i], rank);
+            if (rank == 5) printf("ho copiato\n");
             curr = curr->link;
+            if (rank == 5) printf("ho fatto il passo\n");
         }
+        if (rank == 5) printf("ho finito la lista\n");
     }
 
     return result;

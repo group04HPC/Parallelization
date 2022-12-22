@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
-#include "../Tarjan/Tarjan.h"
-#include "../Constants.h"
+#include "Tarjan.h"
 
 int main(int argc, char* argv[]){
 

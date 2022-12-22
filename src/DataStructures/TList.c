@@ -148,13 +148,11 @@ int *listToArray(TList list)
 }
 
 
-void listCopy(TList source, TList *dest)
-{
-    TList curr = source;
-
-    while (curr != NULL)
+void listCopy(TList source, TList* dest){
+    TNode *node = source;
+    while (node != NULL)
     {
-        *dest=listInsert(*dest, curr->value);
-        curr = curr->link;
+        *dest = listInsert(*dest, node->value);
+        node = node->link;
     }
 }

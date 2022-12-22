@@ -91,7 +91,6 @@ void recv_all(SubGraph **graph, SCCResult **result, int source)
     int size[2];
     MPI_Recv(size, 2, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
     int v = size[0], k = size[1];
-
     // External var allocation
     *graph = createSubGraph(v, k, source);
     *result = SCCResultCreate(v);
