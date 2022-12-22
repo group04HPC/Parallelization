@@ -3,12 +3,13 @@
 #include <assert.h>
 #include <time.h>
 #include "SubGraph.h"
+#include "../Constants.h"
 
 /* Create a new subgraph */
 SubGraph* createSubGraph(int n_vertices, int n_edges, int rank){
     SubGraph *g = malloc(sizeof(SubGraph));
     assert(g != NULL);
-    g->offset = rank*n_vertices;
+    g->offset = rank*WORK_LOAD;
     g->nV = n_vertices;
     g->nE = n_edges;
     g->adj = (int*)malloc(sizeof(int)*n_vertices*n_edges);
@@ -90,6 +91,7 @@ void destroySubGraph(SubGraph* subgraph){
 /* Adds an edge to a subgraph */
 void addEdge(SubGraph* subgraph, int vertex1, int vertex2){
     assert(subgraph->adj != NULL);
+    printf("vertex1: %d, vertex2: %d, nV: %d, nE: %d, offset: %d\n", vertex1, vertex2, subgraph->nV, subgraph->nE, subgraph->offset);
     assert(vertex1 >= 0 && vertex1 < subgraph->nV);
     assert(vertex2 >= 0 && vertex2 < subgraph->nE);
     subgraph->adj[vertex1*subgraph->nE + vertex2] = 1;
