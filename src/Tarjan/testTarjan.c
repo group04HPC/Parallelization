@@ -246,7 +246,7 @@ int main(int argc, char* argv[]){
     destroySubGraph(g10);
     SCCResultDestroy(result10);
 
-    /* Simulating the subgraph created by rank 1 */
+    /* 2. Simulating the subgraph created by rank 1 */
     SubGraph* g11 = createSubGraph(5, 15, 1);
     addEdge(g11, 0, 6);
     addEdge(g11, 0, 7);
@@ -264,7 +264,7 @@ int main(int argc, char* argv[]){
     destroySubGraph(g11);
     SCCResultDestroy(result11);
 
-    /* Simulating the subgraph created by rank 2 */
+    /* 3. Simulating the subgraph created by rank 2 */
     SubGraph* g12 = createSubGraph(5, 15, 2);
     addEdge(g12, 0, 11);
     addEdge(g12, 0, 13);
