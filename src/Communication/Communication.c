@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "Communication.h"
 #include "../DataStructures/TList.h"
+#include "../Constants.h"
 
 /*
  * Function:  send_all
@@ -22,10 +23,10 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
     //              int dest,int tag, MPI_Comm comm)
 
     // Firstly we send the dimensions of the graph's matrix as an array
-    int v = graph->nV, k = graph->nE;
-    int size[2] = {v, k};
-    MPI_Send(size, 2, MPI_INT, dest, 0, MPI_COMM_WORLD);
-
+    int v = graph->nV, k = graph->nE, offset = graph->offset/WORK_LOAD;
+    int size[3] = {v, k, offset};
+    MPI_Send(size, 3, MPI_INT, dest, 0, MPI_COMM_WORLD);
+    
     // Then we prepare a buffer that will contain the graph's matrix togheter
     // with the length of the internal array for each macrovertex.
     // We also count the sum of all the lengths for the next communication
@@ -43,6 +44,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
         send_buf[i * (k + 1) + k] = length[i];
         sum += length[i];
     }
+
     MPI_Send(send_buf, v * (k + 1), MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     // In the end we collapse all the arrays of internal vertexes in one array of,
@@ -59,6 +61,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
     }
 
     MPI_Send(adj, sum, MPI_INT, dest, 0, MPI_COMM_WORLD);
+    
 }
 
 /*
@@ -88,11 +91,11 @@ void recv_all(SubGraph **graph, SCCResult **result, int source)
     //   We also update their values in the recived args and instantiate all
     //   the needed structures
 
-    int size[2];
-    MPI_Recv(size, 2, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
+    int size[3];
+    MPI_Recv(size, 3, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
     int v = size[0], k = size[1];
     // External var allocation
-    *graph = createSubGraph(v, k, source);
+    *graph = createSubGraph(v, k, size[2]);
     *result = SCCResultCreate(v);
 
     // Then we prepare a buffer that will contain the graph's matrix togheter
@@ -138,4 +141,5 @@ void recv_all(SubGraph **graph, SCCResult **result, int source)
             SCCResultInsert(*result, i, recv_internal[count]);
         }
     }
+
 }

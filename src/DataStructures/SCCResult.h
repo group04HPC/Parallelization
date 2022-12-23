@@ -17,5 +17,6 @@ SCCResult *SCCResultRescale(SCCResult* result); /* Rescales the SCCResult struct
 void SCCResultPrint(SCCResult* result); /* Prints the SCCResult structure */
 int getMacronodeFromVertex(SCCResult* result, int vertex); /* Returns the macronode associated to the vertex */
 TList *getVerticesFromMacronode(SCCResult *result, int macronode); /* Returns the veritces associated to the macronode */
+SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC); /* Combines two SCCResult structures */
 
 #endif

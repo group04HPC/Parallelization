@@ -111,7 +111,7 @@ SCCResult* SCC(SubGraph *g){
 }
 
 /**
- *  Rescales the graph, merging all the SCC in a macronode 
+ *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
 SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
 
@@ -126,6 +126,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
             length = listCount(*curr);
 
         for(int j=0; j< length; j++){
+            
             int *edges = getEdges(old,nodes[j]);
 
             /* Scaling nodes that come before the scc part */
@@ -143,6 +144,9 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
         }
         
     }
+
+    destroySubGraph(old);
+
     return new;
 }
 
@@ -151,30 +155,17 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
  */
 SCCResult *retraceResult(SCCResult *res,SCCResult* original, int rank){
 
-    if (rank == 5){
-        printf("Sono dentro\n");
-        SCCResultPrint(res);
-        SCCResultPrint(original);
-    }
-
     SCCResult *result=SCCResultCreate(res->nV);
 
-    if (rank == 5){
-        printf("ho creato il result\n");
-    }
-
     for(int i=0;i<res->nV;i++){
-        if (rank == 5) printf("i = %d\n",i);
+
         TList curr = *res->vertices[i];
-        if (rank == 5) printf("ho preso la lista\n");
+
         while(curr!=NULL){
-            if (rank == 5) printf("curr->value = %d\n",curr->value);
             listCopy(*original->vertices[curr->value],result->vertices[i]);
-            if (rank == 5) printf("ho copiato\n");
             curr = curr->link;
-            if (rank == 5) printf("ho fatto il passo\n");
         }
-        if (rank == 5) printf("ho finito la lista\n");
+
     }
 
     return result;

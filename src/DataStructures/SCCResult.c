@@ -79,3 +79,28 @@ TList *getVerticesFromMacronode(SCCResult *result, int macronode){
     assert(macronode<result->nMacroNodes);
     return result->vertices[macronode];
 } 
+
+/* Combines two SCCResult structures */
+SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
+    SCCResult *result = SCCResultCreate(tarjanResult->nV);
+    result->nMacroNodes = tarjanResult->nMacroNodes;
+
+    for (int i=0; i<tarjanResult->nV; i++){
+    
+        TNode* node = *tarjanResult->vertices[i];
+        
+        while(node != NULL){
+            TNode* node2 = *mergedSCC->vertices[node->value];
+
+            while(node2 != NULL){
+                SCCResultInsert(result, i, node2->value);
+                node2 = node2->link;
+            }
+
+            node = node->link;
+        }
+
+    }
+    
+    return result;
+}
