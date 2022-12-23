@@ -24,7 +24,10 @@ int main(int argc, char* argv[]){
     printSubGraph(sub);
     printf("\nSCC Result:\n");
     
-    SCCResultPrint(SCCResultRescale(SCC(sub)));
+    SCCResult* result = SCCResultRescale(SCC(sub));
+    SCCResultPrint(result);
+    SCCResultDestroy(result);
+    destroySubGraph(sub);
 
     return 0;
 }
