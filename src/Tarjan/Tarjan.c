@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "../DataStructures/TList.h"
 #include "Tarjan.h"
+#include "../Constants.h"
 
 #define NIL -1
 #define TRUE 1
