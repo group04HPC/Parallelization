@@ -12,9 +12,11 @@
  */
 TArray* matrixToArray(SubGraph* g, int i){
     TArray* array = stackCreate(g->nE);
-    for (int j = g->offset; j < g->offset+g->nV; j++)
-        if (g->adj[i*g->nE+j] != 0)
+    for (int j = g->offset; j < g->offset+g->nV; j++){
+        if (g->adj[(i-g->offset)*g->nE+j] == 1){
             stackPush(array, j);
+        }
+    } 
     return array;
 }
 
@@ -167,7 +169,7 @@ SCCResult *retraceResult(SCCResult *res,SCCResult* original, int rank){
         if (rank == 5) printf("ho preso la lista\n");
         while(curr!=NULL){
             if (rank == 5) printf("curr->value = %d\n",curr->value);
-            //listCopy(*original->vertices[curr->value],result->vertices[i], rank);
+            listCopy(*original->vertices[curr->value],result->vertices[i]);
             if (rank == 5) printf("ho copiato\n");
             curr = curr->link;
             if (rank == 5) printf("ho fatto il passo\n");
