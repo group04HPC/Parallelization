@@ -82,7 +82,7 @@ int main(int argc, char* argv[]){
     printf("\nMerged SCC:\n");
     SCCResultPrint(result9);
  
-    SubGraph* mergedSub = mergeGraphs(g7, g8, g7->nV-startDim7, g8->nV-startDim8, result9);
+    SubGraph* mergedSub = mergeGraphs(g7, g8, startDim7-g7->nV, startDim8-g8->nV, result9);
     printf("\nMerged Graph:\n");
     printSubGraph(mergedSub);
 
