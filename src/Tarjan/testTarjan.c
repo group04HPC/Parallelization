@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
     addEdge(g2, 1, 2);
     addEdge(g2, 2, 3);
     printf("\nOriginal Graph:\n");
-    printSubGraph(g1);
+    printSubGraph(g2);
     printf("\nSCC:\n");
     SCCResult* result2 = SCCResultRescale(SCC(g2));
     SCCResultPrint(result2);
@@ -126,6 +126,8 @@ int main(int argc, char* argv[]){
     */
 
     // Test for the parallel version
+
+    /* Simulating tarjan with two processes */
     SubGraph* g6 = createSubGraph(10, 10, 0);
     addEdge(g6, 0, 1);
     addEdge(g6, 0, 3);
@@ -188,6 +190,97 @@ int main(int argc, char* argv[]){
     SCCResultPrint(result8);
     destroySubGraph(g8);
     SCCResultDestroy(result8);
+
+    /* Simulating Tarjan with three processes */
+    SubGraph* g9 = createSubGraph(15, 15, 0);
+    addEdge(g9, 0, 1);
+    addEdge(g9, 0, 3);
+    addEdge(g9, 1, 2);
+    addEdge(g9, 1, 4);
+    addEdge(g9, 2, 0);
+    addEdge(g9, 2, 6);
+    addEdge(g9, 3, 2);
+    addEdge(g9, 4, 5);
+    addEdge(g9, 4, 6);
+    addEdge(g9, 5, 6);
+    addEdge(g9, 5, 7);
+    addEdge(g9, 5, 8);
+    addEdge(g9, 5, 9);
+    addEdge(g9, 6, 4);
+    addEdge(g9, 7, 9);
+    addEdge(g9, 8, 9);
+    addEdge(g9, 9, 8);
+    addEdge(g9, 10, 11);
+    addEdge(g9, 10, 13);
+    addEdge(g9, 11, 12);
+    addEdge(g9, 11, 14);
+    addEdge(g9, 12, 10);
+    addEdge(g9, 12, 16);
+    addEdge(g9, 13, 12);
+    addEdge(g9, 14, 15);
+    addEdge(g9, 14, 16);
+    printf("\nOriginal Graph:\n");
+    printSubGraph(g9);
+    printf("\nSCC:\n");
+    SCCResult* result9 = SCCResultRescale(SCC(g9));
+    SCCResultPrint(result9);
+    destroySubGraph(g9);
+    SCCResultDestroy(result9);
+
+    /* 1. Simulating the subgraph created by rank 0 */
+    SubGraph* g10 = createSubGraph(5, 15, 0);
+    addEdge(g10, 0, 1);
+    addEdge(g10, 0, 3);
+    addEdge(g10, 1, 2);
+    addEdge(g10, 1, 4);
+    addEdge(g10, 2, 0);
+    addEdge(g10, 2, 6);
+    addEdge(g10, 3, 2);
+    addEdge(g10, 4, 5);
+    addEdge(g10, 4, 6);
+    printf("\nOriginal Graph:\n");
+    printSubGraph(g10);
+    printf("\nSCC:\n");
+    SCCResult* result10 = SCCResultRescale(SCC(g10));
+    SCCResultPrint(result10);
+    destroySubGraph(g10);
+    SCCResultDestroy(result10);
+
+    /* Simulating the subgraph created by rank 1 */
+    SubGraph* g11 = createSubGraph(5, 15, 1);
+    addEdge(g11, 0, 6);
+    addEdge(g11, 0, 7);
+    addEdge(g11, 0, 8);
+    addEdge(g11, 0, 9);
+    addEdge(g11, 1, 4);
+    addEdge(g11, 2, 9);
+    addEdge(g11, 3, 9);
+    addEdge(g11, 4, 8);
+    printf("\nOriginal Graph:\n");
+    printSubGraph(g11);
+    printf("\nSCC:\n");
+    SCCResult* result11 = SCCResultRescale(SCC(g11));
+    SCCResultPrint(result11);
+    destroySubGraph(g11);
+    SCCResultDestroy(result11);
+
+    /* Simulating the subgraph created by rank 2 */
+    SubGraph* g12 = createSubGraph(5, 15, 2);
+    addEdge(g12, 0, 11);
+    addEdge(g12, 0, 13);
+    addEdge(g12, 1, 12);
+    addEdge(g12, 1, 14);
+    addEdge(g12, 2, 10);
+    addEdge(g12, 2, 16);
+    addEdge(g12, 3, 12);
+    addEdge(g12, 4, 15);
+    addEdge(g12, 4, 16);
+    printf("\nOriginal Graph:\n");
+    printSubGraph(g12);
+    printf("\nSCC:\n");
+    SCCResult* result12 = SCCResultRescale(SCC(g12));
+    SCCResultPrint(result12);
+    destroySubGraph(g12);
 
     return 0;
 }

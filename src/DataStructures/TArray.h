@@ -7,6 +7,7 @@ typedef struct TArray{
 } TArray;
 
 TArray *stackCreate(int size);
+void stackDestroy(TArray *a);
 int stackPop(TArray *t);
 void stackPush(TArray *a, int value);
 int stackTop(TArray *a);

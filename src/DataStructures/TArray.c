@@ -14,6 +14,11 @@ TArray *stackCreate(int size){
     return result;
 }
 
+void stackDestroy(TArray *a){
+    free(a->arr);
+    free(a);
+}
+
 int arrayGet(TArray *a, int index){
     return a->arr[index];
 }

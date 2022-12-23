@@ -12,11 +12,9 @@
  */
 TArray* matrixToArray(SubGraph* g, int i){
     TArray* array = stackCreate(g->nE);
-    for (int j = g->offset; j < g->offset+g->nV; j++){
-        if (g->adj[(i-g->offset)*g->nE+j] == 1){
+    for (int j = g->offset; j < g->offset+g->nV; j++)
+        if (g->adj[(i-g->offset)*g->nE+j] != 0)
             stackPush(array, j);
-        }
-    } 
     return array;
 }
 
@@ -81,6 +79,7 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
         w = (int)stackPop(st);
         SCCResultInsert(result, u-g->offset, w);
         stackMember[w] = FALSE;
+        stackDestroy(values);
         return;
     }
 }
@@ -107,6 +106,7 @@ SCCResult* SCC(SubGraph *g){
         if (disc[i] == NIL)
             SCCUtil(g, i, disc, low, st, stackMember, result);
 
+    stackDestroy(st);
     return result;
 }
 
