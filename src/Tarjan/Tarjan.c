@@ -113,10 +113,10 @@ SCCResult* SCC(SubGraph *g){
 /**
  *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
+SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
 
     int mergedNodes = old->nV - result->nV, numEdges = old->nE;
-    SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, rank);
+    SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
     
     for(int i=0; i<result->nV; i++){
 
@@ -153,7 +153,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank){
 /**
  *  Retraces the SCCResult, including in each macronode its internal nodes
  */
-SCCResult *retraceResult(SCCResult *res,SCCResult* original, int rank){
+SCCResult *retraceResult(SCCResult *res,SCCResult* original){
 
     SCCResult *result=SCCResultCreate(res->nV);
 

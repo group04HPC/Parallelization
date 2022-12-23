@@ -16,7 +16,7 @@
  *  k: the number of adjacent vertexes
  *  dest: the receiver of the communication
  */
-void send_all(SubGraph *graph, SCCResult *result, int dest)
+void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
 {
     // Signature of the function MPI_Send that will be used here
     // int MPI_Send(const void *buf, int count, MPI_Datatype datatype,
@@ -24,8 +24,8 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
 
     // Firstly we send the dimensions of the graph's matrix as an array
     int v = graph->nV, k = graph->nE, offset = graph->offset/WORK_LOAD;
-    int size[3] = {v, k, offset};
-    MPI_Send(size, 3, MPI_INT, dest, 0, MPI_COMM_WORLD);
+    int size[4] = {v, k, offset,shrink};
+    MPI_Send(size, 4, MPI_INT, dest, 0, MPI_COMM_WORLD);
     
     // Then we prepare a buffer that will contain the graph's matrix togheter
     // with the length of the internal array for each macrovertex.
@@ -77,7 +77,7 @@ void send_all(SubGraph *graph, SCCResult *result, int dest)
  *  *k: a reference to the number of adjacent vertexes
  *  source: the sender of the communication
  */
-void recv_all(SubGraph **graph, SCCResult **result, int source)
+void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
 
 // void recv_all(int **graph, int ***internal, int **lengths, int *v_ext, int *k_ext, int source)
 {
@@ -91,9 +91,10 @@ void recv_all(SubGraph **graph, SCCResult **result, int source)
     //   We also update their values in the recived args and instantiate all
     //   the needed structures
 
-    int size[3];
-    MPI_Recv(size, 3, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
+    int size[4];
+    MPI_Recv(size, 4, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
     int v = size[0], k = size[1];
+    *shrink=size[3];
     // External var allocation
     *graph = createSubGraph(v, k, size[2]);
     *result = SCCResultCreate(v);

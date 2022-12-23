@@ -46,21 +46,25 @@ int main(int argc, char* argv[]){
 
     /* Tarjan algorithm */
     SCCResult* result = SCCResultRescale(SCC(sub));
+    if (sub->nV != result->nV)
+    {
+        sub = rescaleGraph(sub, result);
+    }
     // SubGraph* rescaledGraph = rescaleGraph(sub, result, rank);
     // destroySubGraph(sub);
     // sub = rescaledGraph;
 
-    int start = 0, stop = even ? size/2 : (size-1)/2;
+    int start = 0, stop = even ? size/2 : (size-1)/2,recivedShrink;
     SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
     SCCResult *receivedResult = NULL, *mergedResult = NULL, *combinedResult=NULL;
 
     /* All the processes will be considered */
-    int i=0; 
+    int i=0,shrink=sub->nE-; 
     while(rank >= start && start != stop){
 
         if (rank >= start && rank < stop){
             /* These ranks will send */
-            send_all(sub, result, rank+(stop-start));
+            send_all(sub, result, shrink, rank + (stop - start));
             destroySubGraph(sub);
             SCCResultDestroy(result);
         }
@@ -78,7 +82,7 @@ int main(int argc, char* argv[]){
             if (combinedResult != NULL)
                 SCCResultDestroy(combinedResult);
 
-            recv_all(&receivedGraph, &receivedResult, rank-(stop-start));
+            recv_all(&receivedGraph, &receivedResult,&recivedShrink rank-(stop-start));
 
             printf("My graph:\n");
             printSubGraph(sub);
@@ -91,7 +95,7 @@ int main(int argc, char* argv[]){
             SCCResultPrint(receivedResult);
 
 
-            mergedResult = mergeResults(receivedResult, result);
+            mergedResult = mergeResults(receivedResult, result,recivedShrink,shrink);
             printf("Merged result:\n");
             SCCResultPrint(mergedResult);
 
@@ -105,6 +109,7 @@ int main(int argc, char* argv[]){
             result = SCCResultRescale(SCC(mergedGraph));
             printf("Tarjan result:\n");
             SCCResultPrint(result);
+            shrink=sub->nV-result->nV;
 
             combinedResult = SCCResultCombine(result, mergedResult);
             printf("Combined result:\n");
@@ -136,18 +141,18 @@ int main(int argc, char* argv[]){
     if (!even && size > 1){
 
         if (rank == size - 2){
-            send_all(sub, combinedResult, size-1);
+            send_all(sub, combinedResult,shrink, size-1);
         }
 
         if (rank == size - 1){
 
-            recv_all(&receivedGraph, &receivedResult, size-2);
+            recv_all(&receivedGraph, &receivedResult,&recivedShrink, size-2);
             printf("Sub:\n");
             printSubGraph(sub);
             printf("Received graph:\n");
             printSubGraph(receivedGraph);
 
-            mergedResult = mergeResults(receivedResult, result);
+            mergedResult = mergeResults(receivedResult, result, recivedShrink,shrink);
             printf("Merged result:\n");
             SCCResultPrint(mergedResult);
 
@@ -167,7 +172,7 @@ int main(int argc, char* argv[]){
             SCCResultPrint(combinedResult);
 
             if (sub->nV != combinedResult->nV){
-                sub = rescaleGraph(sub, result, rank);
+                sub = rescaleGraph(sub, result);
             }
             printf("Rescaled graph:\n");
             printSubGraph(sub);

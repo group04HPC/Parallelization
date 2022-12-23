@@ -9,7 +9,7 @@
 TArray* matrixToArray(SubGraph* g, int i);
 void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
 SCCResult *SCC(SubGraph *g);
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, int rank);
-SCCResult *retraceResult(SCCResult *res,SCCResult* original, int rank);
+SubGraph *rescaleGraph(SubGraph *old, SCCResult *result);
+SCCResult *retraceResult(SCCResult *res,SCCResult* original);
 
 #endif
