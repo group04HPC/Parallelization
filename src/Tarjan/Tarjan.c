@@ -119,7 +119,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
     int mergedNodes = old->nV - result->nV, numEdges = old->nE;
     SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
     
-    for(int i=0; i<result->nV; i++){
+    /*for(int i=0; i<result->nV; i++){
 
         TList *curr = getVerticesFromMacronode(result, i);
 
@@ -130,20 +130,48 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
             
             int *edges = getEdges(old,nodes[j]);
 
-            /* Scaling nodes that come before the scc part */
+            /* Scaling nodes that come before the scc part *//*
             for(int k=0;k<old->offset;k++)
                 if(edges[k]) addEdge(new,i,k);
 
-            /* Scaling nodes that are inside the scc part */
+            /* Scaling nodes that are inside the scc part *//*
             for(int k=old->offset; k<old->offset+old->nV; k++)
-                /* Non facciamo leggere questo ad Auletta altrimenti si spara */
+                /* Non facciamo leggere questo ad Auletta altrimenti si spara *//*
                 if (edges[k]) addEdge(new, i, getMacronodeFromVertex(result, k));
 
-            /* Scaling nodes that come after the scc part */
+            /* Scaling nodes that come after the scc part *//*
             for (int k=old->offset + old->nV; k<old->nE; k++)
                 if (edges[k])addEdge(new, i, k-mergedNodes);
         }
         
+    }*/
+    /*printf("Grafo di partenza\n");
+    printSubGraph(old);
+    printf("Result:\n");
+    SCCResultPrint(result);*/
+    for(int i=0;i<old->nV;i++){
+        int newNode = getMacronodeFromVertex(result,old->offset+i);
+        int *edges=getEdges(old,i);
+        for(int j=0;j<old->offset;j++){
+            if (edges[j]){
+                //printf("1: Arco da %d a %d trasformato in %d a %d\n",i,j,newNode,j);
+                addEdge(new, newNode, j);
+            }
+        }
+        for (int j = old->offset; j < old->offset+old->nV; j++)
+        {
+            if (edges[j]){
+                //printf("2: Arco da %d a %d trasformato in %d a %d\n", i, j, newNode, old->offset+getMacronodeFromVertex(result, j));
+
+                addEdge(new, newNode, old->offset + getMacronodeFromVertex(result, j));
+            }
+        }
+        for (int j = old->offset + old->nV;j<old->nE;j++){
+            if (edges[j]){
+                //printf("3: Arco da %d a %d trasformato in %d a %d\n", i, j, newNode, j - mergedNodes);
+                addEdge(new, newNode, j - mergedNodes);
+            }
+        }
     }
 
     destroySubGraph(old);
