@@ -4,7 +4,7 @@
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
 
-void send_all(SubGraph *graph, SCCResult *result, int dest);
-void recv_all(SubGraph **graph, SCCResult **result, int source);
+void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest);
+void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source);
 
 #endif

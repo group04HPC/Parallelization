@@ -82,6 +82,9 @@ void printSubGraph(SubGraph* subgraph){
 
 /* Frees the memory allocated for a subgraph */
 void destroySubGraph(SubGraph* subgraph){
+    if (subgraph == NULL){
+        return;
+    }
     if(subgraph->adj != NULL){
         free(subgraph->adj);
     }

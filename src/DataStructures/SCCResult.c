@@ -18,6 +18,7 @@ SCCResult *SCCResultCreate(int n){
 
 /* Destroys the SCCResult structure */
 void SCCResultDestroy(SCCResult* result){
+    if (result == NULL) return;
     for(int i = 0; i < result->nV; i++){
         listDestroy(*result->vertices[i]);
     }

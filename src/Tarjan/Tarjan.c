@@ -150,24 +150,3 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
 
     return new;
 }
-
-/**
- *  Retraces the SCCResult, including in each macronode its internal nodes
- */
-SCCResult *retraceResult(SCCResult *res,SCCResult* original){
-
-    SCCResult *result=SCCResultCreate(res->nV);
-
-    for(int i=0;i<res->nV;i++){
-
-        TList curr = *res->vertices[i];
-
-        while(curr!=NULL){
-            listCopy(*original->vertices[curr->value],result->vertices[i]);
-            curr = curr->link;
-        }
-
-    }
-
-    return result;
-}

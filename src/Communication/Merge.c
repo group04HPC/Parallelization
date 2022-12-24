@@ -48,11 +48,24 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
 
     int numEdges = g1->nE - shrink2, other_node;
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset/WORK_LOAD);
+    // printf("Grafo 1:\n");
+    // printBella(g1);
+    // printSubGraph(g1);
+    // printf("Grafo 2:\n");
+    // printBella(g2);
+    // printSubGraph(g2);
 
-    // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1 and V1:intra
+    // int reduced_nodes_2= g1->nE-g2->nE-2*(g2->offset-g2->nV);
+
+    // printf("Reduced nodes: %d\t%d\n",reduced_nodes_1,reduced_nodes_2);
+    // printf("Edges: %d\n",numEdges);
+
+    // printf("1~%d\t2~%d\n",reduced_nodes_1,reduced_nodes_2);
+
+    // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1  and V1:intra
     for (int i = 0; i < g1->nV; i++)
     {
-        for (int j = 0; j < g1->offset + g1->nV; j++)
+        for (int j = 0; j < g1->offset +g1->nV; j++)
         {
             if (g1->adj[i * g1->nE + j])
             {
