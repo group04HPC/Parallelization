@@ -8,6 +8,7 @@ typedef struct {
     TList** vertices; /* The array of lists of nodes contained into the SCCResult structure */
     int nMacroNodes; /* The number of macro nodes contained into the SCCResult structure */
     int nV; /* The number of nodes contained into the SCCResult structure */
+    int offset; /* The offset of the SCCResult structure */
 } SCCResult;
 
 SCCResult *SCCResultCreate(int n); /* Creates a new SCCResult structure */

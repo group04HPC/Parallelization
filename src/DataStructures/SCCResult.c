@@ -8,6 +8,7 @@ SCCResult *SCCResultCreate(int n){
     SCCResult* result = (SCCResult*)malloc(sizeof(SCCResult));
     result->nV = n;
     result->nMacroNodes = 0;
+    result->offset = 0;
     result->vertices = (TList**)malloc(n * sizeof(TList*));
     for (int i = 0; i < n; i++){
         result->vertices[i] = (TList*)malloc(sizeof(TList));
@@ -39,20 +40,25 @@ bool SCCResultInsert(SCCResult* result, int key, int value){
 /* Rescales the SCCResult structure */
 SCCResult* SCCResultRescale(SCCResult* result){
     
-    SCCResult* temp = SCCResultCreate(result->nMacroNodes);
+    SCCResult *temp = SCCResultCreate(result->nMacroNodes);
+    temp->offset = result->offset;
 
-    int j=0;
-
-    for (int i=0; i<result->nV; i++)
-        if(*result->vertices[i] != NULL){
-            listCopy(*result->vertices[i], temp->vertices[j]);
+    for (int i=0, j=0; i<result->nV; i++){
+    
+        TNode* node = *result->vertices[i];
+        
+        if(node != NULL){
+            while(node != NULL){
+                SCCResultInsert(temp, j, node->value);
+                node = node->link;
+            }
             j++;
         }
 
-    temp->nMacroNodes = result->nMacroNodes;
+    }
 
     SCCResultDestroy(result);
-
+    
     return temp;
 }
 
@@ -83,18 +89,19 @@ TList *getVerticesFromMacronode(SCCResult *result, int macronode){
 
 /* Combines two SCCResult structures */
 SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
+
     SCCResult *result = SCCResultCreate(tarjanResult->nV);
-    result->nMacroNodes = tarjanResult->nMacroNodes;
 
     for (int i=0; i<tarjanResult->nV; i++){
     
         TNode* node = *tarjanResult->vertices[i];
         
         while(node != NULL){
-            TNode* node2 = *mergedSCC->vertices[node->value];
+            
+            TNode* node2 = *mergedSCC->vertices[node->value-tarjanResult->offset];
 
             while(node2 != NULL){
-                SCCResultInsert(result, i, node2->value);
+                bool res = SCCResultInsert(result, i, node2->value);
                 node2 = node2->link;
             }
 
@@ -102,6 +109,8 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
         }
 
     }
+
+    SCCResultDestroy(tarjanResult);
     
     return result;
 }

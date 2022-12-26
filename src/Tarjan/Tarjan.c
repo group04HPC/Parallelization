@@ -101,6 +101,7 @@ SCCResult* SCC(SubGraph *g){
     }
 
     SCCResult* result = SCCResultCreate(V);
+    result->offset = g->offset;
 
     /* Call the recursive helper function to find strongly connected components in DFS tree with vertex 'i' */
     for (int i = g->offset; i < g->offset+V; i++)
@@ -108,6 +109,7 @@ SCCResult* SCC(SubGraph *g){
             SCCUtil(g, i, disc, low, st, stackMember, result);
 
     stackDestroy(st);
+
     return result;
 }
 
@@ -118,37 +120,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
 
     int mergedNodes = old->nV - result->nV, numEdges = old->nE;
     SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
-    
-    /*for(int i=0; i<result->nV; i++){
 
-        TList *curr = getVerticesFromMacronode(result, i);
-
-        int *nodes = listToArray(*curr),
-            length = listCount(*curr);
-
-        for(int j=0; j< length; j++){
-            
-            int *edges = getEdges(old,nodes[j]);
-
-            /* Scaling nodes that come before the scc part *//*
-            for(int k=0;k<old->offset;k++)
-                if(edges[k]) addEdge(new,i,k);
-
-            /* Scaling nodes that are inside the scc part *//*
-            for(int k=old->offset; k<old->offset+old->nV; k++)
-                /* Non facciamo leggere questo ad Auletta altrimenti si spara *//*
-                if (edges[k]) addEdge(new, i, getMacronodeFromVertex(result, k));
-
-            /* Scaling nodes that come after the scc part *//*
-            for (int k=old->offset + old->nV; k<old->nE; k++)
-                if (edges[k])addEdge(new, i, k-mergedNodes);
-        }
-        
-    }*/
-    /*printf("Grafo di partenza\n");
-    printSubGraph(old);
-    printf("Result:\n");
-    SCCResultPrint(result);*/
     for(int i=0;i<old->nV;i++){
         int newNode = getMacronodeFromVertex(result,old->offset+i);
         int *edges=getEdges(old,i);

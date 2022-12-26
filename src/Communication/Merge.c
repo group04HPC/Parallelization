@@ -22,7 +22,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
     // Firstly we reorder the graphs in case that g1 follows g2
     if (g1->offset > g2->offset)
     {
-        printf("Switched\n");
+        // printf("Switched\n");
         SubGraph *temp = g1;
         g1 = g2;
         g2 = temp;
@@ -50,7 +50,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset/WORK_LOAD);
 
     int intra=g2->offset-g1->nV-g1->offset-shrink1;
-    printf("Intra: %d-%d-%d-%d=%d\n" ,g2->offset , g1->nV , g1->offset, shrink1,intra);
+    //printf("Intra: %d-%d-%d-%d=%d\n" ,g2->offset , g1->nV , g1->offset, shrink1,intra);
     // printf("Grafo 1:\n");
     // printBella(g1);
     // printSubGraph(g1);
@@ -88,7 +88,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
     }
 
     // Graph 1 - Retrace of the edges contained V1:V2 edges and copy of the remaining ones
-    printf("%d - %d\n",g1->offset + g1->nV + intra,g1->nE);
+    //printf("%d - %d\n",g1->offset + g1->nV + intra,g1->nE);
     for (int i = 0; i < g1->nV; i++)
     {
         other_node = 0;

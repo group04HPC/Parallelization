@@ -230,15 +230,6 @@ int main(int argc, char* argv[]){
     SubGraph* mergedSub2 = mergeGraphs(mergedSub1, g14, startDim1-mergedSub1->nV, startDim14-g14->nV, result17);
     printf("\nMerged Graph 2:\n");
     printSubGraph(mergedSub2);
-    //Fin qua va bene, non so perchè continua, dovrebbe fermarsi qua
-    //Tralaltro succede qualcosa di strano con la merge results che si trovano troppi macronodi
-    SCCResult* result18 = SCCResultRescale(SCC(mergedSub2));
-    printf("\nSCC of merged graph 2:\n");
-    SCCResultPrint(result18);
-
-    SCCResult* combined2 = SCCResultCombine(result18, result17);
-    printf("\nCombined SCC 2:\n");
-    SCCResultPrint(combined2);
 
     destroySubGraph(g12);
     SCCResultDestroy(result12);
@@ -252,8 +243,6 @@ int main(int argc, char* argv[]){
     SCCResultDestroy(combined1);
     destroySubGraph(mergedSub2);
     SCCResultDestroy(result17);
-    SCCResultDestroy(result18);
-    SCCResultDestroy(combined2);
 
     return 0;
 }
