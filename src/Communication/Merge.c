@@ -138,7 +138,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
 
-            //printf("V2:intra-V2:V2 :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j-shrink1);
+            printf("V2:intra-V2:V2 :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j-shrink1);
 
             if (g2->adj[i * g2->nE + j])
             {
@@ -151,6 +151,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
+            
             //printf("V2:remaining :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j - shrink1);
 
             if (g2->adj[i * g2->nE + j])

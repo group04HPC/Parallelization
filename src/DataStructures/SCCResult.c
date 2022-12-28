@@ -116,3 +116,22 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
     
     return result;
 }
+
+int SCCResultGetLastElement(SCCResult *result){
+
+    int max = 0;
+
+    for (int i=0; i<result->nV; i++){
+    
+        TNode* node = *result->vertices[i];
+        
+        while(node != NULL){
+            if(node->value > max) max = node->value;
+            node = node->link;
+        }
+
+    }
+
+    return max;
+    
+}
