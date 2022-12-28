@@ -38,15 +38,15 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
 
     // The result's adjacency matrix should look like this:
     //
-    //     \   offset1          V1         intra       V2          remaining
-    //      \___________|_______________|_________|_____________|______________
-    //      |           |               |         |             |             |
-    //   V1 |           |               |         |             |             |
-    //  ____|___________|_______________|_________|_____________|_____________|
-    //      |           |               |         |             |             |
-    //   V2 |           |               |         |             |             |
-    //      |           |               |         |             |             |
-    //      |___________|_______________|_________|_____________|_____________|
+    //     \   offset1          V1           V2          remaining
+    //      \___________|_______________|_____________|______________
+    //      |           |               |             |             |
+    //   V1 |           |               |             |             |
+    //  ____|___________|_______________|_____________|_____________|
+    //      |           |               |             |             |
+    //   V2 |           |               |             |             |
+    //      |           |               |             |             |
+    //      |___________|_______________|_____________|_____________|
     //
     // To obtain this result we can copy for both g1 and g2 the offset1 section,
     //   then copy the V1:V1 square and retrace the edges between g1 and g2, then
@@ -56,9 +56,21 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
 
     int numEdges = g1->nE - shrink2, other_node;
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset/WORK_LOAD);
+    printf("\nResult\n");
+    SCCResultPrint(merged);
+    printf("\n============================\n\tg1\n");
+    printSubGraph(g1);
+    printf("\n============================\n\tg2\n");
+    printSubGraph(g2);
+    printf("\n");
 
-    int intra=g2->offset-g1->nV-g1->offset-shrink1;
+    // TODO: Deappezzottare questa get element
+    int temp = merged->nV;
+    merged->nV -= g2->nV;
+    int last = SCCResultGetLastElement(merged);
+    merged->nV = temp;
 
+    //printf("Last: %d\n", last);
 
     // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1  and V1:intra
     for (int i = 0; i < g1->nV; i++)
@@ -92,7 +104,10 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
-            other_node = getMacronodeFromVertex(merged, j+g2->offset-g1->nV);
+
+            //Provare a togliere shrink1
+            
+            other_node = getMacronodeFromVertex(merged, j + last - g1->offset - g1->nV+1);
             //printf("get number: %d\n", j+g2->offset-g1->nV);
 
             if (other_node != -1){
@@ -100,7 +115,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
                 if (g1->adj[i * g1->nE + j])
                     addEdge(res, i, other_node);
             }else{
-                //printf("V1:remaining :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g1->adj[i * g1->nE + j], i, j + g2->offset - g1->nV-shrink1-shrink2);
+                //printf("V1:remaining :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g1->adj[i * g1->nE + j], i, j -shrink2);
                 if (g1->adj[i * g1->nE + j])
                     addEdge(res, i, j + g2->offset - g1->nV-shrink2-shrink1);
             }
@@ -110,7 +125,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
     // Graph 2 - Copy of the edges contained in V2:offset1 and V2:V1
     for (int i = 0; i < g2->nV; i++)
     {
-        for (int j = 0; j < g1->offset + g1->nV + shrink1; j++)
+        for (int j = 0; j < last+1; j++)//g2->offset; j++)
         {
             other_node = getMacronodeFromVertex(merged, j);
 
@@ -146,13 +161,13 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             }
         }
 
-        for (int j = g2->offset + g2->nV; j < g2->nE; j++)
+        for (int j = last+1; j < g2->nE; j++)
         {
             // If the previous result of getMacronodeFromVertex is -1 it means that
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
-            
-            //printf("V2:remaining :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j - shrink1);
+
+            //printf("V2:V2 V2:remaining :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j-shrink1-shrink2-1);
 
             if (g2->adj[i * g2->nE + j])
             {
