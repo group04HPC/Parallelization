@@ -7,7 +7,7 @@
 int main(int argc, char* argv[]){
 
     int size;
-    FILE* fp = fopen("../Parallel/matrix.txt", "r");
+    FILE* fp = fopen("matrix.txt", "r");
     if (fp == NULL){
         printf("Error opening file\n");
     }
@@ -20,12 +20,25 @@ int main(int argc, char* argv[]){
 
     SubGraph* sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
-    printf("Original Graph:\n");
-    printSubGraph(sub);
-    printf("\nSCC Result:\n");
     
     SCCResult* result = SCCResultRescale(SCC(sub));
-    SCCResultPrint(result);
+
+    FILE* fp2 = fopen("result.txt", "w+");
+    if (fp2 == NULL){
+        printf("Error opening file\n");
+    }
+    fprintf(fp2, "%d\n", result->nMacroNodes);
+    for (int i=0; i<result->nMacroNodes; i++){
+        TList list = *result->vertices[i];
+        fprintf(fp2, "%d ", listCount(list));
+        while (list != NULL){
+            fprintf(fp2, "%d ", list->value);
+            list = list->link;
+        }
+        fprintf(fp2, "\n");
+    }
+    fclose(fp2);
+
     SCCResultDestroy(result);
     destroySubGraph(sub);
 

@@ -22,7 +22,7 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 // Merges two subgraphs and their SCCResult into a SubGraph
 SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCResult *merged)
 {
-    printf("E1: %d E2: %d, shrink1: %d, shrink2: %d\n", g1->nE, g2->nE, shrink1, shrink2);
+    //printf("E1: %d E2: %d, shrink1: %d, shrink2: %d\n", g1->nE, g2->nE, shrink1, shrink2);
     // Firstly we reorder the graphs in case that g1 follows g2
     if (g1->offset > g2->offset)
     {
@@ -58,7 +58,6 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
     SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset/WORK_LOAD);
 
     int intra=g2->offset-g1->nV-g1->offset-shrink1;
-
 
     // Graph 1 - Copy of the edges contained in V1:offset1 and V1:V1  and V1:intra
     for (int i = 0; i < g1->nV; i++)
@@ -138,7 +137,7 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             //   we've surpassed the part in which tarjan has been executed,
             //   so we only have to copy the remaining edges
 
-            printf("V2:intra-V2:V2 :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j-shrink1);
+            //printf("V2:intra-V2:V2 :\nda i=%d j=%d val=%d\n a i=%d j=%d\n", i, j, g2->adj[i * g2->nE + j], g1->nV + i, j-shrink1);
 
             if (g2->adj[i * g2->nE + j])
             {

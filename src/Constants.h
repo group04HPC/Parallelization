@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #define WORK_LOAD 5
-#define MIN_EDGES_PARALLEL 7
+#define MIN_EDGES_PARALLEL 8
 #define MAX_EDGES_PARALLEL 9
 
 #define NUM_VERTICES 10
