@@ -10,6 +10,11 @@
 #include "../Communication/Merge.h"
 #include "../Communication/Communication.h"
 
+int nextAvailableRank(bool* values, int size, int rank);
+int prevAvailableRank(bool* values, int size, int rank);
+void updateAvailableRanks(bool*values, int size);
+int countAvailableRanks(bool* values, int size);
+
 int main(int argc, char* argv[]){
 
     /* MPI init */
@@ -56,156 +61,125 @@ int main(int argc, char* argv[]){
     int start = 0, stop = even ? size/2 : (size-1)/2, recivedShrink=0;
     SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
     SCCResult *receivedResult = NULL, *mergedResult = NULL;
+    
+    bool values[size];
+    for (int i=0; i<size; i++)
+        values[i] = true;
 
-    /* All the processes will be considered */
-    int i=0; 
-    while(rank >= start && start != stop){
+    int next, prev, curr_av = 1;
 
-        if (rank >= start && rank < stop){
-            /* These ranks will send */
-            send_all(sub, result, shrink, rank + (stop - start));
-            destroySubGraph(sub);
-            SCCResultDestroy(result);
-        }
+    while(curr_av > 0){
 
-        if (rank >= stop && rank < stop+(stop-start)){
-            /* These ranks will receive */
+        curr_av = countAvailableRanks(values, rank);
+        // printf("rank %d, availables %d \n", rank, curr_av);
+        if (curr_av % 2 == 0){
+            // send to next
+            next = nextAvailableRank(values, size, rank);
+            if (next != -1){
+                // printf("------rank %d sending to %d-------\n", rank, next);
+                send_all(sub, result, shrink, next);
+                break;
+            }else{
+                // printf("------rank %d -- next %d ------- esco \n", rank, next);
+            }
 
-            recv_all(&receivedGraph, &receivedResult, &recivedShrink, rank-(stop-start));
-
-            // printf("My subgraph:\n");
-            // printSubGraph(sub);
-
+        }else{
+            // rcv from prev
+            prev = prevAvailableRank(values, size, rank);
+            // printf("-------rank %d trying ro rcv from %d-------\n", rank, prev);
+            recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
+            // printf("-------rank %d receiving from %d-------\n", rank, prev);
             receivedResult->offset = receivedGraph->offset;
-            // printf("Received Result: %d\n", receivedResult->offset);
-            // SCCResultPrint(receivedResult);
-            // printf("Received graph: %d\n", receivedGraph->offset);
-            // printSubGraph(receivedGraph);
             mergedResult = mergeResults(receivedResult, result);
-
-            // printf("Merged Result: %d\n", mergedResult->offset);
-            // SCCResultPrint(mergedResult);
-
             mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
             sub = mergedGraph;
-
-            // printf("Merged graph:, %d\n", mergedGraph->offset);
-            // printSubGraph(mergedGraph);
-
             result = SCCResultRescale(SCC(mergedGraph));
             shrink = sub->nV-result->nV;
-
-            // printf("Tarjan:\n");
-            // SCCResultPrint(result);
-
             result = SCCResultCombine(result, mergedResult);
-
-            // printf("Combined result:\n");
-            // SCCResultPrint(result);
-
             if (sub->nV != result->nV){
                 sub = rescaleGraph(mergedGraph, result);
-                // printf("Rescaled graph:\n");
-                // printSubGraph(sub);
             }else{
                 destroySubGraph(sub);
                 sub = mergedGraph;
             }
-
+            if (rank == 3 || rank == 6){
+                // printf("sono %d e sono ancora qui!!!\n", rank);
+            }
         }
 
-        if ((even ? size : size-1) == stop+1){
-            break;
-        }
-
-        start = stop;
+        updateAvailableRanks(values, size);
         
-        stop += ((even ? size : size-1) - stop)/2;
-
-        i++;
     }
-    
-    if (!even && size > 1){
 
-        if (rank == size - 2){
-            send_all(sub, result, shrink, size-1);
-            destroySubGraph(sub);
-            SCCResultDestroy(result);
-        }
-
-        if (rank == size - 1){
-
-            recv_all(&receivedGraph, &receivedResult, &recivedShrink, size-2);
-
-            // printf("Received shrink: %d\n", recivedShrink);
-
-            // printf("Received Result: \n");
-            // SCCResultPrint(receivedResult);
-
-            // printf("Received graph: \n");
-            // printSubGraph(receivedGraph);
-
-
-            // printf("My subgraph:\n");
-            // printSubGraph(sub);
-
-            // printf("My result:\n");
-            // SCCResultPrint(result);
-
-            receivedResult->offset = receivedGraph->offset;
-            mergedResult = mergeResults(receivedResult, result);
-            
-            // printf("Merged result:\n");
-            // SCCResultPrint(mergedResult);
-
-            mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
-
-            // printf("Merged graph:, %d\n", mergedGraph->offset);
-            // printSubGraph(mergedGraph);
-
-            result = SCCResultRescale(SCC(mergedGraph));
-            // printf("Tarjan:\n");
-            // SCCResultPrint(result);
-            shrink=mergedGraph->nV-result->nV;
-
-            result = SCCResultCombine(result, mergedResult);
-
-            if (sub->nV != result->nV){
-                sub = rescaleGraph(mergedGraph, result);
-            }else{
-                destroySubGraph(sub);
-                sub = mergedGraph;
-            }
-
-        }
-    }
+    // printf("rank %d finished\n", rank);
 
     if (rank == size-1){
-        // printf("Final graph:\n");
-        // printSubGraph(sub);
-        // printf("\nFinal result:\n");
-        // int max = SCCResultGetLastElement(result);
-        // printf("Max: %d\n", max);
-        // SCCResultPrint(result);
+        printf("Final graph:\n");
+        printSubGraph(sub);
+        printf("\nFinal result:\n");
+        int max = SCCResultGetLastElement(result);
+        printf("Max: %d\n", max);
+        SCCResultPrint(result);
 
-        FILE* f = fopen("result.txt", "a+");
-        if (f == NULL){
-            printf("Error opening file!\n");
-            exit(1);
-        }
-        fprintf(f, "\n%d\n", result->nMacroNodes);
-        for (int i=0; i<result->nMacroNodes; i++){
-            TList list = *result->vertices[i];
-            fprintf(f, "%d ", listCount(list));
-            while (list != NULL){
-                fprintf(f, "%d ", list->value);
-                list = list->link;
-            }
-            fprintf(f, "\n");
-        }
-        fclose(f);
+        // FILE* f = fopen("result.txt", "a+");
+        // if (f == NULL){
+        //     printf("Error opening file!\n");
+        //     exit(1);
+        // }
+        // fprintf(f, "\n%d\n", result->nMacroNodes);
+        // for (int i=0; i<result->nMacroNodes; i++){
+        //     TList list = *result->vertices[i];
+        //     fprintf(f, "%d ", listCount(list));
+        //     while (list != NULL){
+        //         fprintf(f, "%d ", list->value);
+        //         list = list->link;
+        //     }
+        //     fprintf(f, "\n");
+        // }
+        // fclose(f);
     }
 
     MPI_Finalize();
     exit(EXIT_SUCCESS);
+}
+
+int nextAvailableRank(bool* values, int size, int rank){
+    for(int i=rank+1; i<size; i++){
+        if (values[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int prevAvailableRank(bool* values, int size, int rank){
+    for(int i=rank-1; i>=0; i--){
+        if (values[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void updateAvailableRanks(bool*values, int size){
+    int lastTrue=-1;
+
+    for(int i=0;i<size;i++){
+        if(values[i] && lastTrue==-1){
+            lastTrue=i;
+        }else if(values[i] && lastTrue!=-1){
+            values[lastTrue]=false;
+            lastTrue=-1;
+        }
+    }
+}
+
+int countAvailableRanks(bool* values, int size){
+    int count = 0;
+    for (int i=0; i<size; i++){
+        if (values[i]){
+            count++;
+        }
+    }
+    return count;
 }

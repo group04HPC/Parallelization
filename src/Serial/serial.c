@@ -7,7 +7,7 @@
 int main(int argc, char* argv[]){
 
     int size;
-    FILE* fp = fopen("matrix.txt", "r");
+    FILE* fp = fopen("../Parallel/matrix.txt", "r");
     if (fp == NULL){
         printf("Error opening file\n");
     }
@@ -22,6 +22,11 @@ int main(int argc, char* argv[]){
     sub->adj = matrix;
     
     SCCResult* result = SCCResultRescale(SCC(sub));
+
+    printf("Original graph:\n");
+    printSubGraph(sub);
+    printf("\nResult:\n");
+    SCCResultPrint(result);
 
     FILE* fp2 = fopen("result.txt", "w+");
     if (fp2 == NULL){

@@ -156,3 +156,32 @@ void listCopy(TList source, TList* dest){
         node = node->link;
     }
 }
+
+TList listRemove(TList list, int value){
+    TNode *prec, *succ;
+    prec = NULL;
+    succ = list;
+
+    while (succ != NULL && !valueGreater(succ->value, value))
+    {
+        if (valueEqual(succ->value, value))
+        {
+            if (prec == NULL)
+            {
+                list = list->link;
+                nodeDestroy(succ);
+                return list;
+            }
+            else
+            {
+                prec->link = succ->link;
+                nodeDestroy(succ);
+                return list;
+            }
+        }
+        prec = succ;
+        succ = succ->link;
+    }
+    
+    return list;
+}
