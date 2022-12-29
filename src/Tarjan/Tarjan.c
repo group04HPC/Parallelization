@@ -127,7 +127,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int
             newI = getMacronodeFromVertex(result, old->offset+i);
         }else{
             newI = getMacronodeFromVertex(result2, old->offset+i);
-            newI = getMacronodeFromVertex(result, newI);
+            newI = getMacronodeFromVertex(result, newI-old->offset);
         }
         
         for (j=0; j<old->offset; j++){
@@ -142,7 +142,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int
                     newJ = getMacronodeFromVertex(result, j);
                 }else{
                     //newJ = getMacronodeFromVertex(result2, j);
-                    newJ = getMacronodeFromVertex(result, j);
+                    newJ = getMacronodeFromVertex(result, j-old->offset);
                 }
                 
                 if (newJ != -1) addEdge(new, newI, old->offset+newJ);

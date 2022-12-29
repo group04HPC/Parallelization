@@ -38,9 +38,11 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
 
         for(; j < max - diff; j++){
             if (hasEdge(g1, i, j)){
+                
                 other = getMacronodeFromVertex(merged, j+diff);
+                // printf("i: %d, ini j: %d, +diff: %d, new j: %d\n", i, j, j+diff, g1->offset+other);
                 if (other != -1){
-                    addEdge(res, i, other);
+                    addEdge(res, i, g1->offset+other);
                 }
             }
         }
@@ -63,7 +65,8 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
             if(hasEdge(g2, i, j)){
                 other = getMacronodeFromVertex(merged, j);
                 if (other != -1){
-                    addEdge(res, i+g1->nV, other);
+                    // printf("i: %d, old j: %d, j: %d\n", i+g1->nV, j, g1->offset+other);
+                    addEdge(res, i+g1->nV, g1->offset+other);
                 }
             }
         }

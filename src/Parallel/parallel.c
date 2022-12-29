@@ -66,21 +66,22 @@ int main(int argc, char* argv[]){
     for (int i=0; i<size; i++)
         values[i] = true;
 
-    int next, prev, curr_av = 1;
+    int next, prev, curr_av = 1, i=0;
 
     while(curr_av > 0){
 
         curr_av = countAvailableRanks(values, rank);
-        // printf("rank %d, availables %d \n", rank, curr_av);
+
         if (curr_av % 2 == 0){
             // send to next
             next = nextAvailableRank(values, size, rank);
             if (next != -1){
-                // printf("------rank %d sending to %d-------\n", rank, next);
+                // if (rank == 1 && i==1){
+                //     printf("il mio sotto grafo e':\n");
+                //     printSubGraph(sub);
+                // }
                 send_all(sub, result, shrink, next);
                 break;
-            }else{
-                // printf("------rank %d -- next %d ------- esco \n", rank, next);
             }
 
         }else{
@@ -90,40 +91,50 @@ int main(int argc, char* argv[]){
             recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
             // printf("-------rank %d receiving from %d-------\n", rank, prev);
             receivedResult->offset = receivedGraph->offset;
-            // printf("Received graph:\n");
-            // printSubGraph(receivedGraph);
-            // printf("Received result:\n");
-            // SCCResultPrint(receivedResult);
-            // printf("My graph:\n");
-            // printSubGraph(sub);
-            // printf("My result:\n");
-            // SCCResultPrint(result);
+            if (rank == 3 && i==0){
+                printf("Received graph:\n");
+                printSubGraph(receivedGraph);
+                printf("Received result:\n");
+                SCCResultPrint(receivedResult);
+                printf("My graph:\n");
+                printSubGraph(sub);
+                printf("My result:\n");
+                SCCResultPrint(result);
+            }
+
             mergedResult = mergeResults(receivedResult, result);
-            // printf("Merged result:\n");
-            // SCCResultPrint(mergedResult);
+            if (rank == 3 && i==0){
+                printf("Merged result:\n");
+                SCCResultPrint(mergedResult);
+            }
+            
             mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
-            // printf("Merged graph:\n");
-            // printSubGraph(mergedGraph);
+            if (rank == 3 && i==0){
+                printf("Merged graph:\n");
+                printSubGraph(mergedGraph);
+            }
             //mergedGraph = receivedGraph;
             sub = mergedGraph;
             result = SCCResultRescale(SCC(mergedGraph));
             tarjan = result;
-            // printf("Tarjan result:\n");
-            // SCCResultPrint(tarjan);
+            if (rank == 3 && i==0){
+                printf("Tarjan result:\n");
+                SCCResultPrint(tarjan);
+            }
+
             shrink = sub->nV-result->nV;
             result = SCCResultCombine(result, mergedResult);
-            // printf("Combined result:\n");
-            // SCCResultPrint(result);
+            if (rank == 3 && i==0){
+                printf("Combined result:\n");
+                SCCResultPrint(result);
+            }
             if (sub->nV != result->nV){
                 sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
-            }else{
-                destroySubGraph(sub);
-                sub = mergedGraph;
             }
         }
 
         updateAvailableRanks(values, size);
-        
+        i++; 
     }
 
     // printf("rank %d finished\n", rank);
