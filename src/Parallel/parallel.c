@@ -55,12 +55,12 @@ int main(int argc, char* argv[]){
     //printf("%d nV, %d nMacroNodes, %d rank\n", sub->nV, result->nV, rank);
     shrink = sub->nV - result->nV;
     if (sub->nV != result->nV)
-        sub = rescaleGraph(sub, result);
+        sub = rescaleGraph(sub, result, result, 0);
     //printf("%d shrink, %d rank\n", shrink, rank);
 
     int start = 0, stop = even ? size/2 : (size-1)/2, recivedShrink=0;
     SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
-    SCCResult *receivedResult = NULL, *mergedResult = NULL;
+    SCCResult *receivedResult = NULL, *mergedResult = NULL, *tarjan=NULL;
     
     bool values[size];
     for (int i=0; i<size; i++)
@@ -90,20 +90,35 @@ int main(int argc, char* argv[]){
             recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
             // printf("-------rank %d receiving from %d-------\n", rank, prev);
             receivedResult->offset = receivedGraph->offset;
+            // printf("Received graph:\n");
+            // printSubGraph(receivedGraph);
+            // printf("Received result:\n");
+            // SCCResultPrint(receivedResult);
+            // printf("My graph:\n");
+            // printSubGraph(sub);
+            // printf("My result:\n");
+            // SCCResultPrint(result);
             mergedResult = mergeResults(receivedResult, result);
+            // printf("Merged result:\n");
+            // SCCResultPrint(mergedResult);
             mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
+            // printf("Merged graph:\n");
+            // printSubGraph(mergedGraph);
+            //mergedGraph = receivedGraph;
             sub = mergedGraph;
             result = SCCResultRescale(SCC(mergedGraph));
+            tarjan = result;
+            // printf("Tarjan result:\n");
+            // SCCResultPrint(tarjan);
             shrink = sub->nV-result->nV;
             result = SCCResultCombine(result, mergedResult);
+            // printf("Combined result:\n");
+            // SCCResultPrint(result);
             if (sub->nV != result->nV){
-                sub = rescaleGraph(mergedGraph, result);
+                sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
             }else{
                 destroySubGraph(sub);
                 sub = mergedGraph;
-            }
-            if (rank == 3 || rank == 6){
-                // printf("sono %d e sono ancora qui!!!\n", rank);
             }
         }
 
@@ -121,22 +136,22 @@ int main(int argc, char* argv[]){
         printf("Max: %d\n", max);
         SCCResultPrint(result);
 
-        // FILE* f = fopen("result.txt", "a+");
-        // if (f == NULL){
-        //     printf("Error opening file!\n");
-        //     exit(1);
-        // }
-        // fprintf(f, "\n%d\n", result->nMacroNodes);
-        // for (int i=0; i<result->nMacroNodes; i++){
-        //     TList list = *result->vertices[i];
-        //     fprintf(f, "%d ", listCount(list));
-        //     while (list != NULL){
-        //         fprintf(f, "%d ", list->value);
-        //         list = list->link;
-        //     }
-        //     fprintf(f, "\n");
-        // }
-        // fclose(f);
+        FILE* f = fopen("result.txt", "a+");
+        if (f == NULL){
+            printf("Error opening file!\n");
+            exit(1);
+        }
+        fprintf(f, "\n%d\n", result->nMacroNodes);
+        for (int i=0; i<result->nMacroNodes; i++){
+            TList list = *result->vertices[i];
+            fprintf(f, "%d ", listCount(list));
+            while (list != NULL){
+                fprintf(f, "%d ", list->value);
+                list = list->link;
+            }
+            fprintf(f, "\n");
+        }
+        fclose(f);
     }
 
     MPI_Finalize();

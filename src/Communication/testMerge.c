@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../DataStructures/SubGraph.c"
-#include "../DataStructures/SCCResult.c"
-#include "../Tarjan/Tarjan.c"
-#include "Merge.c"
-#include "../DataStructures/TArray.c"
-#include "../DataStructures/TList.c"
+#include "../DataStructures/SubGraph.h"
+#include "../DataStructures/SCCResult.h"
+#include "../Tarjan/Tarjan.h"
+#include "Merge.h"
 
 int main(int argc, char* argv[]){
     /*
@@ -301,26 +299,26 @@ int main(int argc, char* argv[]){
     printf("\nMerged Graph 2:\n");
     printSubGraph(mergedSub2);
 
-    destroySubGraph(g7);
-    SCCResultDestroy(result7);
-    destroySubGraph(g8);
-    SCCResultDestroy(result8);
-    destroySubGraph(mergedSub);
-    SCCResultDestroy(result9);
-    SCCResultDestroy(result10);
-    SCCResultDestroy(combined);
-    destroySubGraph(g12);
-    SCCResultDestroy(result12);
-    destroySubGraph(g13);
-    SCCResultDestroy(result13);
-    destroySubGraph(g14);
-    SCCResultDestroy(result14);
-    destroySubGraph(mergedSub1);
-    SCCResultDestroy(result15);
-    SCCResultDestroy(result16);
-    SCCResultDestroy(combined1);
-    destroySubGraph(mergedSub2);
-    SCCResultDestroy(result17);
+    // destroySubGraph(g7);
+    // SCCResultDestroy(result7);
+    // destroySubGraph(g8);
+    // SCCResultDestroy(result8);
+    // destroySubGraph(mergedSub);
+    // SCCResultDestroy(result9);
+    // SCCResultDestroy(result10);
+    // SCCResultDestroy(combined);
+    // destroySubGraph(g12);
+    // SCCResultDestroy(result12);
+    // destroySubGraph(g13);
+    // SCCResultDestroy(result13);
+    // destroySubGraph(g14);
+    // SCCResultDestroy(result14);
+    // destroySubGraph(mergedSub1);
+    // SCCResultDestroy(result15);
+    // SCCResultDestroy(result16);
+    // SCCResultDestroy(combined1);
+    // destroySubGraph(mergedSub2);
+    // SCCResultDestroy(result17);
 
     return 0;
 }

@@ -116,33 +116,42 @@ SCCResult* SCC(SubGraph *g){
 /**
  *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result){
+SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int flag){
 
-    int mergedNodes = old->nV - result->nV, numEdges = old->nE;
+    int mergedNodes = old->nV - result->nV, numEdges = old->nE, i, j, newI, newJ;
     SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
 
     for(int i=0;i<old->nV;i++){
-        int newNode = getMacronodeFromVertex(result,old->offset+i);
-        
-        int *edges=getEdges(old,i);
-        for(int j=0;j<old->offset;j++){
-            if (edges[j]){
-                //printf("1: Arco da %d a %d trasformato in %d a %d\n",i,j,newNode,j);
-                addEdge(new, newNode, j);
-            }
-        }
-        for (int j = old->offset; j < old->offset+old->nV; j++)
-        {
-            if (edges[j]){
-                //printf("2: Arco da %d a %d trasformato in %d a %d\n", i, j, newNode, old->offset+getMacronodeFromVertex(result, j));
 
-                addEdge(new, newNode, old->offset + getMacronodeFromVertex(result, j));
+        if (flag == 0){
+            newI = getMacronodeFromVertex(result, old->offset+i);
+        }else{
+            newI = getMacronodeFromVertex(result2, old->offset+i);
+            newI = getMacronodeFromVertex(result, newI);
+        }
+        
+        for (j=0; j<old->offset; j++){
+            if (hasEdge(old, i, j)){
+                addEdge(new, newI, j);
             }
         }
-        for (int j = old->offset + old->nV;j<old->nE;j++){
-            if (edges[j]){
-                //printf("3: Arco da %d a %d trasformato in %d a %d\n", i, j, newNode, j - mergedNodes);
-                addEdge(new, newNode, j - mergedNodes);
+
+        for (; j<old->offset + old->nV; j++){
+            if (hasEdge(old, i, j)){
+                if (flag == 0){
+                    newJ = getMacronodeFromVertex(result, j);
+                }else{
+                    //newJ = getMacronodeFromVertex(result2, j);
+                    newJ = getMacronodeFromVertex(result, j);
+                }
+                
+                if (newJ != -1) addEdge(new, newI, old->offset+newJ);
+            }
+        }
+
+        for (; j<old->nE; j++){
+            if (hasEdge(old, i, j)){
+                addEdge(new, newI, j-mergedNodes);
             }
         }
     }
