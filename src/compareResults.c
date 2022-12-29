@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "DataStructures/SCCResult.h"
 
+void sortResult(TList** result, int size);
+
+
 int main(int argc, char* argv[]){
 
     FILE* fp = fopen("result.txt", "r");
@@ -60,3 +63,5 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
+
+

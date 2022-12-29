@@ -7,7 +7,7 @@
 int main(int argc, char* argv[]){
 
     int size;
-    FILE* fp = fopen("matrix.txt", "r");
+    FILE* fp = fopen("../Parallel/matrix.txt", "r");
     if (fp == NULL){
         printf("Error opening file\n");
     }

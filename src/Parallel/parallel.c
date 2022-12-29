@@ -91,7 +91,7 @@ int main(int argc, char* argv[]){
             recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
             // printf("-------rank %d receiving from %d-------\n", rank, prev);
             receivedResult->offset = receivedGraph->offset;
-            if (rank == 3 && i==0){
+            if (rank == 3 && i==1){
                 printf("Received graph:\n");
                 printSubGraph(receivedGraph);
                 printf("Received result:\n");
@@ -103,13 +103,13 @@ int main(int argc, char* argv[]){
             }
 
             mergedResult = mergeResults(receivedResult, result);
-            if (rank == 3 && i==0){
+            if (rank == 3 && i==1){
                 printf("Merged result:\n");
                 SCCResultPrint(mergedResult);
             }
             
             mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
-            if (rank == 3 && i==0){
+            if (rank == 3 && i==1){
                 printf("Merged graph:\n");
                 printSubGraph(mergedGraph);
             }
@@ -117,19 +117,34 @@ int main(int argc, char* argv[]){
             sub = mergedGraph;
             result = SCCResultRescale(SCC(mergedGraph));
             tarjan = result;
-            if (rank == 3 && i==0){
+            if (rank == 3 && i==1){
                 printf("Tarjan result:\n");
                 SCCResultPrint(tarjan);
             }
 
             shrink = sub->nV-result->nV;
             result = SCCResultCombine(result, mergedResult);
-            if (rank == 3 && i==0){
+            if (rank == 3 && i==1){
                 printf("Combined result:\n");
                 SCCResultPrint(result);
             }
             if (sub->nV != result->nV){
+                if (rank == 3 && i==1){
+                    // printf("=============\n");
+                    printf("Merged graph:\n");
+                    printSubGraph(mergedGraph);
+                    // printf("Tarjan result:\n");
+                    // SCCResultPrint(tarjan);
+                    // printf("Merged result:\n");
+                    // SCCResultPrint(mergedResult);
+                }
+
                 sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
+
+                if (rank == 3 && i==1){
+                    printf("--3-- Rescaled graph:\n");
+                    printSubGraph(sub);
+                }
             }
         }
 

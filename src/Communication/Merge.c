@@ -31,25 +31,28 @@ SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2, int shrink1, int shrink2, SCCR
 
     for(i=0; i<g1->nV; i++){
         for(j=0; j<g1->offset+g1->nV; j++){
+            // printf("1. j: %d, max: %d, diff: %d\n", j, max, diff);
             if (hasEdge(g1, i, j)){
                 addEdge(res, i, j);
             }
         }
 
         for(; j < max - diff; j++){
+            // printf("2. j: %d, max: %d, diff: %d\n", j, max, diff);
             if (hasEdge(g1, i, j)){
                 
                 other = getMacronodeFromVertex(merged, j+diff);
                 // printf("i: %d, ini j: %d, +diff: %d, new j: %d\n", i, j, j+diff, g1->offset+other);
                 if (other != -1){
                     addEdge(res, i, g1->offset+other);
+                    //printSubGraph(res);
                 }
             }
         }
 
         for(; j<g1->nE; j++){
-            
             if (hasEdge(g1, i, j)){
+                //printf("3. j: %d, max: %d, j-shrink: %d\n", j, max, j-shrink2);
                 addEdge(res, i, j-shrink2);
             }
         }

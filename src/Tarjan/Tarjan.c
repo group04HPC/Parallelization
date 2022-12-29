@@ -123,12 +123,7 @@ SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int
 
     for(int i=0;i<old->nV;i++){
 
-        if (flag == 0){
-            newI = getMacronodeFromVertex(result, old->offset+i);
-        }else{
-            newI = getMacronodeFromVertex(result2, old->offset+i);
-            newI = getMacronodeFromVertex(result, newI-old->offset);
-        }
+        newI = getMacronodeFromVertex(result, old->offset+i);
         
         for (j=0; j<old->offset; j++){
             if (hasEdge(old, i, j)){
