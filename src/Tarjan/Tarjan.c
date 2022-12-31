@@ -50,11 +50,11 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
     stackMember[u] = TRUE;
     
     /* Go through all vertices adjacent to this */
-    TArray *values = listToArray(g, u);
+    TList values = *g->adj[u-g->offset];
 
-    for (int i = 0; i < values->size; ++i){
+    for (int i = 0; i < listCount(values); ++i){
 
-        int v = arrayGet(values, i); /* v is the current adjacent of 'u' */
+        int v = listGet(values, i); /* v is the current adjacent of 'u' */
 
         /* If v is not visited yet, then recur for it */
         if (disc[v] == -1){
@@ -84,8 +84,6 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
         w = (int)stackPop(st);
         SCCResultInsert(result, u-g->offset, w);
         stackMember[w] = FALSE;
-        stackDestroy(values);
-        return;
     }
 }
 

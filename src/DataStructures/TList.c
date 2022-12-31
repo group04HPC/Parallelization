@@ -51,7 +51,7 @@ TList listDestroy(TList list)
 {
     TNode *node;
     while (list != NULL)
-    {
+    {   
         node = list;
         list = list->link;
         nodeDestroy(node);
@@ -168,4 +168,13 @@ TList listRemove(TList list, int value){
     }
     
     return list;
+}
+
+int listGet(TList list, int pos){
+    assert(list!=NULL);
+
+    if(pos==0)
+        return list->value;
+
+    return listGet(list->link,pos-1);
 }

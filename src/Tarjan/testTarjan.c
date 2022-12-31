@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../DataStructures/SubGraph.h"
-#include "../DataStructures/SCCResult.h"
-#include "../DataStructures/ListGraph.h"
-#include "Tarjan.h"
+#include "../DataStructures/SubGraph.c"
+#include "../DataStructures/SCCResult.c"
+#include "../DataStructures/ListGraph.c"
+#include "../DataStructures/TList.c"
+#include "../DataStructures/TArray.c"
+
+#include "Tarjan.c"
 
 int main(int argc, char* argv[]){
 
