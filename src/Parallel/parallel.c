@@ -28,6 +28,7 @@ int main(int argc, char* argv[]){
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     bool even = size % 2 == 0 ? true : false;
+    double start, end;
 
     /* subgraph creation */
     SubGraph* sub = createSubGraph(WORK_LOAD, WORK_LOAD*size, rank);
@@ -40,6 +41,8 @@ int main(int argc, char* argv[]){
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);
 
+    start = MPI_Wtime();
+
     /* each process reads its own subgraph from its own file */
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);
@@ -51,116 +54,68 @@ int main(int argc, char* argv[]){
 
     /* Tarjan algorithm */
     SCCResult* result = SCCResultRescale(SCC(sub));
-    int shrink = 0;
-    //printf("%d nV, %d nMacroNodes, %d rank\n", sub->nV, result->nV, rank);
-    shrink = sub->nV - result->nV;
-    if (sub->nV != result->nV)
-        sub = rescaleGraph(sub, result, result, 0);
-    //printf("%d shrink, %d rank\n", shrink, rank);
 
-    int start = 0, stop = even ? size/2 : (size-1)/2, recivedShrink=0;
-    SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
-    SCCResult *receivedResult = NULL, *mergedResult = NULL, *tarjan=NULL;
-    
-    bool values[size];
-    for (int i=0; i<size; i++)
-        values[i] = true;
+    if (size > 1){
+        int shrink = 0;
+        shrink = sub->nV - result->nV;
+        if (sub->nV != result->nV)
+            sub = rescaleGraph(sub, result, result, 0);
 
-    int next, prev, curr_av = 1, i=0;
+        int recivedShrink=0;
+        SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
+        SCCResult *receivedResult = NULL, *mergedResult = NULL, *tarjan=NULL;
+        
+        bool values[size];
+        for (int i=0; i<size; i++)
+            values[i] = true;
 
-    while(curr_av > 0){
+        int next, prev, curr_av = 1, i=0;
 
-        curr_av = countAvailableRanks(values, rank);
+        while(curr_av > 0){
 
-        if (curr_av % 2 == 0){
-            // send to next
-            next = nextAvailableRank(values, size, rank);
-            if (next != -1){
-                // if (rank == 1 && i==1){
-                //     printf("il mio sotto grafo e':\n");
-                //     printSubGraph(sub);
-                // }
-                send_all(sub, result, shrink, next);
-                break;
-            }
+            curr_av = countAvailableRanks(values, rank);
 
-        }else{
-            // rcv from prev
-            prev = prevAvailableRank(values, size, rank);
-            // printf("-------rank %d trying ro rcv from %d-------\n", rank, prev);
-            recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
-            // printf("-------rank %d receiving from %d-------\n", rank, prev);
-            receivedResult->offset = receivedGraph->offset;
-            if (rank == 3 && i==1){
-                printf("Received graph:\n");
-                printSubGraph(receivedGraph);
-                printf("Received result:\n");
-                SCCResultPrint(receivedResult);
-                printf("My graph:\n");
-                printSubGraph(sub);
-                printf("My result:\n");
-                SCCResultPrint(result);
-            }
-
-            mergedResult = mergeResults(receivedResult, result);
-            if (rank == 3 && i==1){
-                printf("Merged result:\n");
-                SCCResultPrint(mergedResult);
-            }
-            
-            mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
-            if (rank == 3 && i==1){
-                printf("Merged graph:\n");
-                printSubGraph(mergedGraph);
-            }
-            //mergedGraph = receivedGraph;
-            sub = mergedGraph;
-            result = SCCResultRescale(SCC(mergedGraph));
-            tarjan = result;
-            if (rank == 3 && i==1){
-                printf("Tarjan result:\n");
-                SCCResultPrint(tarjan);
-            }
-
-            shrink = sub->nV-result->nV;
-            result = SCCResultCombine(result, mergedResult);
-            if (rank == 3 && i==1){
-                printf("Combined result:\n");
-                SCCResultPrint(result);
-            }
-            if (sub->nV != result->nV){
-                if (rank == 3 && i==1){
-                    // printf("=============\n");
-                    printf("Merged graph:\n");
-                    printSubGraph(mergedGraph);
-                    // printf("Tarjan result:\n");
-                    // SCCResultPrint(tarjan);
-                    // printf("Merged result:\n");
-                    // SCCResultPrint(mergedResult);
+            if (curr_av % 2 == 0){
+                // send to next
+                next = nextAvailableRank(values, size, rank);
+                if (next != -1){
+                    send_all(sub, result, shrink, next);
+                    break;
                 }
 
-                sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
+            }else{
+                // rcv from prev
+                prev = prevAvailableRank(values, size, rank);
 
-                if (rank == 3 && i==1){
-                    printf("--3-- Rescaled graph:\n");
-                    printSubGraph(sub);
+                recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
+
+                receivedResult->offset = receivedGraph->offset;
+
+                mergedResult = mergeResults(receivedResult, result);
+                
+                mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
+                sub = mergedGraph;
+
+                result = SCCResultRescale(SCC(mergedGraph));
+                tarjan = result;
+
+                shrink = sub->nV-result->nV;
+                result = SCCResultCombine(result, mergedResult);
+
+                if (sub->nV != result->nV){
+                    sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
                 }
             }
+
+            updateAvailableRanks(values, size);
+            i++; 
         }
-
-        updateAvailableRanks(values, size);
-        i++; 
     }
-
-    // printf("rank %d finished\n", rank);
+    
+    end = MPI_Wtime() - start;
 
     if (rank == size-1){
-        printf("Final graph:\n");
-        printSubGraph(sub);
-        printf("\nFinal result:\n");
-        int max = SCCResultGetLastElement(result);
-        printf("Max: %d\n", max);
-        SCCResultPrint(result);
+        printf("Tarjan excution time parallel: %f\n", end);
 
         FILE* f = fopen("result.txt", "a+");
         if (f == NULL){

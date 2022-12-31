@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
 #include "../Tarjan/Tarjan.h"
@@ -7,7 +8,12 @@
 int main(int argc, char* argv[]){
 
     int size;
-    FILE* fp = fopen("../Parallel/matrix.txt", "r");
+
+    double time_spent = 0.0;
+ 
+    clock_t begin = clock();
+
+    FILE* fp = fopen("matrix.txt", "r");
     if (fp == NULL){
         printf("Error opening file\n");
     }
@@ -21,12 +27,13 @@ int main(int argc, char* argv[]){
     SubGraph* sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
     
+    
     SCCResult* result = SCCResultRescale(SCC(sub));
 
-    printf("Original graph:\n");
-    printSubGraph(sub);
-    printf("\nResult:\n");
-    SCCResultPrint(result);
+    // printf("Original graph:\n");
+    // printSubGraph(sub);
+    // printf("\nResult:\n");
+    // SCCResultPrint(result);
 
     FILE* fp2 = fopen("result.txt", "w+");
     if (fp2 == NULL){
@@ -46,6 +53,11 @@ int main(int argc, char* argv[]){
 
     SCCResultDestroy(result);
     destroySubGraph(sub);
+
+    clock_t end = clock();
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+    printf("Tarjan excution time serial: %f\n", time_spent);
 
     return 0;
 }
