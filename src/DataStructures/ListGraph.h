@@ -14,5 +14,6 @@ typedef struct listGraph {
 ListGraph* createListGraphFromMatrix(SubGraph* sub); /* Creates a list graph from a matrix graph */
 SubGraph* createMatrixGraphFromList(ListGraph* list); /* Creates a matrix graph from a list graph */
 void printListGraph(ListGraph* graph); /* Prints a list graph */
+void destroyListGraph(ListGraph* graph); /* Destroys a list graph */
 
 #endif

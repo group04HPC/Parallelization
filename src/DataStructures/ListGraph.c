@@ -56,3 +56,16 @@ void printListGraph(ListGraph* graph){
         printf("\n");
     }
 }
+
+/* Destroys a list graph */
+void destroyListGraph(ListGraph* graph){
+    if (graph == NULL) return;
+    for(int i = 0; i < graph->nV; i++){
+        if (graph->adj[i] != NULL){
+            listDestroy(*graph->adj[i]);
+            free(graph->adj[i]);
+        }
+    }
+    free(graph->adj);
+    free(graph);
+}
