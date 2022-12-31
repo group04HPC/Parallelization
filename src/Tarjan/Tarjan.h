@@ -9,6 +9,6 @@
 
 void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
 SCCResult *SCC(ListGraph *g);
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int flag);
+ListGraph *rescaleGraph(ListGraph *old, SCCResult *tarjan);
 
 #endif

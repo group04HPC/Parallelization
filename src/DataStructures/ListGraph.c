@@ -3,6 +3,23 @@
 #include "ListGraph.h"
 #include <assert.h>
 
+/* Creates a list graph */
+ListGraph* ListGraphCreate(int nV, int nE, int offset){
+    ListGraph* list = (ListGraph*)malloc(sizeof(ListGraph));
+    assert(list != NULL);
+    list->offset = offset;
+    list->nV = nV;
+    list->nE = nE;
+    
+    list->adj = (TList**)malloc(sizeof(TList*)*list->nV);
+    for(int i = 0; i < list->nV; i++){
+        list->adj[i] = (TList*)malloc(sizeof(TList));
+        assert(list->adj[i] != NULL);
+        *list->adj[i] = listCreate();
+    }
+    return list;
+}
+
 /* Creates a list graph from a matrix graph */
 ListGraph* createListGraphFromMatrix(SubGraph* sub){
     ListGraph* list = (ListGraph*)malloc(sizeof(ListGraph));
@@ -51,7 +68,7 @@ SubGraph* createMatrixGraphFromList(ListGraph* list){
 /* Prints a list graph */
 void printListGraph(ListGraph* graph){
     for(int i = 0; i < graph->nV; i++){
-        printf("Node %d: ", i+graph->offset);
+        printf("Node %d: ", i);
         listPrint(*graph->adj[i]);
         printf("\n");
     }
@@ -68,4 +85,9 @@ void destroyListGraph(ListGraph* graph){
     }
     free(graph->adj);
     free(graph);
+}
+
+/* Inserts a new vertex into the list graph */
+void insertListGraph(ListGraph* new, int v, int u){
+    *new->adj[v] = listInsert(*new->adj[v], u);
 }

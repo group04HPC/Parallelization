@@ -109,42 +109,36 @@ SCCResult* SCC(ListGraph* g){
 /**
  *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int flag){
+ListGraph *rescaleGraph(ListGraph *old, SCCResult *tarjan){
 
-    int mergedNodes = old->nV - result->nV, numEdges = old->nE, i, j, newI, newJ;
-    SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
+    ListGraph *new = ListGraphCreate(tarjan->nV, old->nE - (old->nV-tarjan->nV), old->offset);
 
-    for(int i=0;i<old->nV;i++){
+    int corr[old->nV];
 
-        newI = getMacronodeFromVertex(result, old->offset+i);
-        
-        for (j=0; j<old->offset; j++){
-            if (hasEdge(old, i, j)){
-                addEdge(new, newI, j);
-            }
-        }
-
-        for (; j<old->offset + old->nV; j++){
-            if (hasEdge(old, i, j)){
-                if (flag == 0){
-                    newJ = getMacronodeFromVertex(result, j);
-                }else{
-                    //newJ = getMacronodeFromVertex(result2, j);
-                    newJ = getMacronodeFromVertex(result, j-old->offset);
-                }
-                
-                if (newJ != -1) addEdge(new, newI, old->offset+newJ);
-            }
-        }
-
-        for (; j<old->nE; j++){
-            if (hasEdge(old, i, j)){
-                addEdge(new, newI, j-mergedNodes);
-            }
+    for (int i=0; i<tarjan->nV; i++){
+        TList list = *tarjan->vertices[i];
+        while (list != NULL){
+            corr[list->value-old->offset] = i;
+            list = list->link;
         }
     }
 
-    destroySubGraph(old);
+    for (int i=0; i<old->nV; i++){
+
+        TList list = *old->adj[i];
+                
+        while (list != NULL){
+            
+            if (list->value >= old->offset && list->value < old->offset+old->nV){
+                insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
+            }else{
+                insertListGraph(new, corr[i], list->value);
+            }
+            list = list->link;
+        }
+    }
+
+    // se non da segmentation fault fai la destroy
 
     return new;
 }

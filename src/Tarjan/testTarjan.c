@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
 #include "../DataStructures/ListGraph.h"
@@ -7,6 +8,7 @@
 
 int main(int argc, char* argv[]){
 
+    double conversion_time = 0.0;
     // Test for the serial version
 
     SubGraph* g1 = createSubGraph(5, 5, 0);
@@ -261,11 +263,14 @@ int main(int argc, char* argv[]){
     addEdge(g10, 4, 5);
     addEdge(g10, 4, 6);
     printf("\nOriginal Graph:\n");
-    printSubGraph(g10);
     ListGraph* list10 = createListGraphFromMatrix(g10);
+    printListGraph(list10);
     printf("\nSCC:\n");
     SCCResult* result10 = SCCResultRescale(SCC(list10));
     SCCResultPrint(result10);
+    ListGraph* rescaled = rescaleGraph(list10, result10);
+    printf("\nRescaled Graph:\n");
+    printListGraph(rescaled);
     destroySubGraph(g10);
     SCCResultDestroy(result10);
     destroyListGraph(list10);
@@ -281,11 +286,14 @@ int main(int argc, char* argv[]){
     addEdge(g11, 3, 9);
     addEdge(g11, 4, 8);
     printf("\nOriginal Graph:\n");
-    printSubGraph(g11);
     ListGraph* list11 = createListGraphFromMatrix(g11);
+    printListGraph(list11);
     printf("\nSCC:\n");
     SCCResult* result11 = SCCResultRescale(SCC(list11));
     SCCResultPrint(result11);
+    printf("\nRescaled Graph:\n");
+    ListGraph* r2 = rescaleGraph(list11, result11);
+    printListGraph(r2);
     destroySubGraph(g11);
     SCCResultDestroy(result11);
     destroyListGraph(list11);
@@ -302,11 +310,18 @@ int main(int argc, char* argv[]){
     addEdge(g12, 4, 15);
     addEdge(g12, 4, 16);
     printf("\nOriginal Graph:\n");
-    printSubGraph(g12);
     ListGraph* list12 = createListGraphFromMatrix(g12);
+    printListGraph(list12);
     printf("\nSCC:\n");
     SCCResult* result12 = SCCResultRescale(SCC(list12));
     SCCResultPrint(result12);
+    printf("\nRescaled Graph:\n");
+    clock_t begin = clock();
+    ListGraph* r3 = rescaleGraph(list12, result12);
+    clock_t end = clock();
+    printListGraph(r3);
+    conversion_time += (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("\nRescaling time: %f\n", conversion_time);
     destroySubGraph(g12);
     destroyListGraph(list12);
 

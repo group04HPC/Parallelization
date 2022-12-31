@@ -97,8 +97,6 @@ TList listInsert(TList l, int value)
     TNode *prec, *succ, *new;
     prec = NULL;
     succ = l;
-    new = nodeCreate(value);
-    assert(new != NULL);
 
     /* search the insert position */
     while (succ != NULL && valueGreater(value, succ->value))
@@ -106,6 +104,12 @@ TList listInsert(TList l, int value)
         prec = succ;
         succ = succ->link;
     }
+
+    if (succ!=NULL && succ->value == value)
+        return l;
+
+    new = nodeCreate(value);
+    assert(new != NULL);
 
     /* insertion in the links' chain */
     if (prec == NULL)
@@ -119,6 +123,8 @@ TList listInsert(TList l, int value)
         prec->link = new;
         return l;
     }
+
+    return l;
 }
 
 int listCount(TList list)
