@@ -86,7 +86,6 @@ int main(int argc, char* argv[]){
             }else{
                 // rcv from prev
                 prev = prevAvailableRank(values, size, rank);
-
                 recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
 
                 receivedResult->offset = receivedGraph->offset;

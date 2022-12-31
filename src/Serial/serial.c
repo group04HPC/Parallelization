@@ -27,13 +27,12 @@ int main(int argc, char* argv[]){
     SubGraph* sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
     
-    
     SCCResult* result = SCCResultRescale(SCC(sub));
 
-    // printf("Original graph:\n");
-    // printSubGraph(sub);
-    // printf("\nResult:\n");
-    // SCCResultPrint(result);
+    clock_t end = clock();
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+    printf("Tarjan excution time serial: %f\n", time_spent);
 
     FILE* fp2 = fopen("result.txt", "w+");
     if (fp2 == NULL){
@@ -53,11 +52,6 @@ int main(int argc, char* argv[]){
 
     SCCResultDestroy(result);
     destroySubGraph(sub);
-
-    clock_t end = clock();
-    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
-
-    printf("Tarjan excution time serial: %f\n", time_spent);
 
     return 0;
 }
