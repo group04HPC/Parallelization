@@ -5,11 +5,11 @@
 #include "../DataStructures/TArray.h"
 #include "../DataStructures/TList.h"
 #include "../DataStructures/SCCResult.h"
+#include "../DataStructures/ListGraph.h"
 
-TArray* matrixToArray(SubGraph* g, int i);
-void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
-SCCResult *SCC(SubGraph *g);
+TArray* listToArray(ListGraph* g, int i);
+void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
+SCCResult *SCC(ListGraph *g);
 SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int flag);
-SCCResult *retraceResult(SCCResult *res,SCCResult* original);
 
 #endif

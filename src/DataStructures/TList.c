@@ -132,22 +132,6 @@ int listCount(TList list)
     return conta;
 }
 
-int *listToArray(TList list)
-{
-    int dim = listCount(list), i = 0;
-    int *res = malloc(dim * sizeof(int));
-
-    TNode *node = list;
-    while (node != NULL)
-    {
-        res[i] = node->value;
-        node = node->link;
-        i++;
-    }
-    return res;
-}
-
-
 void listCopy(TList source, TList* dest){
     TNode *node = source;
     while (node != NULL)

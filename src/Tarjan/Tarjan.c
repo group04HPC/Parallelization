@@ -11,11 +11,14 @@
 /**
  * Convert a matrix row into an array 
  */
-TArray* matrixToArray(SubGraph* g, int i){
+TArray* listToArray(ListGraph* g, int i){
     TArray* array = stackCreate(g->nE);
-    for (int j = g->offset; j < g->offset+g->nV; j++)
-        if (g->adj[(i-g->offset)*g->nE+j] != 0)
-            stackPush(array, j);
+    TNode* node = *g->adj[i-g->offset];
+    while(node != NULL){
+        if (node->value >= g->offset && node->value < g->offset+g->nV)
+            stackPush(array, node->value);
+        node = node->link;
+    }
     return array;
 }
 
@@ -29,10 +32,11 @@ TArray* matrixToArray(SubGraph* g, int i){
  * stackMember[] --> bit/index array for faster check whether a node is in stack
  * *result --> the resulting SCCs
  */
-void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult *result){
+void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult *result){
+    
     /* A static variable is used for simplicity, we can avoid the use of static variable by passing a pointer.*/
     static int time = 0;
-
+    
     if(u < g->offset || u >= g->offset+g->nV){
         disc[u] = NIL;
         low[u] = NIL;
@@ -46,7 +50,7 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
     stackMember[u] = TRUE;
     
     /* Go through all vertices adjacent to this */
-    TArray *values = matrixToArray(g, u);
+    TArray *values = listToArray(g, u);
 
     for (int i = 0; i < values->size; ++i){
 
@@ -88,7 +92,7 @@ void SCCUtil(SubGraph *g, int u, int disc[], int low[], TArray *st, int stackMem
 /**
  * The function to do DFS traversal, by means of the SCCUtil().
  */
-SCCResult* SCC(SubGraph *g){
+SCCResult* SCC(ListGraph* g){
 
     int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
@@ -104,9 +108,11 @@ SCCResult* SCC(SubGraph *g){
     result->offset = g->offset;
 
     /* Call the recursive helper function to find strongly connected components in DFS tree with vertex 'i' */
-    for (int i = g->offset; i < g->offset+V; i++)
+    for (int i = g->offset; i < g->offset+V; i++){
+
         if (disc[i] == NIL)
             SCCUtil(g, i, disc, low, st, stackMember, result);
+    }
 
     stackDestroy(st);
 

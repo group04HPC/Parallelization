@@ -16,6 +16,7 @@ int main(int argc, char* argv[]){
     addEdge(g1, 3, 4);
     printf("Original Graph:\n");
     printSubGraph(g1);
+    
     printf("\nSCC:\n");
     SCCResult* result1 = SCCResultRescale(SCC(g1));
     SCCResultPrint(result1);
