@@ -9,20 +9,6 @@
 #define FALSE 0
 
 /**
- * Convert a matrix row into an array 
- */
-TArray* listToArray(ListGraph* g, int i){
-    TArray* array = stackCreate(g->nE);
-    TNode* node = *g->adj[i-g->offset];
-    while(node != NULL){
-        if (node->value >= g->offset && node->value < g->offset+g->nV)
-            stackPush(array, node->value);
-        node = node->link;
-    }
-    return array;
-}
-
-/**
  * A recursive function that finds and prints strongly connected components using DFS traversal.
  * g -> the SubGraph
  * u --> The vertex to be visited next
@@ -56,21 +42,24 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
 
         int v = listGet(values, i); /* v is the current adjacent of 'u' */
 
-        /* If v is not visited yet, then recur for it */
-        if (disc[v] == -1){
-            SCCUtil(g, v, disc, low, st, stackMember,result);
+        if (v >= g->offset && v < g->offset+g->nV){
+            /* If v is not visited yet, then recur for it */
+            if (disc[v] == -1){
+                SCCUtil(g, v, disc, low, st, stackMember,result);
+                /* 
+                * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
+                * Case 1 (per above discussion on Disc and Low value) 
+                */
+                low[u] = (low[u] < low[v]) ? low[u] : low[v];
+            }
             /* 
-             * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
-             * Case 1 (per above discussion on Disc and Low value) 
-             */
-            low[u] = (low[u] < low[v]) ? low[u] : low[v];
+            * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge). 
+            * Case 2 (per above discussion on Disc and Low value)
+            */
+            else if (stackMember[v] == TRUE)
+                low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
         }
-        /* 
-         * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge). 
-         * Case 2 (per above discussion on Disc and Low value)
-         */
-        else if (stackMember[v] == TRUE)
-            low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
+
     }
 
     /* Head node found, pop the stack and print an SCC */
