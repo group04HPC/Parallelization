@@ -20,11 +20,11 @@ int main(int argc, char* argv[]){
     printf("Original Graph:\n");
     printSubGraph(g1);
     ListGraph* list = createListGraphFromMatrix(g1);
-    printf("List Graph:\n");
+    printf("\nList Graph:\n");
     printListGraph(list);
     
     printf("\nSCC:\n");
-    SCCResult* result1 = SCCResultRescale(SCC(list));
+    SCCResult* result1 = SCC(&list);
     SCCResultPrint(result1);
     destroySubGraph(g1);
     SCCResultDestroy(result1);
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g2);
     ListGraph* list2 = createListGraphFromMatrix(g2);
     printf("\nSCC:\n");
-    SCCResult* result2 = SCCResultRescale(SCC(list2));
+    SCCResult* result2 = SCC(&list2);
     SCCResultPrint(result2);
     destroySubGraph(g2);
     SCCResultDestroy(result2);
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g3);
     ListGraph* list3 = createListGraphFromMatrix(g3);
     printf("\nSCC:\n");
-    SCCResult* result3 = SCCResultRescale(SCC(list3));
+    SCCResult* result3 = SCC(&list3);
     SCCResultPrint(result3);
     destroySubGraph(g3);
     SCCResultDestroy(result3);
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g4);
     ListGraph* list4 = createListGraphFromMatrix(g4);
     printf("\nSCC:\n");
-    SCCResult* result4 = SCCResultRescale(SCC(list4));
+    SCCResult* result4 = SCC(&list4);
     SCCResultPrint(result4);
     destroySubGraph(g4);
     SCCResultDestroy(result4);
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g5);
     ListGraph* list5 = createListGraphFromMatrix(g5);
     printf("\nSCC:\n");
-    SCCResult* result5 = SCCResultRescale(SCC(list5));
+    SCCResult* result5 = SCC(&list5);
     SCCResultPrint(result5);
     destroySubGraph(g5);
     SCCResultDestroy(result5);
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g6);
     ListGraph* list6 = createListGraphFromMatrix(g6);
     printf("\nSCC:\n");
-    SCCResult* result6 = SCCResultRescale(SCC(list6));
+    SCCResult* result6 = SCC(&list6);
     SCCResultPrint(result6);
     destroySubGraph(g6);
     SCCResultDestroy(result6);
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g7);
     ListGraph* list7 = createListGraphFromMatrix(g7);
     printf("\nSCC:\n");
-    SCCResult* result7 = SCCResultRescale(SCC(list7));
+    SCCResult* result7 = SCC(&list7);
     SCCResultPrint(result7);
     destroySubGraph(g7);
     SCCResultDestroy(result7);
@@ -207,7 +207,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g8);
     ListGraph* list8 = createListGraphFromMatrix(g8);
     printf("\nSCC:\n");
-    SCCResult* result8 = SCCResultRescale(SCC(list8));
+    SCCResult* result8 = SCC(&list8);
     SCCResultPrint(result8);
     destroySubGraph(g8);
     SCCResultDestroy(result8);
@@ -245,7 +245,7 @@ int main(int argc, char* argv[]){
     printSubGraph(g9);
     ListGraph* list9 = createListGraphFromMatrix(g9);
     printf("\nSCC:\n");
-    SCCResult* result9 = SCCResultRescale(SCC(list9));
+    SCCResult* result9 = SCC(&list9);
     SCCResultPrint(result9);
     destroySubGraph(g9);
     SCCResultDestroy(result9);
@@ -266,11 +266,10 @@ int main(int argc, char* argv[]){
     ListGraph* list10 = createListGraphFromMatrix(g10);
     printListGraph(list10);
     printf("\nSCC:\n");
-    SCCResult* result10 = SCCResultRescale(SCC(list10));
+    SCCResult* result10 = SCC(&list10);
     SCCResultPrint(result10);
-    ListGraph* rescaled = rescaleGraph(list10, result10);
     printf("\nRescaled Graph:\n");
-    printListGraph(rescaled);
+    printListGraph(list10);
     destroySubGraph(g10);
     SCCResultDestroy(result10);
     destroyListGraph(list10);
@@ -289,11 +288,10 @@ int main(int argc, char* argv[]){
     ListGraph* list11 = createListGraphFromMatrix(g11);
     printListGraph(list11);
     printf("\nSCC:\n");
-    SCCResult* result11 = SCCResultRescale(SCC(list11));
+    SCCResult* result11 = SCC(&list11);
     SCCResultPrint(result11);
     printf("\nRescaled Graph:\n");
-    ListGraph* r2 = rescaleGraph(list11, result11);
-    printListGraph(r2);
+    printListGraph(list11);
     destroySubGraph(g11);
     SCCResultDestroy(result11);
     destroyListGraph(list11);
@@ -313,15 +311,10 @@ int main(int argc, char* argv[]){
     ListGraph* list12 = createListGraphFromMatrix(g12);
     printListGraph(list12);
     printf("\nSCC:\n");
-    SCCResult* result12 = SCCResultRescale(SCC(list12));
+    SCCResult* result12 = SCC(&list12);
     SCCResultPrint(result12);
     printf("\nRescaled Graph:\n");
-    clock_t begin = clock();
-    ListGraph* r3 = rescaleGraph(list12, result12);
-    clock_t end = clock();
-    printListGraph(r3);
-    conversion_time += (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("\nRescaling time: %f\n", conversion_time);
+    printListGraph(list12);
     destroySubGraph(g12);
     destroyListGraph(list12);
 

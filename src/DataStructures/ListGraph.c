@@ -68,7 +68,7 @@ SubGraph* createMatrixGraphFromList(ListGraph* list){
 /* Prints a list graph */
 void printListGraph(ListGraph* graph){
     for(int i = 0; i < graph->nV; i++){
-        printf("Node %d: ", i);
+        printf("Node %d: ", i+graph->offset);
         listPrint(*graph->adj[i]);
         printf("\n");
     }

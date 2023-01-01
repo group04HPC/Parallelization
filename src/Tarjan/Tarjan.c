@@ -79,8 +79,9 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
 /**
  * The function to do DFS traversal, by means of the SCCUtil().
  */
-SCCResult* SCC(ListGraph* g){
+SCCResult* SCC(ListGraph** graph){
 
+    ListGraph* g = *graph;
     int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
 
@@ -103,14 +104,19 @@ SCCResult* SCC(ListGraph* g){
 
     stackDestroy(st);
 
+    result = SCCResultRescale(result);
+ 
+    *graph = rescaleGraph(&g, result);
+
     return result;
 }
 
 /**
  *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
-ListGraph *rescaleGraph(ListGraph *old, SCCResult *tarjan){
+ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
 
+    ListGraph *old = *oldGraph;
     ListGraph *new = ListGraphCreate(tarjan->nV, old->nE - (old->nV-tarjan->nV), old->offset);
 
     int corr[old->nV];
@@ -128,17 +134,16 @@ ListGraph *rescaleGraph(ListGraph *old, SCCResult *tarjan){
         TList list = *old->adj[i];
                 
         while (list != NULL){
-            
-            if (list->value >= old->offset && list->value < old->offset+old->nV){
+            if (list->value >= old->offset && list->value < old->offset+old->nV)
                 insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
-            }else{
+            else
                 insertListGraph(new, corr[i], list->value);
-            }
             list = list->link;
         }
     }
 
     // se non da segmentation fault fai la destroy
+    destroyListGraph(old);
 
     return new;
 }

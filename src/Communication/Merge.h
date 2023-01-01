@@ -3,8 +3,9 @@
 
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
+#include "../DataStructures/ListGraph.h"
 
-SubGraph *mergeGraphs(SubGraph *g1, SubGraph *g2,int shrink1,int shrink2, SCCResult *merged);
+ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged);
 SCCResult *mergeResults(SCCResult *r1, SCCResult *r2);
 
 #endif
