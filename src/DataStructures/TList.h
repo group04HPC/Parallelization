@@ -32,5 +32,6 @@ int listCount(TList list);
 void listCopy(TList source, TList *dest);
 TList listRemove(TList list, int value);
 int listGet(TList list, int pos);
+int *listToArray(TList list);
 
 #endif

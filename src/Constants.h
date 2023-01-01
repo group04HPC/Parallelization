@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define WORK_LOAD 5
+#define WORK_LOAD 500
 #define MIN_EDGES_PARALLEL 5
 #define MAX_EDGES_PARALLEL 10
 

@@ -40,16 +40,17 @@ if [ "$serial" -ne 0 ]; then
     gcc -c DataStructures/TList.c 
     gcc -c DataStructures/TArray.c 
     gcc -c DataStructures/SCCResult.c 
+    gcc -c DataStructures/ListGraph.c
     gcc -c Tarjan/Tarjan.c
     gcc -c Serial/serial.c 
-    gcc TList.o TArray.o SCCResult.o SubGraph.o Tarjan.o serial.o -o s && ./s
+    gcc TList.o TArray.o SCCResult.o ListGraph.o SubGraph.o Tarjan.o serial.o -o s && ./s
 fi
 
 # The parallel program executes and writes its result on a file
 gcc -c Communication/Communication.c
 gcc -c Communication/Merge.c
 gcc -c Parallel/parallel.c 
-mpicc TList.o TArray.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o parallel.o -o p
+mpicc TList.o TArray.o SCCResult.o SubGraph.o ListGraph.o Tarjan.o Communication.o Merge.o parallel.o -o p
 mpirun -np $1 ./p
 
 if [ "$serial" -ne 0 ]; then

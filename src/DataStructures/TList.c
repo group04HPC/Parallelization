@@ -147,6 +147,21 @@ void listCopy(TList source, TList* dest){
     }
 }
 
+int *listToArray(TList list)
+ {
+     int dim = listCount(list), i = 0;
+     int *res = malloc(dim * sizeof(int));
+
+     TNode *node = list;
+     while (node != NULL)
+     {
+         res[i] = node->value;
+         node = node->link;
+         i++;
+     }
+     return res;
+ }
+
 TList listRemove(TList list, int value){
     TNode *prec, *succ;
     prec = NULL;

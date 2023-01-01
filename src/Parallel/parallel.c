@@ -53,17 +53,15 @@ int main(int argc, char* argv[]){
     MPI_Comm_free(&file_comm);
 
     /* Tarjan algorithm */
-    SCCResult* result = SCCResultRescale(SCC(sub));
+    ListGraph* list = createListGraphFromMatrix(sub);
+    SCCResult* result = SCC(&list);
+    destroySubGraph(sub);
 
     if (size > 1){
-        int shrink = 0;
-        shrink = sub->nV - result->nV;
-        if (sub->nV != result->nV)
-            sub = rescaleGraph(sub, result, result, 0);
-
-        int recivedShrink=0;
+        int shrink = list->nV - result->nV, recivedShrink=0;
         SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
         SCCResult *receivedResult = NULL, *mergedResult = NULL, *tarjan=NULL;
+        ListGraph *receivedList = NULL, *mergedList = NULL;
         
         bool values[size];
         for (int i=0; i<size; i++)
@@ -79,6 +77,7 @@ int main(int argc, char* argv[]){
                 // send to next
                 next = nextAvailableRank(values, size, rank);
                 if (next != -1){
+                    sub = createMatrixGraphFromList(list);
                     send_all(sub, result, shrink, next);
                     break;
                 }
@@ -86,24 +85,18 @@ int main(int argc, char* argv[]){
             }else{
                 // rcv from prev
                 prev = prevAvailableRank(values, size, rank);
-                recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
 
+                recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
                 receivedResult->offset = receivedGraph->offset;
+                receivedList = createListGraphFromMatrix(receivedGraph);
 
                 mergedResult = mergeResults(receivedResult, result);
-                
-                mergedGraph = mergeGraphs(receivedGraph, sub, recivedShrink, shrink, mergedResult);
-                sub = mergedGraph;
+                mergedList = mergeGraphs(receivedList, list, recivedShrink, shrink, mergedResult);
 
-                result = SCCResultRescale(SCC(mergedGraph));
-                tarjan = result;
-
-                shrink = sub->nV-result->nV;
+                result = SCC(&mergedList);
                 result = SCCResultCombine(result, mergedResult);
 
-                if (sub->nV != result->nV){
-                    sub = rescaleGraph(mergedGraph, tarjan, mergedResult, 1);
-                }
+                shrink = mergedList->nV - result->nV;
             }
 
             updateAvailableRanks(values, size);

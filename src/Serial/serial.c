@@ -3,6 +3,7 @@
 #include <time.h>
 #include "../DataStructures/SubGraph.h"
 #include "../DataStructures/SCCResult.h"
+#include "../DataStructures/ListGraph.h"
 #include "../Tarjan/Tarjan.h"
 
 int main(int argc, char* argv[]){
@@ -26,8 +27,9 @@ int main(int argc, char* argv[]){
 
     SubGraph* sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
+    ListGraph* list = createListGraphFromMatrix(sub);
     
-    SCCResult* result = SCCResultRescale(SCC(sub));
+    SCCResult* result = SCC(&list);
 
     clock_t end = clock();
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
