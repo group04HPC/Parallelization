@@ -21,12 +21,16 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 
 // Merges two subgraphs and their SCCResult into a SubGraph
 ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged){
-    
-    ListGraph *result = ListGraphCreate(merged->nV, g1->nE-shrink2, g1->offset < g2->offset ? g1->offset : g2->offset);
 
-    int corr[merged->nV];
+    // printf("G1 offset: %d G2offset: %d/n", g1->offset, g2->offset);
+    
+    ListGraph *result = ListGraphCreate(merged->nV, g1->nE, g1->offset < g2->offset ? g1->offset : g2->offset);
+    // printf("Merge offset: %d", result->offset);
+
+    int corr[g1->nE];
 
     int count=0;
+
     for (int i=0; i<merged->nV; i++){
         TList list = *merged->vertices[i];
         while (list != NULL){
@@ -39,7 +43,9 @@ ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, S
     for (int i=0; i<g1->nV; i++){
         TList list = *g1->adj[i];
         while (list != NULL){
-            if (list->value >= g1->offset && list->value < g1->offset+count){
+            if (list->value >= g1->offset && list->value < g1->offset+g1->nV){
+                insertListGraph(result, i, list->value);
+            }else if (list->value >= g1->offset+g1->nV && list->value < g1->offset+count){
                 insertListGraph(result, i, corr[list->value-g1->offset] + g1->offset);
             }else{
                 insertListGraph(result, i, list->value);

@@ -54,8 +54,18 @@ int main(int argc, char* argv[]){
 
     /* Tarjan algorithm */
     ListGraph* list = createListGraphFromMatrix(sub);
+    // if(rank == 0){
+    //     printf("List graph:\n");
+    //     printListGraph(list);
+    // }
+
     SCCResult* result = SCC(&list);
+    // if(rank == 0){
+    //     printf("List graph:\n");
+    //     printListGraph(list);
+    // }
     destroySubGraph(sub);
+
 
     if (size > 1){
         int shrink = list->nV - result->nV, recivedShrink=0;
@@ -78,7 +88,12 @@ int main(int argc, char* argv[]){
                 next = nextAvailableRank(values, size, rank);
                 if (next != -1){
                     sub = createMatrixGraphFromList(list);
+                    // printf("Sending result:\n");
+                    // SCCResultPrint(result);
+                    // printf("Sending sub:\n");
+                    // printSubGraph(sub);
                     send_all(sub, result, shrink, next);
+                    // printf("send, i: %d,rank %d\n",i, rank);
                     break;
                 }
 
@@ -87,16 +102,47 @@ int main(int argc, char* argv[]){
                 prev = prevAvailableRank(values, size, rank);
 
                 recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
+                // printf("rcv, i: %d,rank %d\n",i, rank);
+                receivedGraph->offset = receivedGraph->offset/WORK_LOAD;
                 receivedResult->offset = receivedGraph->offset;
                 receivedList = createListGraphFromMatrix(receivedGraph);
+                if (rank == 3){
+                    // printf("Received result:\n");
+                    // SCCResultPrint(receivedResult);
+                    // printf("Received list:\n");
+                    // printListGraph(receivedList);
+
+                    // printf("Current result:\n");
+                    // SCCResultPrint(result);
+                    // printf("Current list:\n");
+                    // printListGraph(list);
+                    
+                }
 
                 mergedResult = mergeResults(receivedResult, result);
+                if (rank == 3){
+                    // printf("Merged result:\n");
+                    // SCCResultPrint(mergedResult);
+                }
                 mergedList = mergeGraphs(receivedList, list, recivedShrink, shrink, mergedResult);
-
+                if (rank == 3){
+                    // printf("Merged list:\n");
+                    // printListGraph(mergedList);
+                }
+                
                 result = SCC(&mergedList);
+                if (rank == 3){
+                //     printf("Tarjan result:\n");
+                //     SCCResultPrint(result);
+                }
                 result = SCCResultCombine(result, mergedResult);
+                if (rank == 3){
+                    // printf("Combined result:\n");
+                    // SCCResultPrint(result);
+                }
 
-                shrink = mergedList->nV - result->nV;
+                list = mergedList;
+                shrink = list->nV - result->nV;
             }
 
             updateAvailableRanks(values, size);
@@ -108,6 +154,8 @@ int main(int argc, char* argv[]){
 
     if (rank == size-1){
         printf("Tarjan excution time parallel: %f\n", end);
+
+        // SCCResultPrint(result);
 
         FILE* f = fopen("result.txt", "a+");
         if (f == NULL){

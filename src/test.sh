@@ -59,6 +59,7 @@ if [ "$serial" -ne 0 ]; then
     gcc TList.o TArray.o compareResults.o SCCResult.o -o c && ./c
 fi
 
-rm -f *.bin *.o *.txt p s c rg wg 
+# rm -f *.bin *.o *.txt p s c rg wg 
+rm -f *.o  p s c rg wg 
 
 exit 0

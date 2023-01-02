@@ -47,14 +47,8 @@ ListGraph* createListGraphFromMatrix(SubGraph* sub){
 
 /* Creates a matrix graph from a list graph */
 SubGraph* createMatrixGraphFromList(ListGraph* list){
-    SubGraph* sub = (SubGraph*)malloc(sizeof(SubGraph));
+    SubGraph* sub = createSubGraph(list->nV, list->nE, list->offset);
     assert(sub != NULL);
-    sub->offset = list->offset;
-    sub->nV = list->nV;
-    sub->nE = list->nE;
-    sub->adj = (int*)malloc(sizeof(int)*sub->nV*sub->nE);
-    assert(sub->adj != NULL);
-    initSubGraph(sub);
     for(int i = 0; i < list->nV; i++){
         TNode* node = *list->adj[i];
         while(node != NULL){

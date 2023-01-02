@@ -102,6 +102,7 @@ SCCResult* SCC(ListGraph** graph){
             SCCUtil(g, i, disc, low, st, stackMember, result);
     }
 
+    // printf("Sono tarjan e ho finito!\n");
     stackDestroy(st);
 
     result = SCCResultRescale(result);
@@ -117,27 +118,46 @@ SCCResult* SCC(ListGraph** graph){
 ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
 
     ListGraph *old = *oldGraph;
-    ListGraph *new = ListGraphCreate(tarjan->nV, old->nE - (old->nV-tarjan->nV), old->offset);
+    ListGraph *new = ListGraphCreate(tarjan->nV, old->nE, old->offset);
 
     int corr[old->nV];
 
+    // printf("tarjan:\n");
+    // SCCResultPrint(tarjan);
+
+    int count = 0;
     for (int i=0; i<tarjan->nV; i++){
         TList list = *tarjan->vertices[i];
         while (list != NULL){
             corr[list->value-old->offset] = i;
             list = list->link;
+            count ++;
         }
     }
+
+    // for (int i=0; i<count; i++){
+    //     printf("corr[%d]: %d\n", i, corr[i]);
+    // }
+
+    // printf("offset: %d nv: %d\n", old->offset, old->nV);
 
     for (int i=0; i<old->nV; i++){
 
         TList list = *old->adj[i];
                 
         while (list != NULL){
-            if (list->value >= old->offset && list->value < old->offset+old->nV)
+            
+            if (list->value >= old->offset && list->value < old->offset+old->nV){
+                // printf("i: %d, list->value: %d, corr[i]: %d, corr[list->value-old->offset]: %d\n", i, list->value, corr[i], corr[list->value-old->offset]);
                 insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
-            else
+                // printf("inserito 1 \n");
+            } 
+            else{
+                // printf("i: %d, list->value: %d, corr[i]: %d\n", i, list->value, corr[i]);
                 insertListGraph(new, corr[i], list->value);
+                // printf("inserito 2 \n");
+            }
+                
             list = list->link;
         }
     }

@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
     ListGraph* list = createListGraphFromMatrix(sub);
     
     SCCResult* result = SCC(&list);
+    // SCCResultPrint(result);
 
     clock_t end = clock();
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
