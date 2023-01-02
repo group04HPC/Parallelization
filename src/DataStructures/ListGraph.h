@@ -1,21 +1,27 @@
-#ifndef LISTGRAPH_H
-#define LISTGRAPH_H
+#ifndef SCCRESULT_H
+#define SCCRESULT_H
 
-#include "SubGraph.h"
+#include <stdbool.h>
 #include "TList.h"
 
-typedef struct listGraph {
-    int offset; /* Starting vertex of the subgraph */
-    int nV; /* Number of vertices */
-    int nE; /* Number of edges */
-    TList** adj; /* Adjacency list */
-} ListGraph;
+typedef struct
+{
+    TList **vertices; /* The array of lists of nodes contained into the SCCResult structure */
+    int nMacroNodes;  /* The number of macro nodes contained into the SCCResult structure */
+    int nV;           /* The number of nodes contained into the SCCResult structure */
+    int offset;       /* The offset of the SCCResult structure */
+} SCCResult;
 
-ListGraph* createListGraphFromMatrix(SubGraph* sub); /* Creates a list graph from a matrix graph */
-ListGraph* ListGraphCreate(int nV, int nE, int offset); /* Creates a list graph */
-SubGraph* createMatrixGraphFromList(ListGraph* list); /* Creates a matrix graph from a list graph */
-void printListGraph(ListGraph* graph); /* Prints a list graph */
-void destroyListGraph(ListGraph* graph); /* Destroys a list graph */
-void insertListGraph(ListGraph* new, int v, int u); /* Inserts a new vertex into the list graph */
+SCCResult *SCCResultCreate(int n);                                          /* Creates a new SCCResult structure */
+void SCCResultDestroy(SCCResult *result);                                   /* Destroys the SCCResult structure */
+bool SCCResultInsert(SCCResult *result, int key, int value);                /* Inserts a macronode-to-node match into the SCCResult structure */
+SCCResult *SCCResultRescale(SCCResult *result);                             /* Rescales the SCCResult structure */
+void SCCResultPrint(SCCResult *result);                                     /* Prints the SCCResult structure */
+int getMacronodeFromVertex(SCCResult *result, int vertex);                  /* Returns the macronode associated to the vertex */
+TList *getVerticesFromMacronode(SCCResult *result, int macronode);          /* Returns the veritces associated to the macronode */
+SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC); /* Combines two SCCResult structures */
+int SCCResultGetLastElement(SCCResult *result);                             /* Return the max element of the SCC */
+void SCCResultSort(SCCResult *result);
+void SCCResultQuickSort(SCCResult *result, int first, int last);
 
 #endif
