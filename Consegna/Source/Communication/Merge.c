@@ -1,7 +1,7 @@
-#include "Merge.h"
+#include "../../Headers/Merge.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../Constants.h"
+#include "../../Headers/Constants.h"
 
 SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 {

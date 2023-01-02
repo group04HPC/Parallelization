@@ -21,13 +21,11 @@ int main(int argc, char* argv[]){
     int rank, size;
     MPI_Status status;
     MPI_File fh;
-    MPI_Offset offset;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    bool even = size % 2 == 0 ? true : false;
     double start, end;
 
     /* subgraph creation */
@@ -69,8 +67,8 @@ int main(int argc, char* argv[]){
 
     if (size > 1){
         int shrink = list->nV - result->nV, recivedShrink=0;
-        SubGraph *receivedGraph = NULL, *mergedGraph = NULL;
-        SCCResult *receivedResult = NULL, *mergedResult = NULL, *tarjan=NULL;
+        SubGraph *receivedGraph = NULL;
+        SCCResult *receivedResult = NULL, *mergedResult = NULL;
         ListGraph *receivedList = NULL, *mergedList = NULL;
         
         bool values[size];

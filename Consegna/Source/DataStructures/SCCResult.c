@@ -62,6 +62,50 @@ SCCResult* SCCResultRescale(SCCResult* result){
     return temp;
 }
 
+void SCCResultQuickSort(SCCResult* result, int first, int last){
+    if (last<=first) return;
+    int i = first, j = last, pivot = first;
+    TList *temp,curr_i, curr_j, curr_pivot= *result->vertices[pivot];
+
+    while(i<j){
+        curr_i = *result->vertices[i];
+        while (i < last && curr_i->value <= curr_pivot->value)
+        {
+
+            i++;
+            curr_i = *result->vertices[i];
+        }
+        curr_j = *result->vertices[j];
+        while(curr_j->value>curr_pivot->value){
+            j--;
+            curr_j = *result->vertices[j];
+        }
+        if(i<j){
+            temp=result->vertices[i];
+            result->vertices[i]=result->vertices[j];
+            result->vertices[j]=temp;
+        }
+    }
+
+    temp=result->vertices[pivot];
+    result->vertices[pivot] = result->vertices[j];
+    result->vertices[j]=temp;
+
+    SCCResultQuickSort(result, first, j - 1);
+    SCCResultQuickSort(result, j + 1, last);
+}
+
+void SCCResultSort(SCCResult *result)
+{
+    for (int i = 0; i < result->nV; i++)
+    {   
+        if (*result->vertices[i] == NULL){
+            *result->vertices[i] =listInsert(*result->vertices[i], -1);
+        }
+    }
+    SCCResultQuickSort(result, 0, result->nV-1);
+}
+
 /* Prints the SCCResult structure */
 void SCCResultPrint(SCCResult* result){
     for(int i = 0; i < result->nV; i++){
@@ -101,7 +145,7 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
             TNode* node2 = *mergedSCC->vertices[node->value-tarjanResult->offset];
 
             while(node2 != NULL){
-                bool res = SCCResultInsert(result, i, node2->value);
+                SCCResultInsert(result, i, node2->value);
                 node2 = node2->link;
             }
 

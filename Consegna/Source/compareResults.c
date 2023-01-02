@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../Headers/SCCResult.h"
+#include "../Headers/SCCResult.h"
 
 int main(int argc, char* argv[]){
 

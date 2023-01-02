@@ -1,7 +1,7 @@
 ## Tutti i ## dovrebbero essere gestiti dal makefile
-#
+
 # !/bin/bash
-#
+
 # Check if the user asked for help
 if [ "$1" = "" ]; then
     echo "Executes the program on a given number of processes. If the [run serial] param is not filled it will execute it as default\n\n"
@@ -27,9 +27,9 @@ fi
 
 # Each process creates its own binary file with a part of the full graph
 
-gcc -c DataStructures/SubGraph.c
-mpicc -c Parallel/writeGraph.c
-mpicc SubGraph.o writeGraph.o -o wg
+##gcc -c DataStructures/SubGraph.c
+##gcc -c Parallel/writeGraph.c
+##mpicc SubGraph.o writeGraph.o -o wg
 mpirun -np $1 ./wg
 
 if [ "$serial" -ne 0 ]; then
@@ -40,6 +40,7 @@ if [ "$serial" -ne 0 ]; then
     mpirun -np $1 ./rg
 
     # The serial program executes and writes its result on a file
+<<<<<<< Updated upstream
     gcc -c DataStructures/TList.c 
     gcc -c DataStructures/TArray.c 
     gcc -c DataStructures/SCCResult.c 
@@ -54,18 +55,32 @@ gcc -c Communication/Communication.c
 gcc -c Communication/Merge.c
 gcc -c Parallel/parallel.c 
 mpicc TList.o TArray.o SCCResult.o SubGraph.o ListGraph.o Tarjan.o Communication.o Merge.o parallel.o -o p
+=======
+    ##gcc -c DataStructures/TList.c 
+    ##gcc -c DataStructures/TArray.c 
+    ##gcc -c DataStructures/SCCResult.c 
+    ##gcc -c Tarjan/Tarjan.c
+    ##gcc -c Serial/serial.c 
+    ##gcc TList.o TArray.o SCCResult.o SubGraph.o Tarjan.o serial.o -o s 
+    ./s
+fi
+
+# The parallel program executes and writes its result on a file
+##gcc -c Communication/Communication.c
+##gcc -c Communication/Merge.c
+##gcc -c Parallel/parallel.c 
+##mpicc TList.o TArray.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o parallel.o -o p
+>>>>>>> Stashed changes
 mpirun -np $1 ./p
 
 if [ "$serial" -ne 0 ]; then
     # The results of both the serial and the parallel version are compared
-    gcc -c compareResults.c
-    gcc TList.o TArray.o compareResults.o SCCResult.o -o c 
+    ##gcc -c compareResults.c
+    ##gcc TList.o TArray.o compareResults.o SCCResult.o -o c 
     ./c
 fi
 
 # rm -f *.bin *.o *.txt p s c rg wg 
-#rm -f *.o  p s c rg wg 
+rm -f *.o  p s c rg wg 
 
 exit 0
-
-
