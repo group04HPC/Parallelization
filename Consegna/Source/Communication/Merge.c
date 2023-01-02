@@ -20,65 +20,52 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 }
 
 // Merges two subgraphs and their SCCResult into a SubGraph
-SubGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged)
-{
-    int numEdges = g1->nE - shrink2;
+ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged){
 
-    SubGraph *res = createSubGraph(g1->nV + g2->nV, numEdges, g1->offset/WORK_LOAD);
+    // printf("G1 offset: %d G2offset: %d/n", g1->offset, g2->offset);
+    
+    ListGraph *result = ListGraphCreate(merged->nV, g1->nE, g1->offset < g2->offset ? g1->offset : g2->offset);
+    // printf("Merge offset: %d", result->offset);
 
-    int i,j,other, max=SCCResultGetLastElement(merged)+1;
-    int diff = (g2->offset-(g1->offset+g1->nV));
+    int corr[g1->nE];
 
-    for(i=0; i<g1->nV; i++){
-        for(j=0; j<g1->offset+g1->nV; j++){
-            // printf("1. j: %d, max: %d, diff: %d\n", j, max, diff);
-            if (hasEdge(g1, i, j)){
-                addEdge(res, i, j);
-            }
-        }
+    int count=0;
 
-        for(; j < max - diff; j++){
-            // printf("2. j: %d, max: %d, diff: %d\n", j, max, diff);
-            if (hasEdge(g1, i, j)){
-                
-                other = getMacronodeFromVertex(merged, j+diff);
-                // printf("i: %d, ini j: %d, +diff: %d, new j: %d\n", i, j, j+diff, g1->offset+other);
-                if (other != -1){
-                    addEdge(res, i, g1->offset+other);
-                    //printSubGraph(res);
-                }
-            }
-        }
-
-        for(; j<g1->nE; j++){
-            if (hasEdge(g1, i, j)){
-                //printf("3. j: %d, max: %d, j-shrink: %d\n", j, max, j-shrink2);
-                addEdge(res, i, j-shrink2);
-            }
+    for (int i=0; i<merged->nV; i++){
+        TList list = *merged->vertices[i];
+        while (list != NULL){
+            corr[list->value-g1->offset] = i;
+            list = list->link;
+            count++;
         }
     }
 
-    for (i=0; i<g2->nV; i++){
-        for (j=0; j<g1->offset; j++){
-            if (hasEdge(g2, i, j)){
-                addEdge(res, i+g1->nV, j);
-            }
-        }
-        for (; j<g2->offset; j++){
-            if(hasEdge(g2, i, j)){
-                other = getMacronodeFromVertex(merged, j);
-                if (other != -1){
-                    // printf("i: %d, old j: %d, j: %d\n", i+g1->nV, j, g1->offset+other);
-                    addEdge(res, i+g1->nV, g1->offset+other);
-                }
-            }
-        }
-        for(; j<g2->nE; j++){
-            if (hasEdge(g2, i, j)){
-                addEdge(res, i+g1->nV, j-diff);
-            }
+    for (int i=0; i<g1->nV; i++){
+        TList list = *g1->adj[i];
+        while (list != NULL){
+            if (list->value >= g1->offset && list->value < g1->offset+g1->nV){
+                insertListGraph(result, i, list->value);
+            }else if (list->value >= g1->offset+g1->nV && list->value < g1->offset+count){
+                insertListGraph(result, i, corr[list->value-g1->offset] + g1->offset);
+            }else{
+                insertListGraph(result, i, list->value);
+            }  
+            list = list->link;
         }
     }
 
-    return res;
+    for (int i=0; i<g2->nV; i++){
+        TList list = *g2->adj[i];
+        while (list != NULL){
+            if (list->value >= g1->offset && list->value < g1->offset+count){
+                insertListGraph(result, i+g1->nV, corr[list->value-g1->offset] + g1->offset);
+            }else{
+                insertListGraph(result, i+g1->nV, list->value);
+            }
+            list = list->link;
+        }
+    }
+    
+    return result;
+
 }

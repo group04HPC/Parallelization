@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
-#include "SubGraph.h"
-#include "../Constants.h"
+#include "../../Headers/SubGraph.h"
+#include "../../Headers/Constants.h"
 
 /* Create a new subgraph */
 SubGraph* createSubGraph(int n_vertices, int n_edges, int rank){

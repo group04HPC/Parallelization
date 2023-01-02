@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "TArray.h"
+#include "../../Headers/TArray.h"
 
 int stackPop(TArray *a){
     return a->arr[--a->size];

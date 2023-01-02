@@ -1,26 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../DataStructures/TList.h"
-#include "Tarjan.h"
-#include "../Constants.h"
+#include "../../Headers/TList.h"
+#include "../../Headers/Tarjan.h"
+#include "../../Headers/Constants.h"
 
 #define NIL -1
 #define TRUE 1
 #define FALSE 0
-
-/**
- * Convert a matrix row into an array 
- */
-TArray* listToArray(ListGraph* g, int i){
-    TArray* array = stackCreate(g->nE);
-    TNode* node = *g->adj[i-g->offset];
-    while(node != NULL){
-        if (node->value >= g->offset && node->value < g->offset+g->nV)
-            stackPush(array, node->value);
-        node = node->link;
-    }
-    return array;
-}
 
 /**
  * A recursive function that finds and prints strongly connected components using DFS traversal.
@@ -56,21 +42,24 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
 
         int v = listGet(values, i); /* v is the current adjacent of 'u' */
 
-        /* If v is not visited yet, then recur for it */
-        if (disc[v] == -1){
-            SCCUtil(g, v, disc, low, st, stackMember,result);
+        if (v >= g->offset && v < g->offset+g->nV){
+            /* If v is not visited yet, then recur for it */
+            if (disc[v] == -1){
+                SCCUtil(g, v, disc, low, st, stackMember,result);
+                /* 
+                * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
+                * Case 1 (per above discussion on Disc and Low value) 
+                */
+                low[u] = (low[u] < low[v]) ? low[u] : low[v];
+            }
             /* 
-             * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
-             * Case 1 (per above discussion on Disc and Low value) 
-             */
-            low[u] = (low[u] < low[v]) ? low[u] : low[v];
+            * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge). 
+            * Case 2 (per above discussion on Disc and Low value)
+            */
+            else if (stackMember[v] == TRUE)
+                low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
         }
-        /* 
-         * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge). 
-         * Case 2 (per above discussion on Disc and Low value)
-         */
-        else if (stackMember[v] == TRUE)
-            low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
+
     }
 
     /* Head node found, pop the stack and print an SCC */
@@ -90,8 +79,9 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
 /**
  * The function to do DFS traversal, by means of the SCCUtil().
  */
-SCCResult* SCC(ListGraph* g){
+SCCResult* SCC(ListGraph** graph){
 
+    ListGraph* g = *graph;
     int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
 
@@ -112,7 +102,12 @@ SCCResult* SCC(ListGraph* g){
             SCCUtil(g, i, disc, low, st, stackMember, result);
     }
 
+    // printf("Sono tarjan e ho finito!\n");
     stackDestroy(st);
+
+    result = SCCResultRescale(result);
+ 
+    *graph = rescaleGraph(&g, result);
 
     return result;
 }
@@ -120,42 +115,55 @@ SCCResult* SCC(ListGraph* g){
 /**
  *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
  */
-SubGraph *rescaleGraph(SubGraph *old, SCCResult *result, SCCResult *result2, int flag){
+ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
 
-    int mergedNodes = old->nV - result->nV, numEdges = old->nE, i, j, newI, newJ;
-    SubGraph* new = createSubGraph(result->nV, numEdges-mergedNodes, old->offset/WORK_LOAD);
+    ListGraph *old = *oldGraph;
+    ListGraph *new = ListGraphCreate(tarjan->nV, old->nE, old->offset);
 
-    for(int i=0;i<old->nV;i++){
+    int corr[old->nV];
 
-        newI = getMacronodeFromVertex(result, old->offset+i);
-        
-        for (j=0; j<old->offset; j++){
-            if (hasEdge(old, i, j)){
-                addEdge(new, newI, j);
-            }
-        }
+    // printf("tarjan:\n");
+    // SCCResultPrint(tarjan);
 
-        for (; j<old->offset + old->nV; j++){
-            if (hasEdge(old, i, j)){
-                if (flag == 0){
-                    newJ = getMacronodeFromVertex(result, j);
-                }else{
-                    //newJ = getMacronodeFromVertex(result2, j);
-                    newJ = getMacronodeFromVertex(result, j-old->offset);
-                }
-                
-                if (newJ != -1) addEdge(new, newI, old->offset+newJ);
-            }
-        }
-
-        for (; j<old->nE; j++){
-            if (hasEdge(old, i, j)){
-                addEdge(new, newI, j-mergedNodes);
-            }
+    int count = 0;
+    for (int i=0; i<tarjan->nV; i++){
+        TList list = *tarjan->vertices[i];
+        while (list != NULL){
+            corr[list->value-old->offset] = i;
+            list = list->link;
+            count ++;
         }
     }
 
-    destroySubGraph(old);
+    // for (int i=0; i<count; i++){
+    //     printf("corr[%d]: %d\n", i, corr[i]);
+    // }
+
+    // printf("offset: %d nv: %d\n", old->offset, old->nV);
+
+    for (int i=0; i<old->nV; i++){
+
+        TList list = *old->adj[i];
+                
+        while (list != NULL){
+            
+            if (list->value >= old->offset && list->value < old->offset+old->nV){
+                // printf("i: %d, list->value: %d, corr[i]: %d, corr[list->value-old->offset]: %d\n", i, list->value, corr[i], corr[list->value-old->offset]);
+                insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
+                // printf("inserito 1 \n");
+            } 
+            else{
+                // printf("i: %d, list->value: %d, corr[i]: %d\n", i, list->value, corr[i]);
+                insertListGraph(new, corr[i], list->value);
+                // printf("inserito 2 \n");
+            }
+                
+            list = list->link;
+        }
+    }
+
+    // se non da segmentation fault fai la destroy
+    destroyListGraph(old);
 
     return new;
 }

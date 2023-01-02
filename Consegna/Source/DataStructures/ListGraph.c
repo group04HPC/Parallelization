@@ -1,7 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "ListGraph.h"
 #include <assert.h>
+#include "../../Headers/ListGraph.h"
+
+/* Creates a list graph */
+ListGraph* ListGraphCreate(int nV, int nE, int offset){
+    ListGraph* list = (ListGraph*)malloc(sizeof(ListGraph));
+    assert(list != NULL);
+    list->offset = offset;
+    list->nV = nV;
+    list->nE = nE;
+    
+    list->adj = (TList**)malloc(sizeof(TList*)*list->nV);
+    for(int i = 0; i < list->nV; i++){
+        list->adj[i] = (TList*)malloc(sizeof(TList));
+        assert(list->adj[i] != NULL);
+        *list->adj[i] = listCreate();
+    }
+    return list;
+}
 
 /* Creates a list graph from a matrix graph */
 ListGraph* createListGraphFromMatrix(SubGraph* sub){
@@ -30,14 +47,8 @@ ListGraph* createListGraphFromMatrix(SubGraph* sub){
 
 /* Creates a matrix graph from a list graph */
 SubGraph* createMatrixGraphFromList(ListGraph* list){
-    SubGraph* sub = (SubGraph*)malloc(sizeof(SubGraph));
+    SubGraph* sub = createSubGraph(list->nV, list->nE, list->offset);
     assert(sub != NULL);
-    sub->offset = list->offset;
-    sub->nV = list->nV;
-    sub->nE = list->nE;
-    sub->adj = (int*)malloc(sizeof(int)*sub->nV*sub->nE);
-    assert(sub->adj != NULL);
-    initSubGraph(sub);
     for(int i = 0; i < list->nV; i++){
         TNode* node = *list->adj[i];
         while(node != NULL){
@@ -68,4 +79,9 @@ void destroyListGraph(ListGraph* graph){
     }
     free(graph->adj);
     free(graph);
+}
+
+/* Inserts a new vertex into the list graph */
+void insertListGraph(ListGraph* new, int v, int u){
+    *new->adj[v] = listInsert(*new->adj[v], u);
 }

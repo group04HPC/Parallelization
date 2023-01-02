@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "SCCResult.h"
+#include "../../Headers/SCCResult.h"
 
 /* Creates a new SCCResult structure */
 SCCResult *SCCResultCreate(int n){

@@ -1,8 +1,8 @@
 #include <mpi.h>
 #include <stdio.h>
-#include "Communication.h"
-#include "../DataStructures/TList.h"
-#include "../Constants.h"
+#include "../../Headers/Communication.h"
+#include "../../Headers/TList.h"
+#include "../../Headers/Constants.h"
 
 /*
  * Function:  send_all
@@ -26,13 +26,15 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
     int v = graph->nV, k = graph->nE, offset = graph->offset/WORK_LOAD;
     int size[4] = {v, k, offset,shrink};
     MPI_Send(size, 4, MPI_INT, dest, 0, MPI_COMM_WORLD);
-    
+
     // Then we prepare a buffer that will contain the graph's matrix togheter
     // with the length of the internal array for each macrovertex.
     // We also count the sum of all the lengths for the next communication
-    int send_buf[v * (k + 1)];
+    int dim = v * (k + 1);
+    int *send_buf = (int*)malloc(dim * sizeof(int));
     int sum = 0, length[v];
     int *adjacent;
+
     for (int i = 0; i < v; i++)
     {
         adjacent = getEdges(graph, i);
@@ -61,7 +63,8 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
     }
 
     MPI_Send(adj, sum, MPI_INT, dest, 0, MPI_COMM_WORLD);
-    
+
+    free(send_buf);
 }
 
 /*
@@ -103,7 +106,8 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
     //   with the length of the internal array for each macrovertex and we
     //   recive what has been sent.
 
-    int recv_graph[v * (k + 1)];
+    int dim = v * (k + 1);
+    int* recv_graph = (int*)malloc(dim * sizeof(int));
     MPI_Recv(recv_graph, v * (k + 1), MPI_INT, source, 0, MPI_COMM_WORLD, &status);
 
     // Then we split the recived matrix in the original graph and lengths array
@@ -143,4 +147,5 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
         }
     }
 
+    free(recv_graph);
 }

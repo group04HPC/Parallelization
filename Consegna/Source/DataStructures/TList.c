@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "TList.h"
-
-/* Operations on int */
+#include "../../Headers/TList.h"
 
 int valueEqual(int value1, int value2)
 {
@@ -105,13 +103,12 @@ TList listInsert(TList l, int value)
         succ = succ->link;
     }
 
-    if(prec!=NULL && prec->value==value){
+    if (succ!=NULL && succ->value == value)
         return l;
-    }
 
     new = nodeCreate(value);
     assert(new != NULL);
-    
+
     /* insertion in the links' chain */
     if (prec == NULL)
     {
@@ -120,10 +117,12 @@ TList listInsert(TList l, int value)
     }
     else
     {
-        new->link = succ;   
+        new->link = succ;
         prec->link = new;
         return l;
     }
+
+    return l;
 }
 
 int listCount(TList list)
@@ -145,6 +144,21 @@ void listCopy(TList source, TList* dest){
         node = node->link;
     }
 }
+
+int *listToArray(TList list)
+ {
+     int dim = listCount(list), i = 0;
+     int *res = malloc(dim * sizeof(int));
+
+     TNode *node = list;
+     while (node != NULL)
+     {
+         res[i] = node->value;
+         node = node->link;
+         i++;
+     }
+     return res;
+ }
 
 TList listRemove(TList list, int value){
     TNode *prec, *succ;

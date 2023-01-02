@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mpi.h>
-#include "../Constants.h"
-#include "../DataStructures/SubGraph.h"
+#include "../../Headers/Constants.h"
+#include "../../Headers/SubGraph.h"
 
 int main(int argc, char* argv[]){
     int rank, size;
