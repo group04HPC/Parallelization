@@ -1,5 +1,6 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../../Headers/Communication.h"
 #include "../../Headers/TList.h"
 #include "../../Headers/Constants.h"

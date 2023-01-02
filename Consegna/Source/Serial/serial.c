@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../DataStructures/SubGraph.h"
-#include "../DataStructures/SCCResult.h"
-#include "../Tarjan/Tarjan.h"
+#include "../../Headers/SubGraph.h"
+#include "../../Headers/SCCResult.h"
+#include "../../Headers/Tarjan.h"
 
 int main(int argc, char* argv[]){
 

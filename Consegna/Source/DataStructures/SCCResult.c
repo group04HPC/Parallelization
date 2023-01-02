@@ -101,7 +101,7 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC){
             TNode* node2 = *mergedSCC->vertices[node->value-tarjanResult->offset];
 
             while(node2 != NULL){
-                bool res = SCCResultInsert(result, i, node2->value);
+                SCCResultInsert(result, i, node2->value);
                 node2 = node2->link;
             }
 
