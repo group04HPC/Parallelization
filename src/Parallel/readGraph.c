@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
     if (rank==0){
         FILE* fp = fopen("matrix.txt", "w+");
         if (fp == NULL){
-            printf("Error opening file\n");
+            printf("Error opening file read\n");
             exit(1);
         }
         fprintf(fp, "%d\n", WORK_LOAD*size);

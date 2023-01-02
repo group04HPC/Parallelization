@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 
     FILE* fp = fopen("matrix.txt", "r");
     if (fp == NULL){
-        printf("Error opening file\n");
+        printf("Error opening file \n");
     }
     fscanf(fp, "%d", &size);
     int* matrix = (int*)malloc(size*size*sizeof(int));

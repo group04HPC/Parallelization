@@ -68,6 +68,7 @@ SCCResult *SCCResultRescale(SCCResult *result)
         }
     }
 
+    SCCResultQuickSort(temp, 0, temp->nV - 1);
     SCCResultDestroy(result);
 
     return temp;

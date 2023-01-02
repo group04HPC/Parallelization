@@ -6,7 +6,7 @@ int main(int argc, char* argv[]){
 
     FILE* fp = fopen("result.txt", "r");
     if (fp == NULL){
-        printf("Error opening file\n");
+        printf("Error opening file -- compare\n");
     }
 
     int nMacroNodes, value, len;
