@@ -1,6 +1,9 @@
+IDRIR = Headers
 CC = mpicc #gcc
-CFLAGS = -Wall -c #-pedantic
-objects = f.o r.o
+CFLAGS = -I$(IDIR)
+
+ODIR = OBJ
+LDIR = Build
 
 writeGraphObjects = SubGraph.o writeGraph.o
 readGraphObjects = SubGraph.o readGraph.o
