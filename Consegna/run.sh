@@ -5,6 +5,8 @@ if [ "$1" = "-h" ]; then
 	echo -e "Executes the program on a given number of processes. If the [run serial] parameter is not inserted it will execute it as default\n"
 	echo -e "Usage:\t$0 [num of processes]"
 	echo -e "\t$0 [num of processes] [run serial (0/1)]"
+	echo -e "\t$0 -h\t-to print this help output"
+	echo -e "\t$0 -t\t-to execute a series of tests"
 	exit 0
 fi
 

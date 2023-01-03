@@ -94,5 +94,3 @@ Build/Serial.o : Source/Serial/serial.c
 
 Build/compareResults.o : Source/compareResults.c
 	$(CC) $(CFLAGS) Source/compareResults.c -o Build/compareResults.o
-
-
