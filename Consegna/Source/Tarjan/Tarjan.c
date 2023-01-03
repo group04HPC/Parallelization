@@ -105,6 +105,9 @@ SCCResult* SCC(ListGraph** graph){
     // printf("Sono tarjan e ho finito!\n");
     stackDestroy(st);
 
+    // printf("Before rescale  SCC:\n");
+    // SCCResultPrint(result);
+
     result = SCCResultRescale(result);
  
     *graph = rescaleGraph(&g, result);

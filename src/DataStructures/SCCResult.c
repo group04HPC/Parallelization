@@ -50,6 +50,8 @@ SCCResult *SCCResultRescale(SCCResult *result)
 {
 
     SCCResult *temp = SCCResultCreate(result->nMacroNodes);
+    int lastValue = -1;
+    bool sort = false;
     temp->offset = result->offset;
 
     for (int i = 0, j = 0; i < result->nV; i++)
@@ -59,6 +61,10 @@ SCCResult *SCCResultRescale(SCCResult *result)
 
         if (node != NULL)
         {
+            if (lastValue > node->value)
+                sort = true;
+            lastValue = node->value;
+
             while (node != NULL)
             {
                 SCCResultInsert(temp, j, node->value);
@@ -68,7 +74,7 @@ SCCResult *SCCResultRescale(SCCResult *result)
         }
     }
 
-    SCCResultQuickSort(temp, 0, temp->nV - 1);
+    if (sort) SCCResultQuickSort(temp, 0, temp->nV - 1);
     SCCResultDestroy(result);
 
     return temp;

@@ -40,6 +40,12 @@ ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, S
         }
     }
 
+    // if (g2->offset == 10){
+    //     for (int i=0; i<count; i++){
+    //         printf("corr[%d]: %d \n", i, corr[i]);
+    //     }
+    // }
+
     for (int i=0; i<g1->nV; i++){
         TList list = *g1->adj[i];
         while (list != NULL){
@@ -58,8 +64,10 @@ ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, S
         TList list = *g2->adj[i];
         while (list != NULL){
             if (list->value >= g1->offset && list->value < g1->offset+count){
+                // if (g2->offset == 10) printf("1. corr[%d]: %d \n", list->value-g1->offset, corr[list->value-g1->offset]);
                 insertListGraph(result, i+g1->nV, corr[list->value-g1->offset] + g1->offset);
             }else{
+                // if (g2->offset == 10) printf("2. list->value: %d \n", list->value);
                 insertListGraph(result, i+g1->nV, list->value);
             }
             list = list->link;

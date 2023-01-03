@@ -13,9 +13,9 @@ int main(int argc, char* argv[]){
  
     clock_t begin = clock();
 
-    FILE* fp = fopen("matrix.txt", "r");
+    FILE* fp = fopen("Data/matrix.txt", "r");
     if (fp == NULL){
-        printf("Error opening\n");
+        printf("Error opening file \n");
     }
     fscanf(fp, "%d", &size);
     int* matrix = (int*)malloc(size*size*sizeof(int));
@@ -29,14 +29,13 @@ int main(int argc, char* argv[]){
     ListGraph* list = createListGraphFromMatrix(sub);
     
     SCCResult* result = SCC(&list);
-    // SCCResultPrint(result);
 
     clock_t end = clock();
     time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     printf("Tarjan excution time serial: %f\n", time_spent);
 
-    FILE* fp2 = fopen("result.txt", "w+");
+    FILE* fp2 = fopen("Data/result.txt", "w+");
     if (fp2 == NULL){
         printf("Error opening file\n");
     }

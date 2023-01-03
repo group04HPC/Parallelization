@@ -34,7 +34,7 @@ int main(int argc, char* argv[]){
 
     /* filenames init */
     char filename[FILENAME_LENGTH], num[NUM_LENGTH];
-    strcpy(filename, "file");
+    strcpy(filename, "Data/file");
     sprintf(num, "%d", rank);
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);
@@ -52,16 +52,20 @@ int main(int argc, char* argv[]){
 
     /* Tarjan algorithm */
     ListGraph* list = createListGraphFromMatrix(sub);
-    // if(rank == 0){
-    //     printf("List graph:\n");
-    //     printListGraph(list);
-    // }
+    if(rank == 3){
+        // printf("Sub graph:\n");
+        // printSubGraph(sub);
+        // printf("List graph:\n");
+        // printListGraph(list);
+    }
 
     SCCResult* result = SCC(&list);
-    // if(rank == 0){
-    //     printf("List graph:\n");
-    //     printListGraph(list);
-    // }
+    if(rank == 3){
+        // printf("Tarjan result:\n");
+        // SCCResultPrint(result);
+        // printf("List graph:\n");
+        // printListGraph(list);
+    }
     destroySubGraph(sub);
 
 
@@ -104,7 +108,7 @@ int main(int argc, char* argv[]){
                 receivedGraph->offset = receivedGraph->offset/WORK_LOAD;
                 receivedResult->offset = receivedGraph->offset;
                 receivedList = createListGraphFromMatrix(receivedGraph);
-                if (rank == 3){
+                if (rank == 3 && i == 0){
                     // printf("Received result:\n");
                     // SCCResultPrint(receivedResult);
                     // printf("Received list:\n");
@@ -118,25 +122,26 @@ int main(int argc, char* argv[]){
                 }
 
                 mergedResult = mergeResults(receivedResult, result);
-                if (rank == 3){
+                if (rank == 3 && i == 0){
                     // printf("Merged result:\n");
                     // SCCResultPrint(mergedResult);
                 }
                 mergedList = mergeGraphs(receivedList, list, recivedShrink, shrink, mergedResult);
-                if (rank == 3){
+                if (rank == 3 && i == 0){
                     // printf("Merged list:\n");
                     // printListGraph(mergedList);
                 }
                 
                 result = SCC(&mergedList);
-                if (rank == 3){
-                //     printf("Tarjan result:\n");
-                //     SCCResultPrint(result);
+                if (rank == 3 && i == 0){
+                    // printf("Tarjan result:\n");
+                    // SCCResultPrint(result);
                 }
                 result = SCCResultCombine(result, mergedResult);
-                if (rank == 3){
+                if (rank == 3 && i == 0){
                     // printf("Combined result:\n");
                     // SCCResultPrint(result);
+                    // printListGraph(mergedList);
                 }
 
                 list = mergedList;
@@ -155,7 +160,7 @@ int main(int argc, char* argv[]){
 
         // SCCResultPrint(result);
 
-        FILE* f = fopen("result.txt", "a+");
+        FILE* f = fopen("Data/result.txt", "a+");
         if (f == NULL){
             printf("Error opening file!\n");
             exit(1);

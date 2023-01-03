@@ -3,6 +3,8 @@
 #include <assert.h>
 #include "../../Headers/TList.h"
 
+/* Operations on int */
+
 int valueEqual(int value1, int value2)
 {
     return value1 == value2;

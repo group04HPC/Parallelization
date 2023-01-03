@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
     int* edges = getEdges(sub, 0);
 
     char filename[FILENAME_LENGTH], num[NUM_LENGTH];
-    strcpy(filename, "file");
+    strcpy(filename, "Data/file");
     sprintf(num, "%d", rank);
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);

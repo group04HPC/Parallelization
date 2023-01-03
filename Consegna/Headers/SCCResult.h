@@ -20,7 +20,6 @@ int getMacronodeFromVertex(SCCResult* result, int vertex); /* Returns the macron
 TList *getVerticesFromMacronode(SCCResult *result, int macronode); /* Returns the veritces associated to the macronode */
 SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC); /* Combines two SCCResult structures */
 int SCCResultGetLastElement(SCCResult *result); /* Return the max element of the SCC */
-void SCCResultSort(SCCResult *result);
-void SCCResultQuickSort(SCCResult *result, int first, int last);
+void SCCResultQuickSort(SCCResult *result, int first, int last); /* Sorts the SCCResult structure */
 
 #endif

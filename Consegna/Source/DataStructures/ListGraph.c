@@ -82,6 +82,6 @@ void destroyListGraph(ListGraph* graph){
 }
 
 /* Inserts a new vertex into the list graph */
-void insertListGraph(ListGraph* new, int v, int u){
-    *new->adj[v] = listInsert(*new->adj[v], u);
+void insertListGraph(ListGraph* newList, int v, int u){
+    *newList->adj[v] = listInsert(*newList->adj[v], u);
 }
