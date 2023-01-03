@@ -23,9 +23,9 @@ testObjects := $(foreach object,$(testObjects),$(buildDir)$(object))
 
 .PHONY: test all clean cleanBin cleanObj cleanTxt
 
-all:  $(allObjects) #$(parallelObjects) $(serialObjects) $(allObjects)
+all:  $(allObjects) 
 
-test: $(testObjects) runTest clean
+test: $(testObjects) runTest cleanBin cleanTxt
 
 clean: cleanObj cleanBin cleanTxt
 
