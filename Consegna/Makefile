@@ -4,12 +4,13 @@ CFLAGS = -Wall -c #-pedantic
 
 buildDir = Build/
 
-allObjects = wg rg s p c
+allObjects = wg.o rg.o s.o p.o c.o
 writeGraphObjects = SubGraph.o writeGraph.o
 readGraphObjects = SubGraph.o readGraph.o
 serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Serial.o
 parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o parallel.o
 compareObjects = TList.o TArray.o compareResults.o SCCResult.o
+testObjects = wg.o rg.o s.o p.o c.o
 
 # Adding the build directory
 allObjects := $(foreach object,$(allObjects),$(buildDir)$(object))
@@ -18,30 +19,42 @@ readGraphObjects := $(foreach object,$(readGraphObjects),$(buildDir)$(object))
 serialObjects := $(foreach object,$(serialObjects),$(buildDir)$(object))
 parallelObjects := $(foreach object,$(parallelObjects),$(buildDir)$(object))
 compareObjects := $(foreach object,$(compareObjects),$(buildDir)$(object))
+testObjects := $(foreach object,$(testObjects),$(buildDir)$(object))
 
-.PHONY: clean test all
+.PHONY: test all clean cleanBin cleanObj cleanTxt
 
 all:  $(allObjects) #$(parallelObjects) $(serialObjects) $(allObjects)
 
-test: $(testObjects)
+test: $(testObjects) runTest clean
 
-clean:
-	-rm Build/*
+clean: cleanObj cleanBin cleanTxt
 
-Build/wg :	$(writeGraphObjects)
-	$(CC) -Wall $(writeGraphObjects) -o Build/wg
+cleanObj:
+	-rm Build/*.o
 
-Build/rg :	$(readGraphObjects)
-	$(CC) -Wall $(readGraphObjects) -o Build/rg
+cleanBin:
+	-rm Data/*.bin
 
-Build/s : 	$(serialObjects)
-	$(CC) -Wall $(serialObjects) -o Build/s 
+cleanTxt: 
+	-rm Data/*.txt
+
+runTest:
+	./test.sh -t
+
+Build/wg.o :	$(writeGraphObjects)
+	$(CC) -Wall $(writeGraphObjects) -o Build/wg.o
+
+Build/rg.o :	$(readGraphObjects)
+	$(CC) -Wall $(readGraphObjects) -o Build/rg.o
+
+Build/s.o : 	$(serialObjects)
+	$(CC) -Wall $(serialObjects) -o Build/s.o 
     
-Build/p : 	$(parallelObjects)
-	$(CC) -Wall $(parallelObjects) -o Build/p
+Build/p.o : 	$(parallelObjects)
+	$(CC) -Wall $(parallelObjects) -o Build/p.o
 
-Build/c : 	$(compareObjects)
-	$(CC) -Wall $(compareObjects) -o Build/c
+Build/c.o : 	$(compareObjects)
+	$(CC) -Wall $(compareObjects) -o Build/c.o
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
 	$(CC) $(CFLAGS) Source/DataStructures/SubGraph.c -o Build/SubGraph.o
