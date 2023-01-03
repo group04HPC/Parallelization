@@ -31,6 +31,12 @@
  * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
  * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
  * represent the graph in memory.
+ * 
+ * Purpose of the file:
+ * This file contains the implementation of the SCCResult structure.
+ * The SCCResult structure is used to store the result of the Tarjan's algorithm.
+ * The SCCResult structure is composed by an array of lists of nodes, the number of macro nodes, the number of nodes and the offset.
+ * 
  */
 
 #include <stdio.h>

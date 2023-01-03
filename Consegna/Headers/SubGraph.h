@@ -31,6 +31,11 @@
  * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
  * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
  * represent the graph in memory.
+ * 
+ * Purpose of the file:
+ * This file contains the implementation of the SubGraph data structure. 
+ * A SubGraph is a graph that is stored in a single node. 
+ * 
  */
 
 #ifndef SUBGRAPH_H
