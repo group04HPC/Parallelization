@@ -58,3 +58,5 @@ Tarjan/run.bat
 .DS_Store
 src/.DS_Store
 src/DataStructures/TestGraph.c
+*.bin
+*.txt
