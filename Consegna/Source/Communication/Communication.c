@@ -1,36 +1,42 @@
-/* 
- * Course: High Performance Computing 2022/2023 
- * 
- * Lecturer: Francesco Moscato    fmoscato@unisa.it 
+/*
+ * Course: High Performance Computing 2022/2023
  *
- * Group: 
+ * Lecturer: Francesco Moscato    fmoscato@unisa.it
+ *
+ * Group:
  * Ferrara Grazia   0622701901  g.ferrara75@studenti.unisa.it
  * Franco Paolo     0622701993  p.franco9@studenti.unisa.it
  *
- * Copyright (C) 2023 - All Rights Reserved 
+ * Copyright (C) 2023 - All Rights Reserved
  *
- * This file is part of Project Assignment 2022/2023. 
+ * This file is part of Project Assignment 2022/2023.
  *
- * This program is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation, either version 3 of the License, or 
- * (at your option) any later version. 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
- * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/. 
- * 
+ * You should have received a copy of the GNU General Public License
+ * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/.
+ *
  * Requirements of the assignment:
- * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph. 
- * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI. 
- * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files 
- * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
- * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
+ * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph.
+ * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI.
+ * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files
+ * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph
+ * dimensions are greater than 4GB of data. Students have to choose the proper data structure to
  * represent the graph in memory.
+ *
+ * Purpose of the file:
+ * This file contains the implementation of the functions required to comunicate all the structures between processes.
+ * The provided functions are:
+ *      void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
+ *      void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
  */
 
 #include <mpi.h>
@@ -45,19 +51,13 @@
  * --------------------
  * Sends all the needed informations to the "dest" node
  *
- *  *graph: the graph's matrix
- *  **internal: the array of arrays of internal vertexes
- *  *lengths: the lengths of each array of internal vertexes
- *  v: the number of vertexes of the graph
- *  k: the number of adjacent vertexes
+ *  **graph: a reference to the SubGraph structure that has to be sent
+ *  **result: a referemce to the SCCResult structure that has to be sent
+ *  shrink: a int representing the number of nodes that have been merged
  *  dest: the receiver of the communication
  */
 void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
 {
-    // Signature of the function MPI_Send that will be used here
-    // int MPI_Send(const void *buf, int count, MPI_Datatype datatype,
-    //              int dest,int tag, MPI_Comm comm)
-
     // Firstly we send the dimensions of the graph's matrix as an array
     int v = graph->nV, k = graph->nE, offset = graph->offset/WORK_LOAD;
     int size[4] = {v, k, offset,shrink};
@@ -109,20 +109,14 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
  * Recives all the needed informations from the "source" node
  *   and instantiates all the needed structures passed as arguments
  *
- *  **graph: a reference to the graph's matrix
- *  ***internal: a reference to the array of arrays of internal vertexes
- *  **lengths: a reference to the lengths of each array of internal vertexes
- *  *v: a reference to the number of vertexes of the graph
- *  *k: a reference to the number of adjacent vertexes
+ *  **graph: a reference to the output SubGraph structure
+ *  **result: a referemce to the output SCCResult structure
+ *  *shrink: a reference to a int representing the number of nodes that have been merged
  *  source: the sender of the communication
  */
 void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
-
-// void recv_all(int **graph, int ***internal, int **lengths, int *v_ext, int *k_ext, int source)
 {
-    // Signature of the function MPI_Recv that will be used here
-    // int MPI_Recv(void *buf, int count, MPI_Datatype datatype,
-    //              int source, int tag, MPI_Comm comm, MPI_Status *status)
+    
 
     MPI_Status status;
 
@@ -134,6 +128,7 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
     MPI_Recv(size, 4, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
     int v = size[0], k = size[1];
     *shrink=size[3];
+
     // External var allocation
     *graph = createSubGraph(v, k, size[2]);
     *result = SCCResultCreate(v);
@@ -154,7 +149,7 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
     {
         if (i == k * (l + 1) + l)
         {
-            // Adds to the lenght array the recived length
+            // Adds to the lenght array the recived one
             int curr = recv_graph[i];
             lengths[l] = curr;
             sum += curr;
@@ -168,9 +163,9 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
         }
     }
 
-    // In the end we prepare a buffer where to store all the whole array containing
+    // In the end we prepare a buffer to store the whole array containing
     //   the internal vertexes and recive the sender's message in it.
-    //   Then the last step is to split each array and populate the given array
+    //   Then the last step is to split each array and populate the recived SCCResult
 
     int recv_internal[sum];
     MPI_Recv(recv_internal, sum, MPI_INT, source, 0, MPI_COMM_WORLD, &status);

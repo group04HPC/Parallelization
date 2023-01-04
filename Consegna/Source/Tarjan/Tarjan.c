@@ -1,36 +1,43 @@
-/* 
- * Course: High Performance Computing 2022/2023 
- * 
- * Lecturer: Francesco Moscato    fmoscato@unisa.it 
+/*
+ * Course: High Performance Computing 2022/2023
  *
- * Group: 
+ * Lecturer: Francesco Moscato    fmoscato@unisa.it
+ *
+ * Group:
  * Ferrara Grazia   0622701901  g.ferrara75@studenti.unisa.it
  * Franco Paolo     0622701993  p.franco9@studenti.unisa.it
  *
- * Copyright (C) 2023 - All Rights Reserved 
+ * Copyright (C) 2023 - All Rights Reserved
  *
- * This file is part of Project Assignment 2022/2023. 
+ * This file is part of Project Assignment 2022/2023.
  *
- * This program is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation, either version 3 of the License, or 
- * (at your option) any later version. 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
- * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/. 
- * 
+ * You should have received a copy of the GNU General Public License
+ * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/.
+ *
  * Requirements of the assignment:
- * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph. 
- * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI. 
- * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files 
- * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
- * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
+ * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph.
+ * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI.
+ * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files
+ * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph
+ * dimensions are greater than 4GB of data. Students have to choose the proper data structure to
  * represent the graph in memory.
+ *
+ * Purpose of the file:
+ * This file contains the implementation of the functions required to execute Tarjan's algorithm.
+ * The provided functions are:
+ *      void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult* result);
+ *      SCCResult *SCC(ListGraph **g);
+ *      ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan);
  */
 
 #include <stdio.h>
@@ -43,15 +50,18 @@
 #define TRUE 1
 #define FALSE 0
 
-/**
- * A recursive function that finds and prints strongly connected components using DFS traversal.
- * g -> the SubGraph
- * u --> The vertex to be visited next
- * disc[] --> Stores discovery times of visited vertices
- * low[] -- >> earliest visited vertex (the vertex with minimum discovery time) that can be reached from subtree rooted with current vertex
- * *st -- >> To store all the connected ancestors (could be part of SCC)
- * stackMember[] --> bit/index array for faster check whether a node is in stack
- * *result --> the resulting SCCs
+/*
+ * Function:  SCCUtil
+ * --------------------
+ *  Locally finds all the strongly connected components using DFS traversa, inserting them in a SCCResult structure.
+ *
+ *  *g: the ListGraph to analyze
+ *  u: the vertex to visit in this execution
+ *  disc[]: an array storing the discovery times of the visited vertices
+ *  low[]: an array storing the vertices with minimum discovery time
+ *  stackMember[]: an array used to fastly check whether a node is in stack
+ *  *st: a stack used to store all the connected ancestors
+ *  *result: the resulting SCCResult structure
  */
 void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult *result){
     
@@ -61,7 +71,6 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
     if(u < g->offset || u >= g->offset+g->nV){
         disc[u] = NIL;
         low[u] = NIL;
-        printf("Error: Vertex %d is out of bounds\n", u);
         return;
     }
         
@@ -111,8 +120,14 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
     }
 }
 
-/**
- * The function to do DFS traversal, by means of the SCCUtil().
+/*
+ * Function:  SCC
+ * --------------------
+ *  Finds all the strongly connected components invoking multiple times the SCCUtil function.
+ *
+ *  **graph: the ListGraph to analyze
+ * 
+ *  return: the resulting SCCResult structure
  */
 SCCResult* SCC(ListGraph** graph){
 
@@ -137,31 +152,29 @@ SCCResult* SCC(ListGraph** graph){
             SCCUtil(g, i, disc, low, st, stackMember, result);
     }
 
-    // printf("Sono tarjan e ho finito!\n");
     stackDestroy(st);
-
-    // printf("Before rescale  SCC:\n");
-    // SCCResultPrint(result);
-
     result = SCCResultRescale(result);
- 
     *graph = rescaleGraph(&g, result);
 
     return result;
 }
 
-/**
- *  Rescales the graph, merging all the SCC in a macronode and destroys the old one.
+/*
+ * Function:  rescaleGraph
+ * --------------------
+ *  Rescales the graph, merging all the SCC in a macronode and destroying the old one.
+ *
+ *  **oldGraph: the ListGraph to rescale
+ *  *tarjan: the SCCResult to use during the rescale process
+ * 
+ *  return: the rescaled ListGraph structure
  */
+
 ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
 
     ListGraph *old = *oldGraph;
     ListGraph *new = ListGraphCreate(tarjan->nV, old->nE, old->offset);
-
     int corr[old->nV];
-
-    // printf("tarjan:\n");
-    // SCCResultPrint(tarjan);
 
     int count = 0;
     for (int i=0; i<tarjan->nV; i++){
@@ -173,34 +186,21 @@ ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
         }
     }
 
-    // for (int i=0; i<count; i++){
-    //     printf("corr[%d]: %d\n", i, corr[i]);
-    // }
-
-    // printf("offset: %d nv: %d\n", old->offset, old->nV);
-
     for (int i=0; i<old->nV; i++){
-
-        TList list = *old->adj[i];
-                
+        TList list = *old->adj[i];     
         while (list != NULL){
             
             if (list->value >= old->offset && list->value < old->offset+old->nV){
-                // printf("i: %d, list->value: %d, corr[i]: %d, corr[list->value-old->offset]: %d\n", i, list->value, corr[i], corr[list->value-old->offset]);
                 insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
-                // printf("inserito 1 \n");
             } 
             else{
-                // printf("i: %d, list->value: %d, corr[i]: %d\n", i, list->value, corr[i]);
                 insertListGraph(new, corr[i], list->value);
-                // printf("inserito 2 \n");
             }
                 
             list = list->link;
         }
     }
 
-    // se non da segmentation fault fai la destroy
     destroyListGraph(old);
 
     return new;
