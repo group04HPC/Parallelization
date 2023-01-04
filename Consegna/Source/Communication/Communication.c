@@ -50,9 +50,10 @@
  * Function:  send_all
  * --------------------
  * Sends all the needed informations to the "dest" node
- *
- *  **graph: a reference to the SubGraph structure that has to be sent
- *  **result: a referemce to the SCCResult structure that has to be sent
+ *  
+ *  Parameters:
+ *  graph: a reference to the SubGraph structure that has to be sent
+ *  result: a referemce to the SCCResult structure that has to be sent
  *  shrink: a int representing the number of nodes that have been merged
  *  dest: the receiver of the communication
  */
@@ -109,9 +110,10 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
  * Recives all the needed informations from the "source" node
  *   and instantiates all the needed structures passed as arguments
  *
- *  **graph: a reference to the output SubGraph structure
- *  **result: a referemce to the output SCCResult structure
- *  *shrink: a reference to a int representing the number of nodes that have been merged
+ *  Parameters:
+ *  graph: a reference to the output SubGraph structure
+ *  result: a referemce to the output SCCResult structure
+ *  shrink: a reference to a int representing the number of nodes that have been merged
  *  source: the sender of the communication
  */
 void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)

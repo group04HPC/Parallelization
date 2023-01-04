@@ -50,15 +50,17 @@
  * --------------------
  * Merges two SCCResults in one structure
  *
- *  *r1: a reference to the first SCCResult structure to merge
- *  *r2: a reference to the second SCCResult structure to merge
+ *  Parameters:
+ *  r1: a reference to the first SCCResult structure to merge
+ *  r2: a reference to the second SCCResult structure to merge
  *
- *  return: the merged SCCResult
+ *  Returns:
+ *  result: the merged SCCResult
  */
 SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
 {
     SCCResult *result = SCCResultCreate(r1->nMacroNodes + r2->nMacroNodes);
-    
+
     int i = 0;
     for (; i < r1->nV; i++)
         listCopy(*r1->vertices[i], result->vertices[i]);
@@ -77,53 +79,69 @@ SCCResult *mergeResults(SCCResult *r1, SCCResult *r2)
  * Merges two ListGraphs in one ListGraph, rerouting all the edges of the old graphs
  * to the new nodes in the merged one
  *
- *  *g1: a reference to the first SCCResult structure to merge
- *  *g2: a reference to the second SCCResult structure to merge
+ *  Paameters:
+ *  g1: a reference to the first SCCResult structure to merge
+ *  g2: a reference to the second SCCResult structure to merge
  *  shrink1: a int representing the number of nodes that have been merged in the first graph
  *  shrink2: a int representing the number of nodes that have been merged in the second graph
- *  *merged: the merged SCCResult
+ *  merged: the merged SCCResult
  *
- *  return: the merged ListGraph
+ *  Returns:
+ *  result: the merged ListGraph
  */
-ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged){    
+ListGraph *mergeGraphs(ListGraph *g1, ListGraph *g2, int shrink1, int shrink2, SCCResult *merged)
+{
     ListGraph *result = ListGraphCreate(merged->nV, g1->nE, g1->offset < g2->offset ? g1->offset : g2->offset);
-    int corr[g1->nE],count=0;
+    int corr[g1->nE], count = 0;
 
-    for (int i=0; i<merged->nV; i++){
+    for (int i = 0; i < merged->nV; i++)
+    {
         TList list = *merged->vertices[i];
-        while (list != NULL){
-            corr[list->value-g1->offset] = i;
+        while (list != NULL)
+        {
+            corr[list->value - g1->offset] = i;
             list = list->link;
             count++;
         }
     }
 
-    for (int i=0; i<g1->nV; i++){
+    for (int i = 0; i < g1->nV; i++)
+    {
         TList list = *g1->adj[i];
-        while (list != NULL){
-            if (list->value >= g1->offset && list->value < g1->offset+g1->nV){
+        while (list != NULL)
+        {
+            if (list->value >= g1->offset && list->value < g1->offset + g1->nV)
+            {
                 insertListGraph(result, i, list->value);
-            }else if (list->value >= g1->offset+g1->nV && list->value < g1->offset+count){
-                insertListGraph(result, i, corr[list->value-g1->offset] + g1->offset);
-            }else{
+            }
+            else if (list->value >= g1->offset + g1->nV && list->value < g1->offset + count)
+            {
+                insertListGraph(result, i, corr[list->value - g1->offset] + g1->offset);
+            }
+            else
+            {
                 insertListGraph(result, i, list->value);
-            }  
-            list = list->link;
-        }
-    }
-
-    for (int i=0; i<g2->nV; i++){
-        TList list = *g2->adj[i];
-        while (list != NULL){
-            if (list->value >= g1->offset && list->value < g1->offset+count){
-                insertListGraph(result, i+g1->nV, corr[list->value-g1->offset] + g1->offset);
-            }else{
-                insertListGraph(result, i+g1->nV, list->value);
             }
             list = list->link;
         }
     }
-    
-    return result;
 
+    for (int i = 0; i < g2->nV; i++)
+    {
+        TList list = *g2->adj[i];
+        while (list != NULL)
+        {
+            if (list->value >= g1->offset && list->value < g1->offset + count)
+            {
+                insertListGraph(result, i + g1->nV, corr[list->value - g1->offset] + g1->offset);
+            }
+            else
+            {
+                insertListGraph(result, i + g1->nV, list->value);
+            }
+            list = list->link;
+        }
+    }
+
+    return result;
 }

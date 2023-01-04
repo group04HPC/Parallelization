@@ -55,67 +55,74 @@
  * --------------------
  *  Locally finds all the strongly connected components using DFS traversa, inserting them in a SCCResult structure.
  *
- *  *g: the ListGraph to analyze
+ *  Parameters:
+ *  g: the ListGraph to analyze
  *  u: the vertex to visit in this execution
- *  disc[]: an array storing the discovery times of the visited vertices
- *  low[]: an array storing the vertices with minimum discovery time
- *  stackMember[]: an array used to fastly check whether a node is in stack
- *  *st: a stack used to store all the connected ancestors
- *  *result: the resulting SCCResult structure
+ *  disc: an array storing the discovery times of the visited vertices
+ *  low: an array storing the vertices with minimum discovery time
+ *  stackMember: an array used to fastly check whether a node is in stack
+ *  st: a stack used to store all the connected ancestors
+ *  result: the resulting SCCResult structure
  */
-void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult *result){
-    
+void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMember[], SCCResult *result)
+{
+
     /* A static variable is used for simplicity, we can avoid the use of static variable by passing a pointer.*/
     static int time = 0;
-    
-    if(u < g->offset || u >= g->offset+g->nV){
+
+    if (u < g->offset || u >= g->offset + g->nV)
+    {
         disc[u] = NIL;
         low[u] = NIL;
         return;
     }
-        
+
     /* Initialize discovery time and low value */
     disc[u] = low[u] = ++time;
     stackPush(st, u);
     stackMember[u] = TRUE;
-    
-    /* Go through all vertices adjacent to this */
-    TList values = *g->adj[u-g->offset];
 
-    for (int i = 0; i < listCount(values); ++i){
+    /* Go through all vertices adjacent to this */
+    TList values = *g->adj[u - g->offset];
+
+    for (int i = 0; i < listCount(values); ++i)
+    {
 
         int v = listGet(values, i); /* v is the current adjacent of 'u' */
 
-        if (v >= g->offset && v < g->offset+g->nV){
+        if (v >= g->offset && v < g->offset + g->nV)
+        {
             /* If v is not visited yet, then recur for it */
-            if (disc[v] == -1){
-                SCCUtil(g, v, disc, low, st, stackMember,result);
-                /* 
-                * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
-                * Case 1 (per above discussion on Disc and Low value) 
-                */
+            if (disc[v] == -1)
+            {
+                SCCUtil(g, v, disc, low, st, stackMember, result);
+                /*
+                 * Check if the subtree rooted with 'v' has a connection to one of the ancestors of 'u'
+                 * Case 1 (per above discussion on Disc and Low value)
+                 */
                 low[u] = (low[u] < low[v]) ? low[u] : low[v];
             }
-            /* 
-            * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge). 
-            * Case 2 (per above discussion on Disc and Low value)
-            */
+            /*
+             * Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge).
+             * Case 2 (per above discussion on Disc and Low value)
+             */
             else if (stackMember[v] == TRUE)
                 low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
         }
-
     }
 
     /* Head node found, pop the stack and print an SCC */
     int w = g->offset; /* To store stack extracted vertices */
-    if (low[u] == disc[u]){
-        while (stackTop(st) != u){
+    if (low[u] == disc[u])
+    {
+        while (stackTop(st) != u)
+        {
             w = (int)stackPop(st);
-            SCCResultInsert(result, u-g->offset, w);
+            SCCResultInsert(result, u - g->offset, w);
             stackMember[w] = FALSE;
         }
         w = (int)stackPop(st);
-        SCCResultInsert(result, u-g->offset, w);
+        SCCResultInsert(result, u - g->offset, w);
         stackMember[w] = FALSE;
     }
 }
@@ -125,28 +132,33 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
  * --------------------
  *  Finds all the strongly connected components invoking multiple times the SCCUtil function.
  *
- *  **graph: the ListGraph to analyze
- * 
- *  return: the resulting SCCResult structure
+ *  Parameters:
+ *  graph: the ListGraph to analyze
+ *
+ *  Returns:
+ *  resultt: the resulting SCCResult structure
  */
-SCCResult* SCC(ListGraph** graph){
+SCCResult *SCC(ListGraph **graph)
+{
 
-    ListGraph* g = *graph;
+    ListGraph *g = *graph;
     int V = g->nV, disc[g->nE], low[g->nE], stackMember[g->nE];
     TArray *st = stackCreate(V);
 
     /* Initialize disc and low, and stackMember arrays */
-    for (int i = 0; i < g->nE; i++){
+    for (int i = 0; i < g->nE; i++)
+    {
         disc[i] = NIL;
         low[i] = NIL;
         stackMember[i] = FALSE;
     }
 
-    SCCResult* result = SCCResultCreate(V);
+    SCCResult *result = SCCResultCreate(V);
     result->offset = g->offset;
 
     /* Call the recursive helper function to find strongly connected components in DFS tree with vertex 'i' */
-    for (int i = g->offset; i < g->offset+V; i++){
+    for (int i = g->offset; i < g->offset + V; i++)
+    {
 
         if (disc[i] == NIL)
             SCCUtil(g, i, disc, low, st, stackMember, result);
@@ -164,39 +176,48 @@ SCCResult* SCC(ListGraph** graph){
  * --------------------
  *  Rescales the graph, merging all the SCC in a macronode and destroying the old one.
  *
- *  **oldGraph: the ListGraph to rescale
- *  *tarjan: the SCCResult to use during the rescale process
- * 
- *  return: the rescaled ListGraph structure
+ *  Parameters:
+ *  oldGraph: the ListGraph to rescale
+ *  tarjan: the SCCResult to use during the rescale process
+ *
+ *  Returns:
+ *  new: the rescaled ListGraph structure
+ *
  */
-
-ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan){
+ListGraph *rescaleGraph(ListGraph **oldGraph, SCCResult *tarjan)
+{
 
     ListGraph *old = *oldGraph;
     ListGraph *new = ListGraphCreate(tarjan->nV, old->nE, old->offset);
     int corr[old->nV];
 
     int count = 0;
-    for (int i=0; i<tarjan->nV; i++){
+    for (int i = 0; i < tarjan->nV; i++)
+    {
         TList list = *tarjan->vertices[i];
-        while (list != NULL){
-            corr[list->value-old->offset] = i;
+        while (list != NULL)
+        {
+            corr[list->value - old->offset] = i;
             list = list->link;
-            count ++;
+            count++;
         }
     }
 
-    for (int i=0; i<old->nV; i++){
-        TList list = *old->adj[i];     
-        while (list != NULL){
-            
-            if (list->value >= old->offset && list->value < old->offset+old->nV){
-                insertListGraph(new, corr[i], corr[list->value-old->offset]+old->offset);
-            } 
-            else{
+    for (int i = 0; i < old->nV; i++)
+    {
+        TList list = *old->adj[i];
+        while (list != NULL)
+        {
+
+            if (list->value >= old->offset && list->value < old->offset + old->nV)
+            {
+                insertListGraph(new, corr[i], corr[list->value - old->offset] + old->offset);
+            }
+            else
+            {
                 insertListGraph(new, corr[i], list->value);
             }
-                
+
             list = list->link;
         }
     }

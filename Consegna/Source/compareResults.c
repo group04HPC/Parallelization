@@ -33,7 +33,7 @@
  * represent the graph in memory.
  *
  * Purpose of the file:
- * This file contains the implementation of the functions required to execute Tarjan's algorithm.
+ * This file contains the main function needed to compare two SCCResult structures after the serial and parallel execution.
  * The provided functions are:
  *      int main(int argc, char* argv[])
  */
@@ -51,32 +51,38 @@
  *  argc: the number of arguments
  *  argv: the arguments
  *
- *  Returns: the 
+ *  Returns: the exit code of the main function
  */
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[])
+{
 
-    FILE* fp = fopen("Data/result.txt", "r");
-    if (fp == NULL){
+    FILE *fp = fopen("Data/result.txt", "r");
+    if (fp == NULL)
+    {
         printf("Error opening file -- compare\n");
     }
 
     int nMacroNodes, value, len;
     fscanf(fp, "%d", &nMacroNodes);
-    SCCResult* result = SCCResultCreate(nMacroNodes);
-    for (int i=0; i<nMacroNodes; i++){
+    SCCResult *result = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
         fscanf(fp, "%d", &len);
-        for (int j=0; j<len; j++){
+        for (int j = 0; j < len; j++)
+        {
             fscanf(fp, "%d", &value);
             SCCResultInsert(result, i, value);
         }
     }
-    
+
     fscanf(fp, "%d", &nMacroNodes);
 
-    SCCResult* result2 = SCCResultCreate(nMacroNodes);
-    for (int i=0; i<nMacroNodes; i++){
+    SCCResult *result2 = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
         fscanf(fp, "%d", &len);
-        for (int j=0; j<len; j++){
+        for (int j = 0; j < len; j++)
+        {
             fscanf(fp, "%d", &value);
             SCCResultInsert(result2, i, value);
         }
@@ -86,16 +92,20 @@ int main(int argc, char* argv[]){
 
     printf("=============RESULTS=============\n");
 
-    if (result->nMacroNodes != result2->nMacroNodes){
+    if (result->nMacroNodes != result2->nMacroNodes)
+    {
         printf("Bad result, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
         return 1;
     }
 
-    for (int i=0; i<result->nMacroNodes; i++){
+    for (int i = 0; i < result->nMacroNodes; i++)
+    {
         TList list = *result->vertices[i];
         TList list2 = *result2->vertices[i];
-        while (list != NULL){
-            if (list->value != list2->value){
+        while (list != NULL)
+        {
+            if (list->value != list2->value)
+            {
                 printf("Bad result, %d, %d\n", list->value, list2->value);
                 return 1;
             }
@@ -108,5 +118,3 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
-
-
