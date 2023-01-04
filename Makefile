@@ -33,6 +33,7 @@
 #
 # Purpose of the file:
 # This file is the Makefile for the program, capable of compiling, when necessary, all the source files to make the executuion coherent
+.SILENT:
 
 IDRIR = Headers
 CC = mpicc 
