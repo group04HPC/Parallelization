@@ -216,7 +216,8 @@ int main(int argc, char *argv[])
         fprintf(f2, "read graph: %f\n", read_time_spent);
         fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
         fprintf(f2, "write result: %f\n", write_time_spent);
-        fprintf(f2, "total time: %f\n\n", total_time_spent);
+        fprintf(f2, "total time: %f\n", total_time_spent);
+        fprintf(f2, "\n");
         fclose(f2);
         printf("Total excution time parallel: %f\n", total_time_spent);
     }
