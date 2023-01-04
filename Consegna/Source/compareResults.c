@@ -59,7 +59,8 @@ int main(int argc, char *argv[])
     FILE *fp = fopen("Data/result.txt", "r");
     if (fp == NULL)
     {
-        printf("Error opening file -- compare\n");
+        printf("Error opening file in compareResults.c\n");
+        return 1;
     }
 
     int nMacroNodes, value, len;
@@ -89,8 +90,6 @@ int main(int argc, char *argv[])
     }
 
     fclose(fp);
-
-    printf("=============RESULTS=============\n");
 
     if (result->nMacroNodes != result2->nMacroNodes)
     {

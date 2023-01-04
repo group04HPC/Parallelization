@@ -44,6 +44,7 @@
 #include "../../Headers/SubGraph.h"
 #include "../../Headers/SCCResult.h"
 #include "../../Headers/Tarjan.h"
+#include "../../Headers/Constants.h"
 
 /*
  * Function:  main
@@ -61,14 +62,15 @@ int main(int argc, char *argv[])
 
     int size;
 
-    double time_spent = 0.0;
+    double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
     clock_t begin = clock();
 
     FILE *fp = fopen("Data/matrix.txt", "r");
     if (fp == NULL)
     {
-        printf("Error opening file \n");
+        printf("Error opening file in serial.c\n");
+        return 1;
     }
     fscanf(fp, "%d", &size);
     int *matrix = (int *)malloc(size * size * sizeof(int));
@@ -77,21 +79,25 @@ int main(int argc, char *argv[])
             fscanf(fp, "%d", &matrix[i * size + j]);
     fclose(fp);
 
+
     SubGraph *sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
     ListGraph *list = createListGraphFromMatrix(sub);
 
-    SCCResult *result = SCC(&list);
-
     clock_t end = clock();
-    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+    read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
-    printf("Tarjan excution time serial: %f\n", time_spent);
+    begin = clock();
+    SCCResult *result = SCC(&list);
+    end = clock();
+    tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
+    begin = clock();
     FILE *fp2 = fopen("Data/result.txt", "w+");
     if (fp2 == NULL)
     {
-        printf("Error opening file\n");
+        printf("Error opening file in serial.c\n");
+        return 1;
     }
     fprintf(fp2, "%d\n", result->nMacroNodes);
     for (int i = 0; i < result->nMacroNodes; i++)
@@ -106,6 +112,25 @@ int main(int argc, char *argv[])
         fprintf(fp2, "\n");
     }
     fclose(fp2);
+    end = clock();
+    write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+    total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
+
+    FILE *fp3 = fopen("Data/time.txt", "a+");
+    if (fp3 == NULL)
+    {
+        printf("Error opening file in serial.c\n");
+        return 1;
+    }
+    fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
+    fprintf(fp3, "serial\n");
+    fprintf(fp3, "read graph: %f\n", read_time_spent);
+    fprintf(fp3, "tarjan result: %f\n", tarjan_time_spent);
+    fprintf(fp3, "write result: %f\n", write_time_spent);
+    fprintf(fp3, "total time: %f\n", total_time_spent);
+    fclose(fp3);
+
+    printf("Total excution time serial: %f\n", total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);

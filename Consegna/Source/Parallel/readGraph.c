@@ -88,8 +88,8 @@ int main(int argc, char* argv[]){
         of the program to execute Tarjan. */
         FILE* fp = fopen("Data/matrix.txt", "w+");
         if (fp == NULL){
-            printf("Error opening file read\n");
-            exit(1);
+            printf("Error opening file in readGraph.c\n");
+            return 1;
         }
         fprintf(fp, "%d\n", WORK_LOAD*size);
         for (int i=0; i<WORK_LOAD*size; i++)

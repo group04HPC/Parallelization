@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    double start, end;
+    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;;
 
     /* subgraph creation */
     SubGraph *sub = createSubGraph(WORK_LOAD, WORK_LOAD * size, rank);
@@ -88,7 +88,6 @@ int main(int argc, char *argv[])
     strncat(filename, ".bin", EXTENSION_LENGTH);
 
     start = MPI_Wtime();
-
     /* each process reads its own subgraph from its own file */
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);
@@ -100,6 +99,10 @@ int main(int argc, char *argv[])
 
     /* Tarjan algorithm on the subgraph converted in list */
     ListGraph *list = createListGraphFromMatrix(sub);
+    end = MPI_Wtime();
+    read_time_spent += end - start;
+
+    start = MPI_Wtime();
     SCCResult *result = SCC(&list);
     destroySubGraph(sub);
 
@@ -107,6 +110,7 @@ int main(int argc, char *argv[])
      * If the number of processes is equal to 1 then it has already finished
      * otherwise it executes the content of this statement
      */
+    
     if (size > 1)
     {
         int shrink = list->nV - result->nV, recivedShrink = 0, next, prev, curr_av = 1;
@@ -172,19 +176,19 @@ int main(int argc, char *argv[])
         }
     }
 
-    end = MPI_Wtime() - start;
+    end = MPI_Wtime();
+    tarjan_time_spent += end - start;
 
     // last process
     if (rank == size - 1)
     {
-        printf("Tarjan excution time parallel: %f\n", end);
-
+        start = MPI_Wtime();
         /* saves the result on a file */
         FILE *f = fopen("Data/result.txt", "a+");
         if (f == NULL)
         {
-            printf("Error opening file!\n");
-            exit(1);
+            printf("Error opening file in parallel.c\n");
+            return 1;
         }
         fprintf(f, "\n%d\n", result->nMacroNodes);
         for (int i = 0; i < result->nMacroNodes; i++)
@@ -199,6 +203,22 @@ int main(int argc, char *argv[])
             fprintf(f, "\n");
         }
         fclose(f);
+        end = MPI_Wtime();
+        write_time_spent += end - start;
+        total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
+        FILE *f2 = fopen("Data/time.txt", "a+");
+        if (f2 == NULL)
+        {
+            printf("Error opening file in parallel.c\n");
+            return 1;
+        }
+        fprintf(f2, "parallel\n");
+        fprintf(f2, "read graph: %f\n", read_time_spent);
+        fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
+        fprintf(f2, "write result: %f\n", write_time_spent);
+        fprintf(f2, "total time: %f\n\n", total_time_spent);
+        fclose(f2);
+        printf("Total excution time parallel: %f\n", total_time_spent);
     }
 
     MPI_Finalize();
