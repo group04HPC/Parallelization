@@ -37,7 +37,9 @@
 
 IDRIR = Headers
 CC = mpicc 
-CFLAGS = -Wall -c #-pedantic
+CFLAGS= -Wall -c
+commonFlags = -Wall  #-pedantic
+dependendecyFlags = -c
 
 buildDir = Build/
 
@@ -79,19 +81,19 @@ runTest:
 	./test.sh -t
 
 Build/wg.o :	$(writeGraphObjects)
-	$(CC) -Wall $(writeGraphObjects) -o Build/wg.o
+	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o
 
 Build/rg.o :	$(readGraphObjects)
-	$(CC) -Wall $(readGraphObjects) -o Build/rg.o
+	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
 Build/s.o : 	$(serialObjects)
-	$(CC) -Wall $(serialObjects) -o Build/s.o 
+	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
     
 Build/p.o : 	$(parallelObjects)
-	$(CC) -Wall $(parallelObjects) -o Build/p.o
+	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
 
 Build/c.o : 	$(compareObjects)
-	$(CC) -Wall $(compareObjects) -o Build/c.o
+	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
 	$(CC) $(CFLAGS) Source/DataStructures/SubGraph.c -o Build/SubGraph.o
