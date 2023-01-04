@@ -1,42 +1,44 @@
-/* 
- * Course: High Performance Computing 2022/2023 
- * 
- * Lecturer: Francesco Moscato    fmoscato@unisa.it 
+/*
+ * Course: High Performance Computing 2022/2023
  *
- * Group: 
+ * Lecturer: Francesco Moscato    fmoscato@unisa.it
+ *
+ * Group:
  * Ferrara Grazia   0622701901  g.ferrara75@studenti.unisa.it
  * Franco Paolo     0622701993  p.franco9@studenti.unisa.it
  *
- * Copyright (C) 2023 - All Rights Reserved 
+ * Copyright (C) 2023 - All Rights Reserved
  *
- * This file is part of Project Assignment 2022/2023. 
+ * This file is part of Project Assignment 2022/2023.
  *
- * This program is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation, either version 3 of the License, or 
- * (at your option) any later version. 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
- * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/. 
- * 
+ * You should have received a copy of the GNU General Public License
+ * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/.
+ *
  * Requirements of the assignment:
- * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph. 
- * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI. 
- * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files 
- * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
- * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
+ * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph.
+ * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI.
+ * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files
+ * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph
+ * dimensions are greater than 4GB of data. Students have to choose the proper data structure to
  * represent the graph in memory.
- * 
+ *
  * Purpose of the file:
  * This file contains the implementation of the SCCResult structure.
  * The SCCResult structure is used to store the result of the Tarjan's algorithm.
- * The SCCResult structure is composed by an array of lists of nodes, the number of macro nodes, the number of nodes and the offset.
- * 
+ * The SCCResult structure is composed by an array of lists of nodes, the number
+ * of macro nodes, the number of nodes and the offset. It contains all the necessary functions
+ * to create and manage a SCCResult structure.
+ *
  */
 
 #include <stdio.h>
@@ -44,7 +46,18 @@
 #include <assert.h>
 #include "../../Headers/SCCResult.h"
 
-/* Creates a new SCCResult structure */
+/**
+ * Function: SCCResultCreate
+ * -------------------------
+ * Creates a new SCCResult structure
+ *
+ * Parameters:
+ * n: the number of nodes
+ *
+ * Returns:
+ * *result: a pointer to the new SCCResult structure
+ *
+ */
 SCCResult *SCCResultCreate(int n)
 {
     SCCResult *result = (SCCResult *)malloc(sizeof(SCCResult));
@@ -60,33 +73,61 @@ SCCResult *SCCResultCreate(int n)
     return result;
 }
 
-/* Destroys the SCCResult structure */
+/**
+ * Function: SCCResultDestroy
+ * --------------------------
+ * Destroys a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure to destroy
+ *
+ */
 void SCCResultDestroy(SCCResult *result)
 {
     if (result == NULL)
         return;
     for (int i = 0; i < result->nV; i++)
-    {
         listDestroy(*result->vertices[i]);
-    }
     free(result->vertices);
     free(result);
 }
 
-/* Inserts a macronode-to-node match into the SCCResult structure */
+/**
+ * Function: SCCResultInsert
+ * -------------------------
+ * Inserts a macronode-to-node match into the SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure
+ * key: the key of the match
+ * value: the value of the match
+ *
+ * Returns:
+ * true if the insertion was successful, false otherwise
+ *
+ */
 bool SCCResultInsert(SCCResult *result, int key, int value)
 {
     if (key >= result->nV || key < 0)
         return false;
     if (*result->vertices[key] == NULL)
-    {
         result->nMacroNodes++;
-    }
     *result->vertices[key] = listInsert(*result->vertices[key], value);
     return true;
 }
 
-/* Rescales the SCCResult structure */
+/**
+ * Function: SCCResultRescale
+ * --------------------------
+ * Rescales a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure to rescale
+ *
+ * Returns:
+ * *temp: a pointer to the rescaled SCCResult structure
+ *
+ */
 SCCResult *SCCResultRescale(SCCResult *result)
 {
 
@@ -115,12 +156,27 @@ SCCResult *SCCResultRescale(SCCResult *result)
         }
     }
 
-    if (sort) SCCResultQuickSort(temp, 0, temp->nV - 1);
+    if (sort)
+        SCCResultQuickSort(temp, 0, temp->nV - 1);
     SCCResultDestroy(result);
 
     return temp;
 }
 
+/**
+ * Function: SCCResultQuickSort
+ * ----------------------------
+ * Sorts a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure to sort
+ * first: the first index of the array to sort
+ * last: the last index of the array to sort
+ *
+ * Returns:
+ * *temp: a pointer to the sorted SCCResult structure
+ *
+ */
 void SCCResultQuickSort(SCCResult *result, int first, int last)
 {
     if (last <= first)
@@ -133,7 +189,6 @@ void SCCResultQuickSort(SCCResult *result, int first, int last)
         curr_i = *result->vertices[i];
         while (i < last && curr_i->value <= curr_pivot->value)
         {
-
             i++;
             curr_i = *result->vertices[i];
         }
@@ -159,19 +214,34 @@ void SCCResultQuickSort(SCCResult *result, int first, int last)
     SCCResultQuickSort(result, j + 1, last);
 }
 
+/**
+ * Function: SCCResultSort
+ * -----------------------
+ * Sorts a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure to sort
+ *
+ */
 void SCCResultSort(SCCResult *result)
 {
     for (int i = 0; i < result->nV; i++)
     {
         if (*result->vertices[i] == NULL)
-        {
             *result->vertices[i] = listInsert(*result->vertices[i], -1);
-        }
     }
     SCCResultQuickSort(result, 0, result->nV - 1);
 }
 
-/* Prints the SCCResult structure */
+/**
+ * Function: SCCResultPrint
+ * ------------------------
+ * Prints a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure to print
+ *
+ */
 void SCCResultPrint(SCCResult *result)
 {
     for (int i = 0; i < result->nV; i++)
@@ -182,7 +252,18 @@ void SCCResultPrint(SCCResult *result)
     }
 }
 
-/* Returns the macronode associated to the vertex */
+/**
+ * Function: getMacronodeFromVertex
+ * --------------------------------
+ * Returns the macronode associated to the vertex
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure
+ * vertex: the vertex to search
+ *
+ * Returns:
+ * the macronode associated to the vertex
+ */
 int getMacronodeFromVertex(SCCResult *result, int vertex)
 {
     for (int i = 0; i < result->nV; i++)
@@ -195,14 +276,37 @@ int getMacronodeFromVertex(SCCResult *result, int vertex)
     return -1;
 }
 
-/* Returns the veritces associated to the macronode */
+/**
+ * Function: getVerticesFromMacronode
+ * ----------------------------------
+ * Returns the vertices associated to the macronode
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure
+ * macronode: the macronode to search
+ *
+ * Returns:
+ * the vertices associated to the macronode
+ */
 TList *getVerticesFromMacronode(SCCResult *result, int macronode)
 {
     assert(macronode < result->nMacroNodes);
     return result->vertices[macronode];
 }
 
-/* Combines two SCCResult structures */
+/**
+ * Function: SCCResultCombine
+ * --------------------------
+ * Combines two SCCResult structures
+ *
+ * Parameters:
+ * tarjanResult: a pointer to the first SCCResult structure
+ * mergedSCC: a pointer to the second SCCResult structure
+ *
+ * Returns:
+ * *result: a pointer to the combined SCCResult structure
+ *
+ */
 SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC)
 {
 
@@ -210,12 +314,10 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC)
 
     for (int i = 0; i < tarjanResult->nV; i++)
     {
-
         TNode *node = *tarjanResult->vertices[i];
 
         while (node != NULL)
         {
-
             TNode *node2 = *mergedSCC->vertices[node->value - tarjanResult->offset];
 
             while (node2 != NULL)
@@ -233,6 +335,18 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC)
     return result;
 }
 
+/**
+ * Function: SCCResultGetLastElement
+ * ---------------------------------
+ * Returns the last element of a SCCResult structure
+ *
+ * Parameters:
+ * result: a pointer to the SCCResult structure
+ *
+ * Returns:
+ * the last element of the SCCResult structure
+ *
+ */
 int SCCResultGetLastElement(SCCResult *result)
 {
 
@@ -240,7 +354,6 @@ int SCCResultGetLastElement(SCCResult *result)
 
     for (int i = 0; i < result->nV; i++)
     {
-
         TNode *node = *result->vertices[i];
 
         while (node != NULL)

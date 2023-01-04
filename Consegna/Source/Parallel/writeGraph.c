@@ -31,6 +31,11 @@
  * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph 
  * dimensions are greater than 4GB of data. Students have to choose the proper data structure to 
  * represent the graph in memory.
+ * 
+ * Purpose of the file:
+ * This file contains a main to generate a random graph and store it in a file by means of MPI. Each process 
+ * generates a random subgraph and stores it in a binary file. 
+ * 
  */
 
 #include <stdio.h>
@@ -49,6 +54,7 @@ int main(int argc, char* argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    /* each process creates its own subgraph */
     SubGraph* sub = createSubGraph(WORK_LOAD, WORK_LOAD*size, rank);
     generateRandomSubGraph(sub, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
     int* edges = getEdges(sub, 0);
@@ -59,6 +65,7 @@ int main(int argc, char* argv[]){
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);
 
+    /* Each process saves its own subgraph on a binary file */
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);
     MPI_File_open(file_comm, filename, MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh);
