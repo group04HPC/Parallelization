@@ -41,11 +41,11 @@ CFLAGS = -Wall -c #-pedantic
 buildDir = Build/
 
 allObjects = wg.o rg.o s.o p.o c.o
-writeGraphObjects = SubGraph.o writeGraph.o
-readGraphObjects = SubGraph.o readGraph.o
+writeGraphObjects = SubGraph.o WriteGraph.o
+readGraphObjects = SubGraph.o ReadGraph.o
 serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Serial.o
-parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o parallel.o
-compareObjects = TList.o TArray.o compareResults.o SCCResult.o
+parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o Parallel.o
+compareObjects = TList.o TArray.o CompareResults.o SCCResult.o
 testObjects = wg.o rg.o s.o p.o c.o
 
 # Adding the build directory
@@ -107,14 +107,14 @@ Build/SCCResult.o : Source/DataStructures/SCCResult.c
 Build/ListGraph.o : Source/DataStructures/ListGraph.c
 	$(CC) $(CFLAGS) Source/DataStructures/ListGraph.c -o Build/ListGraph.o
 
-Build/writeGraph.o : Source/Parallel/writeGraph.c    
-	$(CC) $(CFLAGS) Source/Parallel/writeGraph.c -o Build/writeGraph.o
+Build/WriteGraph.o : Source/Parallel/WriteGraph.c    
+	$(CC) $(CFLAGS) Source/Parallel/WriteGraph.c -o Build/WriteGraph.o
 
-Build/readGraph.o : Source/Parallel/readGraph.c
-	$(CC) $(CFLAGS) Source/Parallel/readGraph.c -o Build/readGraph.o
+Build/ReadGraph.o : Source/Parallel/ReadGraph.c
+	$(CC) $(CFLAGS) Source/Parallel/ReadGraph.c -o Build/ReadGraph.o
 
-Build/parallel.o : Source/Parallel/parallel.c
-	$(CC) $(CFLAGS) Source/Parallel/parallel.c -o Build/parallel.o
+Build/Parallel.o : Source/Parallel/Parallel.c
+	$(CC) $(CFLAGS) Source/Parallel/Parallel.c -o Build/Parallel.o
 
 Build/Communication.o : Source/Communication/Communication.c
 	$(CC) $(CFLAGS) Source/Communication/Communication.c -o Build/Communication.o
@@ -125,8 +125,8 @@ Build/Merge.o : Source/Communication/Merge.c
 Build/Tarjan.o : Source/Tarjan/Tarjan.c
 	$(CC) $(CFLAGS) Source/Tarjan/Tarjan.c -o Build/Tarjan.o
 
-Build/Serial.o : Source/Serial/serial.c 
-	$(CC) $(CFLAGS) Source/Serial/serial.c  -o Build/Serial.o
+Build/Serial.o : Source/Serial/Serial.c 
+	$(CC) $(CFLAGS) Source/Serial/Serial.c  -o Build/Serial.o
 
-Build/compareResults.o : Source/compareResults.c
-	$(CC) $(CFLAGS) Source/compareResults.c -o Build/compareResults.o
+Build/CompareResults.o : Source/CompareResults.c
+	$(CC) $(CFLAGS) Source/CompareResults.c -o Build/CompareResults.o

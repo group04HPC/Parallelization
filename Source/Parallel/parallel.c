@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         FILE *f = fopen("Data/result.txt", "a+");
         if (f == NULL)
         {
-            printf("Error opening file in parallel.c\n");
+            printf("Error opening file in Parallel.c\n");
             return 1;
         }
         fprintf(f, "\n%d\n", result->nMacroNodes);
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
         FILE *f2 = fopen("Data/time.txt", "a+");
         if (f2 == NULL)
         {
-            printf("Error opening file in parallel.c\n");
+            printf("Error opening file in Parallel.c\n");
             return 1;
         }
         fprintf(f2, "parallel\tsize: %d\n", size);

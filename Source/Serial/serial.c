@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     FILE *fp = fopen("Data/matrix.txt", "r");
     if (fp == NULL)
     {
-        printf("Error opening file in serial.c\n");
+        printf("Error opening file in Serial.c\n");
         return 1;
     }
     fscanf(fp, "%d", &size);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     FILE *fp2 = fopen("Data/result.txt", "w+");
     if (fp2 == NULL)
     {
-        printf("Error opening file in serial.c\n");
+        printf("Error opening file in Serial.c\n");
         return 1;
     }
     fprintf(fp2, "%d\n", result->nMacroNodes);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     FILE *fp3 = fopen("Data/time.txt", "a+");
     if (fp3 == NULL)
     {
-        printf("Error opening file in serial.c\n");
+        printf("Error opening file in Serial.c\n");
         return 1;
     }
     fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
