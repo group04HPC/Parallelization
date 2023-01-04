@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
             printf("Error opening file in parallel.c\n");
             return 1;
         }
-        fprintf(f2, "parallel\n");
+        fprintf(f2, "parallel\tsize: %d\n", size);
         fprintf(f2, "read graph: %f\n", read_time_spent);
         fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
         fprintf(f2, "write result: %f\n", write_time_spent);
