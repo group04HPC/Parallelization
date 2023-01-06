@@ -48,13 +48,13 @@ fi
 
 # Run various tests
 if [ "$1" = "-t" ]; then
-	echo "Running a test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 4 processes"
 	./test.sh 4
 
-	echo "Running first test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 8 processes"
 	./test.sh 4
 
-	echo "Running first test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 16 processes"
 	./test.sh 4
 	exit 0
 fi

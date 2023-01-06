@@ -61,7 +61,7 @@ How to run
             ./run.sh -t     -to execute a series of tests
     "
 4. To further customize the program's execution you have to modify the file `Headers/Constants.h` with your
-    desired values
+    desired values and rebuild the whole project using `make -B`
 5. You can customize compilation options and more by using specific make parameters. Try using `make help`
     to get a list of all the available options. The output of the command will be the following:
 
