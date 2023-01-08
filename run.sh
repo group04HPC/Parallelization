@@ -60,7 +60,7 @@ if [ "$1" = "-t" ]; then
 fi
 # Check if the number of arguments is correct
 if [ $# -le 0 ]; then
-	echo "You have to specify the number of processes!\n Try using using \"$0 -h\" for more info"
+	echo -e "You have to specify the number of processes!\n Try using using \"$0 -h\" for more info"
 	exit 1
 fi
 
