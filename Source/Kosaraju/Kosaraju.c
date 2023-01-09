@@ -1,9 +1,64 @@
+/*
+ * Course: High Performance Computing 2022/2023
+ *
+ * Lecturer: Francesco Moscato    fmoscato@unisa.it
+ *
+ * Group:
+ * Ferrara Grazia   0622701901  g.ferrara75@studenti.unisa.it
+ * Franco Paolo     0622701993  p.franco9@studenti.unisa.it
+ *
+ * Copyright (C) 2023 - All Rights Reserved
+ *
+ * This file is part of Project Assignment 2022/2023.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Project Assignment 2022/2023.  If not, see http://www.gnu.org/licenses/.
+ *
+ * Requirements of the assignment:
+ * Provide a parallell version of the Tarjan's algorithm to find Strongly Connected Components in a Graph.
+ * The implementation MUST use a message passing paradigm, and has to be implemented by using MPI.
+ * Students MUST store and load the input graph FROM FILES. The whole graph MUST be distributed on files
+ * on each node (i.e.: the whole graph cannot be stored on a single (even replicated) file). Good Graph
+ * dimensions are greater than 4GB of data. Students have to choose the proper data structure to
+ * represent the graph in memory.
+ *
+ * Purpose of the file:
+ * This file contains the implementation of the functions required to execute Kosaraju's algorithm.
+ * The provided functions are:
+ *      void fillOrder(ListGraph* g, int v, bool* visited, TArray* stack);
+ *      void DFSUtil(ListGraph* g, int v, bool* visited, SCCResult* result, int key);
+ *      SCCResult* SCC_K(ListGraph** graph);
+ *      ListGraph* getTranspose(ListGraph* g);
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "../../Headers/Kosaraju.h"
+#include "../../Headers/Tarjan.h"
 
-// A recursive function to print DFS starting from v
+/**
+ * Function: DFSUtil
+ * -----------------
+ * This function is a recursive function that uses the DFS starting from v.
+ * 
+ * Parameters:
+ * g: the graph
+ * v: the starting vertex
+ * visited: the array of visited vertices
+ * result: the result of the algorithm
+ * key: the key of the SCC
+*/
 void DFSUtil(ListGraph* g, int v, bool* visited, SCCResult* result, int key)
 {
     // Mark the current node as visited and print it
@@ -20,7 +75,15 @@ void DFSUtil(ListGraph* g, int v, bool* visited, SCCResult* result, int key)
         values = values->link;
     }
 }
- 
+
+/**
+ * Function: getTranspose
+ * ----------------------
+ * This function trnsposes the graph g.
+ * 
+ * Parameters:
+ * g: the graph
+*/
 ListGraph* getTranspose(ListGraph* g)
 {
     ListGraph* gT = ListGraphCreate(g->nE, g->nE, g->offset);
@@ -38,11 +101,20 @@ ListGraph* getTranspose(ListGraph* g)
     
     }
 
-    destroyListGraph(g);
-
     return gT;
 }
  
+/**
+ * Function: fillOrder
+ * -------------------
+ * This function fills the stack with the vertices in the order of their finishing times.
+ * 
+ * Parameters:
+ * g: the graph
+ * v: the starting vertex
+ * visited: the array of visited vertices
+ * stack: the stack
+*/
 void fillOrder(ListGraph* g, int v, bool* visited, TArray* stack)
 {
     // Mark the current node as visited and print it
@@ -62,10 +134,23 @@ void fillOrder(ListGraph* g, int v, bool* visited, TArray* stack)
     stackPush(stack, v);
 }
  
-// The main function that finds and prints all strongly connected components
-SCCResult* SCC(ListGraph* g)
+/**
+ * Function: SCC_K
+ * ---------------
+ * This function finds and inserts in a SCCResult all strongly connected components in the graph.
+ * 
+ * Parameters:
+ * graph: the graph
+ * 
+ * Returns:
+ * the result of the algorithm
+*/
+
+SCCResult* SCC_K(ListGraph** graph)
 {
+    ListGraph* g = *graph;
     SCCResult* result = SCCResultCreate(g->nV);
+    result->offset = g->offset;
 
     TArray* stack = stackCreate(g->nV);
  
@@ -101,176 +186,10 @@ SCCResult* SCC(ListGraph* g)
         i++;
     }
 
+    stackDestroy(stack);
+    result = SCCResultRescale(result);
+    *graph = rescaleGraph(&g, result);
+
     return result;
 
-}
- 
-// Driver program to test above functions
-int main()
-{
-    double conversion_time = 0.0;
-    // Test for the parallel version
-
-    /* Simulating tarjan with two processes */
-    // SubGraph* g6 = createSubGraph(10, 10, 0);
-    // addEdge(g6, 0, 1);
-    // addEdge(g6, 0, 3);
-    // addEdge(g6, 1, 2);
-    // addEdge(g6, 1, 4);
-    // addEdge(g6, 2, 0);
-    // addEdge(g6, 2, 6);
-    // addEdge(g6, 3, 2);
-    // addEdge(g6, 4, 5);
-    // addEdge(g6, 4, 6);
-    // addEdge(g6, 5, 6);
-    // addEdge(g6, 5, 7);
-    // addEdge(g6, 5, 8);
-    // addEdge(g6, 5, 9);
-    // addEdge(g6, 6, 4);
-    // addEdge(g6, 7, 9);
-    // addEdge(g6, 8, 9);
-    // addEdge(g6, 9, 8);
-    // printf("\nOriginal Graph:\n");
-    // printSubGraph(g6);
-    // ListGraph* list6 = createListGraphFromMatrix(g6);
-    // printf("\nSCC:\n");
-    // SCCResult* result6 = SCCResultRescale(SCC(list6));
-    // SCCResultPrint(result6);
-    // destroySubGraph(g6);
-    // SCCResultDestroy(result6);
-    // destroyListGraph(list6);
-
-    /* 1. Simulating the subgraph created by rank 0 */
-    SubGraph* g7 = createSubGraph(5, 10, 0);
-    addEdge(g7, 0, 1);
-    addEdge(g7, 0, 3);
-    addEdge(g7, 1, 2);
-    addEdge(g7, 1, 4);
-    addEdge(g7, 2, 0);
-    addEdge(g7, 2, 6);
-    addEdge(g7, 3, 2);
-    addEdge(g7, 4, 5);
-    addEdge(g7, 4, 6);
-    ListGraph* list7 = createListGraphFromMatrix(g7);
-    printf("\nSCC:\n");
-    SCCResult* result7 = SCCResultRescale(SCC(list7));
-    SCCResultPrint(result7);
-    // destroySubGraph(g7);
-    // SCCResultDestroy(result7);
-    // destroyListGraph(list7);
-
-    /* 2. Simulating the subgraph created by rank 1 */
-    SubGraph* g8 = createSubGraph(5, 10, 1);
-    addEdge(g8, 0, 6);
-    addEdge(g8, 0, 7);
-    addEdge(g8, 0, 8);
-    addEdge(g8, 0, 9);
-    addEdge(g8, 1, 4);
-    addEdge(g8, 2, 9);
-    addEdge(g8, 3, 9);
-    addEdge(g8, 4, 8);
-    ListGraph* list8 = createListGraphFromMatrix(g8);
-    printf("\nSCC:\n");
-    SCCResult* result8 = SCCResultRescale(SCC(list8));
-    SCCResultPrint(result8);
-    // destroySubGraph(g8);
-    // SCCResultDestroy(result8);
-    // destroyListGraph(list8);
-
-    // /* Simulating Tarjan with three processes */
-    SubGraph* g9 = createSubGraph(15, 15, 0);
-    addEdge(g9, 0, 1);
-    addEdge(g9, 0, 3);
-    addEdge(g9, 1, 2);
-    addEdge(g9, 1, 4);
-    addEdge(g9, 2, 0);
-    addEdge(g9, 2, 6);
-    addEdge(g9, 3, 2);
-    addEdge(g9, 4, 5);
-    addEdge(g9, 4, 6);
-    addEdge(g9, 5, 6);
-    addEdge(g9, 5, 7);
-    addEdge(g9, 5, 8);
-    addEdge(g9, 5, 9);
-    addEdge(g9, 6, 4);
-    addEdge(g9, 7, 9);
-    addEdge(g9, 8, 9);
-    addEdge(g9, 9, 8);
-    addEdge(g9, 10, 11);
-    addEdge(g9, 10, 13);
-    addEdge(g9, 11, 12);
-    addEdge(g9, 11, 14);
-    addEdge(g9, 12, 10);
-    addEdge(g9, 12, 16);
-    addEdge(g9, 13, 12);
-    addEdge(g9, 14, 15);
-    addEdge(g9, 14, 16);
-    ListGraph* list9 = createListGraphFromMatrix(g9);
-    printf("\nSCC:\n");
-    SCCResult* result9 = SCCResultRescale(SCC(list9));
-    SCCResultPrint(result9);
-    destroySubGraph(g9);
-    SCCResultDestroy(result9);
-    // destroyListGraph(list9);
-
-    // /* 1. Simulating the subgraph created by rank 0 */
-    SubGraph* g10 = createSubGraph(5, 15, 0);
-    addEdge(g10, 0, 1);
-    addEdge(g10, 0, 3);
-    addEdge(g10, 1, 2);
-    addEdge(g10, 1, 4);
-    addEdge(g10, 2, 0);
-    addEdge(g10, 2, 6);
-    addEdge(g10, 3, 2);
-    addEdge(g10, 4, 5);
-    addEdge(g10, 4, 6);
-    ListGraph* list10 = createListGraphFromMatrix(g10);
-    printf("\nSCC:\n");
-    SCCResult* result10 = SCCResultRescale(SCC(list10));
-    SCCResultPrint(result10);
-    // destroySubGraph(g10);
-    // SCCResultDestroy(result10);
-    // destroyListGraph(list10);
-
-    // /* 2. Simulating the subgraph created by rank 1 */
-    SubGraph* g11 = createSubGraph(5, 15, 1);
-    addEdge(g11, 0, 6);
-    addEdge(g11, 0, 7);
-    addEdge(g11, 0, 8);
-    addEdge(g11, 0, 9);
-    addEdge(g11, 1, 4);
-    addEdge(g11, 2, 9);
-    addEdge(g11, 3, 9);
-    addEdge(g11, 4, 8);
-    ListGraph* list11 = createListGraphFromMatrix(g11);
-    printf("\nSCC:\n");
-    SCCResult* result11 = SCCResultRescale(SCC(list11));
-    SCCResultPrint(result11);
-    // printf("\nRescaled Graph:\n");
-    // printListGraph(list11);
-    // destroySubGraph(g11);
-    // SCCResultDestroy(result11);
-    // destroyListGraph(list11);
-
-    // /* 3. Simulating the subgraph created by rank 2 */
-    SubGraph* g12 = createSubGraph(5, 15, 2);
-    addEdge(g12, 0, 11);
-    addEdge(g12, 0, 13);
-    addEdge(g12, 1, 12);
-    addEdge(g12, 1, 14);
-    addEdge(g12, 2, 10);
-    addEdge(g12, 2, 16);
-    addEdge(g12, 3, 12);
-    addEdge(g12, 4, 15);
-    addEdge(g12, 4, 16);
-    ListGraph* list12 = createListGraphFromMatrix(g12);
-    printf("\nSCC:\n");
-    SCCResult* result12 = SCCResultRescale(SCC(list12));
-    SCCResultPrint(result12);
-    // printf("\nRescaled Graph:\n");
-    // printListGraph(list12);
-    // destroySubGraph(g12);
-    // destroyListGraph(list12);
-
-    return 0;
 }
