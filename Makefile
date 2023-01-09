@@ -34,9 +34,13 @@
 # Purpose of the file:
 # This file is the Makefile for the program, capable of compiling, when necessary, all the source files to make the executuion coherent
 
+.SILENT:
+
 IDRIR = Headers
 CC = mpicc 
-CFLAGS = -Wall -c #-pedantic
+CFLAGS= -Wall -c
+commonFlags = -Wall  #-pedantic
+dependendecyFlags = -c
 
 buildDir = Build/
 
@@ -57,13 +61,36 @@ parallelObjects := $(foreach object,$(parallelObjects),$(buildDir)$(object))
 compareObjects := $(foreach object,$(compareObjects),$(buildDir)$(object))
 testObjects := $(foreach object,$(testObjects),$(buildDir)$(object))
 
-.PHONY: test all clean cleanBin cleanObj cleanTxt
+.PHONY: help test all clean cleanBin cleanObj cleanTxt optimize1 optimize2 optimize3 optimize4 optimize5 optimize6
 
 all:  $(allObjects) 
 
 test: $(testObjects) runTest cleanBin cleanTxt
 
 clean: cleanObj cleanBin cleanTxt
+
+optimize1: updateO1 all
+
+optimize2: updateO2 all
+
+optimize3: updateO3 all
+
+optimize4: updateO4 all
+
+optimize5: updateO5 all
+
+optimize6: updateO6 all
+
+help: 
+	echo "Builds all the binaries required to test the program"
+	echo "Usage:\t make all\t-the default way to execute make, builds all the required files"
+	echo "\t make test\t-runs various tests of the program"
+	echo "\t make clean\t-cleans the working directory, deleting object files and eventual output files"
+	echo "\t make cleanObj\t-cleans the working directory, deleting the object files"
+	echo "\t make cleanBin\t-cleans the working directory, deleting the binary output files"
+	echo "\t make cleanTxt\t-cleans the working directory, deleting the textual output files"
+	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-6]"
+	echo "\t make help\t-prints this output"
 
 cleanObj:
 	-rm Build/*.o
@@ -77,20 +104,39 @@ cleanTxt:
 runTest:
 	./test.sh -t
 
+updateO1:
+	$(eval CC = $(CC) -O1)
+
+updateO2:
+	$(eval CC = $(CC) -O2)
+	#$(info "$(CC)")
+
+updateO3:
+	$(eval CC = $(CC) -O3)
+
+updateO4:
+	$(eval CC = $(CC) -O4)
+
+updateO5:
+	$(eval CC = $(CC) -O5)
+
+updateO6:
+	$(eval CC = $(CC) -O6)
+
 Build/wg.o :	$(writeGraphObjects)
-	$(CC) -Wall $(writeGraphObjects) -o Build/wg.o
+	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o
 
 Build/rg.o :	$(readGraphObjects)
-	$(CC) -Wall $(readGraphObjects) -o Build/rg.o
+	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
 Build/s.o : 	$(serialObjects)
-	$(CC) -Wall $(serialObjects) -o Build/s.o 
+	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
     
 Build/p.o : 	$(parallelObjects)
-	$(CC) -Wall $(parallelObjects) -o Build/p.o
+	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
 
 Build/c.o : 	$(compareObjects)
-	$(CC) -Wall $(compareObjects) -o Build/c.o
+	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
 	$(CC) $(CFLAGS) Source/DataStructures/SubGraph.c -o Build/SubGraph.o

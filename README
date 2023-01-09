@@ -52,10 +52,27 @@ How to run
     all the options to execute the program. The output of the command will be the following:
     
     "
-    Executes the program on a given number of processes. If the [run serial] parameter is not inserted it will execute it as default
+    Executes the program on a given number of processes. If the [run serial] parameter is not inserted 
+    it will execute it as default
 
     Usage:  ./run.sh [num of processes]
-        ./run.sh [num of processes] [run serial (0/1)]
-        ./run.sh -h     -to print this help output
-        ./run.sh -t     -to execute a series of tests
+            ./run.sh [num of processes] [run serial (0/1)]
+            ./run.sh -h     -to print this help output
+            ./run.sh -t     -to execute a series of tests
+    "
+4. To further customize the program's execution you have to modify the file `Headers/Constants.h` with your
+    desired values and rebuild the whole project using `make -B`
+5. You can customize compilation options and more by using specific make parameters. Try using `make help`
+    to get a list of all the available options. The output of the command will be the following:
+
+    "
+    Builds all the binaries required to test the program
+    Usage:  make all       -the default way to execute make, builds all the required files
+            make test      -runs various tests of the program
+            make clean     -cleans the working directory, deleting object files and eventual output files
+            make cleanObj  -cleans the working directory, deleting the object files
+            make cleanBin  -cleans the working directory, deleting the binary output files
+            make cleanTxt  -cleans the working directory, deleting the textual output files
+            make optimizeX -builds all the required files allpying the specified level of optimization X=[1-6]
+            make help      -prints this output
     "

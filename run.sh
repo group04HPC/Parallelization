@@ -48,19 +48,19 @@ fi
 
 # Run various tests
 if [ "$1" = "-t" ]; then
-	echo "Running a test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 4 processes"
 	./test.sh 4
 
-	echo "Running first test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 8 processes"
 	./test.sh 4
 
-	echo "Running first test with a 1000x1000 matrix on 4 processes"
+	echo "Running a test on 16 processes"
 	./test.sh 4
 	exit 0
 fi
 # Check if the number of arguments is correct
 if [ $# -le 0 ]; then
-	echo "You have to specify the number of processes!\n Try using using \"$0 -h\" for more info"
+	echo -e "You have to specify the number of processes!\n Try using using \"$0 -h\" for more info"
 	exit 1
 fi
 
