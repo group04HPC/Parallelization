@@ -44,6 +44,7 @@
 #include "../../Headers/SubGraph.h"
 #include "../../Headers/SCCResult.h"
 #include "../../Headers/Tarjan.h"
+#include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 
 /*
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 {
 
     int size;
+    int k = 1; // k=0 -> Tarjan, k=1 -> Kosaraju
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
@@ -79,7 +81,6 @@ int main(int argc, char *argv[])
             fscanf(fp, "%d", &matrix[i * size + j]);
     fclose(fp);
 
-
     SubGraph *sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
     ListGraph *list = createListGraphFromMatrix(sub);
@@ -88,7 +89,8 @@ int main(int argc, char *argv[])
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    SCCResult *result = SCC(&list);
+    SCCResult *result = NULL;
+    result = (k==0) ? SCC(&list) : SCC_K(&list);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 

@@ -53,6 +53,7 @@
 #include "../../Headers/SubGraph.h"
 #include "../../Headers/SCCResult.h"
 #include "../../Headers/Tarjan.h"
+#include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 #include "../../Headers/Merge.h"
 #include "../../Headers/Communication.h"
@@ -74,7 +75,8 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;;
+    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
+    int k = 1; // k=0 -> Tarjan, k=1 -> Kosaraju
 
     /* subgraph creation */
     SubGraph *sub = createSubGraph(WORK_LOAD, WORK_LOAD * size, rank);
@@ -103,7 +105,8 @@ int main(int argc, char *argv[])
     read_time_spent += end - start;
 
     start = MPI_Wtime();
-    SCCResult *result = SCC(&list);
+    SCCResult *result; 
+    result = (k==0) ? SCC(&list) : SCC_K(&list);
     destroySubGraph(sub);
 
     /*
@@ -163,7 +166,7 @@ int main(int argc, char *argv[])
                  * applies Tarjan's algorithm on the merged graph and rescales both the result
                  * and the graph 
                  */
-                result = SCC(&mergedList);
+                result = (k==0) ? SCC(&mergedList) : SCC_K(&mergedList);
 
                 /* combined the result of tarjan with the merged result */
                 result = SCCResultCombine(result, mergedResult);
