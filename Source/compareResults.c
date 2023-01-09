@@ -56,7 +56,7 @@
 int main(int argc, char *argv[])
 {
 
-    FILE *fp = fopen("Data/result.txt", "r");
+    FILE *fp = fopen("Data/resultTarjan.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file in compareResults.c\n");
@@ -113,7 +113,65 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("Completed Successfully!\n");
+    printf("Tarjan completed Successfully!\n");
+
+    fp = fopen("Data/resultKosaraju.txt", "r");
+    if (fp == NULL)
+    {
+        printf("Error opening file in compareResults.c\n");
+        return 1;
+    }
+
+    fscanf(fp, "%d", &nMacroNodes);
+    result = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
+        fscanf(fp, "%d", &len);
+        for (int j = 0; j < len; j++)
+        {
+            fscanf(fp, "%d", &value);
+            SCCResultInsert(result, i, value);
+        }
+    }
+
+    fscanf(fp, "%d", &nMacroNodes);
+
+    result2 = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
+        fscanf(fp, "%d", &len);
+        for (int j = 0; j < len; j++)
+        {
+            fscanf(fp, "%d", &value);
+            SCCResultInsert(result2, i, value);
+        }
+    }
+
+    fclose(fp);
+
+    if (result->nMacroNodes != result2->nMacroNodes)
+    {
+        printf("Bad result, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        return 1;
+    }
+
+    for (int i = 0; i < result->nMacroNodes; i++)
+    {
+        TList list = *result->vertices[i];
+        TList list2 = *result2->vertices[i];
+        while (list != NULL)
+        {
+            if (list->value != list2->value)
+            {
+                printf("Bad result, %d, %d\n", list->value, list2->value);
+                return 1;
+            }
+            list = list->link;
+            list2 = list2->link;
+        }
+    }
+
+    printf("Kosaraju completed Successfully!\n");
 
     return 0;
 }

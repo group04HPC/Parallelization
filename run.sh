@@ -86,10 +86,12 @@ if [ "$serial" -ne 0 ]; then
 
 	# The serial program executes and writes its result on a file
 	./Build/s.o
+	./Build/s_k.o
 fi
 
 # The parallel program executes and writes its result on a file
 mpirun -np $1 ./Build/p.o
+mpirun -np $1 ./Build/p_k.o
 
 if [ "$serial" -ne 0 ]; then
 	# The results of both the serial and the parallel version are compared  

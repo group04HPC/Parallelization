@@ -129,14 +129,14 @@ Build/wg.o :	$(writeGraphObjects)
 Build/rg.o :	$(readGraphObjects)
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
+Build/c.o : 	$(compareObjects)
+	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
+
 Build/s.o : 	$(serialObjects)
 	$(CC) -DTARJAN_ALGO $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s.o 
     
 Build/p.o : 	$(parallelObjects)
 	$(CC) -DTARJAN_ALGO $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p.o
-
-Build/c.o : 	$(compareObjects)
-	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
 Build/p_k.o :	$(parallelObjects)
 	$(CC) $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p_k.o

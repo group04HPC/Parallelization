@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 
     start = MPI_Wtime();
     SCCResult *result; 
-    result = (k==0) ? SCC(&list) : SCC_K(&list);
+    result = (k) ? SCC(&list) : SCC_K(&list);
     destroySubGraph(sub);
 
     /*
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
                  * applies Tarjan's algorithm on the merged graph and rescales both the result
                  * and the graph 
                  */
-                result = (k==0) ? SCC(&mergedList) : SCC_K(&mergedList);
+                result = (k) ? SCC(&mergedList) : SCC_K(&mergedList);
 
                 /* combined the result of tarjan with the merged result */
                 result = SCCResultCombine(result, mergedResult);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
     {
         start = MPI_Wtime();
         /* saves the result on a file */
-        FILE *f = fopen("Data/result.txt", "a+");
+        FILE *f = fopen(k?"Data/resultKosaraju.txt":"Data/resultTarjan.txt", "a+");
         if (f == NULL)
         {
             printf("Error opening file in Parallel.c\n");
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
         end = MPI_Wtime();
         write_time_spent += end - start;
         total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
-        FILE *f2 = fopen("Data/time.txt", "a+");
+        FILE *f2 = fopen(k ? "Data/timeKosaraju.txt" : "Data/timeTarjan.txt", "a+");
         if (f2 == NULL)
         {
             printf("Error opening file in Parallel.c\n");
@@ -222,12 +222,12 @@ int main(int argc, char *argv[])
         }
         fprintf(f2, "parallel\tsize: %d\n", size);
         fprintf(f2, "read graph: %f\n", read_time_spent);
-        fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
+        fprintf(f2, "%s result: %f\n", k ? "Kosaraju" : "Tarjan", tarjan_time_spent);
         fprintf(f2, "write result: %f\n", write_time_spent);
         fprintf(f2, "total time: %f\n", total_time_spent);
         fprintf(f2, "\n");
         fclose(f2);
-        printf("Total excution time parallel: %f\n", total_time_spent);
+        printf("Total excution time for %s parallel: %f\n", k ? "Kosaraju" : "Tarjan", total_time_spent);
     }
 
     MPI_Finalize();

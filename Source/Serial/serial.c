@@ -95,12 +95,12 @@ int main(int argc, char *argv[])
 
     begin = clock();
     SCCResult *result = NULL;
-    result = (k==0) ? SCC(&list) : SCC_K(&list);
+    result = (k) ? SCC(&list) : SCC_K(&list);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    FILE *fp2 = fopen("Data/result.txt", "w+");
+    FILE *fp2 = fopen(k ? "Data/resultKosaraju.txt" : "Data/resultTarjan.txt", "w+");
     if (fp2 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
-    FILE *fp3 = fopen("Data/time.txt", "a+");
+    FILE *fp3 = fopen(k ? "Data/timeKosaraju.txt" : "Data/timeTarjan.txt", "a+");
     if (fp3 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -132,12 +132,12 @@ int main(int argc, char *argv[])
     fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
     fprintf(fp3, "serial\n");
     fprintf(fp3, "read graph: %f\n", read_time_spent);
-    fprintf(fp3, "tarjan result: %f\n", tarjan_time_spent);
+    fprintf(fp3, "%s result: %f\n", k ? "Kosaraju" : "Tarjan", tarjan_time_spent);
     fprintf(fp3, "write result: %f\n", write_time_spent);
     fprintf(fp3, "total time: %f\n", total_time_spent);
     fclose(fp3);
 
-    printf("Total excution time serial: %f\n", total_time_spent);
+    printf("Total excution time for %s serial: %f\n", k?"Kosaraju":"Tarjan",total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);
