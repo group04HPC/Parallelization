@@ -44,11 +44,11 @@ dependendecyFlags = -c
 
 buildDir = Build/
 
-allObjects = wg.o rg.o s.o p.o c.o
+allObjects = wg.o rg.o s.o p.o c.o p_k.o s_k.o
 writeGraphObjects = SubGraph.o WriteGraph.o
 readGraphObjects = SubGraph.o ReadGraph.o
-serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Serial.o
-parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Communication.o Merge.o Parallel.o
+serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o 
+parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Communication.o Merge.o 
 compareObjects = TList.o TArray.o CompareResults.o SCCResult.o
 testObjects = wg.o rg.o s.o p.o c.o
 
@@ -130,13 +130,19 @@ Build/rg.o :	$(readGraphObjects)
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
 Build/s.o : 	$(serialObjects)
-	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
+	$(CC) -DTARJAN_ALGO $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s.o 
     
 Build/p.o : 	$(parallelObjects)
-	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
+	$(CC) -DTARJAN_ALGO $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p.o
 
 Build/c.o : 	$(compareObjects)
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
+
+Build/p_k.o :	$(parallelObjects)
+	$(CC) $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p_k.o
+
+Build/s_k.o :	$(serialObjects)
+	$(CC) $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s_k.o 
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
 	$(CC) $(CFLAGS) Source/DataStructures/SubGraph.c -o Build/SubGraph.o
@@ -159,9 +165,6 @@ Build/WriteGraph.o : Source/Parallel/WriteGraph.c
 Build/ReadGraph.o : Source/Parallel/ReadGraph.c
 	$(CC) $(CFLAGS) Source/Parallel/ReadGraph.c -o Build/ReadGraph.o
 
-Build/Parallel.o : Source/Parallel/Parallel.c
-	$(CC) $(CFLAGS) Source/Parallel/Parallel.c -o Build/Parallel.o
-
 Build/Communication.o : Source/Communication/Communication.c
 	$(CC) $(CFLAGS) Source/Communication/Communication.c -o Build/Communication.o
 
@@ -173,9 +176,6 @@ Build/Tarjan.o : Source/Tarjan/Tarjan.c
 
 Build/Kosaraju.o : Source/Kosaraju/Kosaraju.c
 	$(CC) $(CFLAGS) Source/Kosaraju/Kosaraju.c -o Build/Kosaraju.o
-
-Build/Serial.o : Source/Serial/Serial.c 
-	$(CC) $(CFLAGS) Source/Serial/Serial.c  -o Build/Serial.o
 
 Build/CompareResults.o : Source/CompareResults.c
 	$(CC) $(CFLAGS) Source/CompareResults.c -o Build/CompareResults.o

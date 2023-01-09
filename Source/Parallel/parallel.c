@@ -58,6 +58,12 @@
 #include "../../Headers/Merge.h"
 #include "../../Headers/Communication.h"
 
+#ifdef TARJAN_ALGO
+int k = 0; // Will be executed Tarjan's algorithm
+#else
+int k = 1; // Willbe executed Kosaraju's algorithm
+#endif
+
 int nextAvailableRank(bool *values, int size, int rank); // returns the next available rank
 int prevAvailableRank(bool *values, int size, int rank); // returns the previous available rank
 void updateAvailableRanks(bool *values, int size);       // updates the array of available ranks
@@ -76,7 +82,6 @@ int main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
-    int k = 1; // k=0 -> Tarjan, k=1 -> Kosaraju
 
     /* subgraph creation */
     SubGraph *sub = createSubGraph(WORK_LOAD, WORK_LOAD * size, rank);

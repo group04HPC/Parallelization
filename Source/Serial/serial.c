@@ -47,6 +47,12 @@
 #include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 
+#ifdef TARJAN_ALGO
+int k = 0; // Will be executed Tarjan's algorithm
+#else
+int k = 1; // Willbe executed Kosaraju's algorithm
+#endif
+
 /*
  * Function:  main
  * --------------------
@@ -62,7 +68,6 @@ int main(int argc, char *argv[])
 {
 
     int size;
-    int k = 1; // k=0 -> Tarjan, k=1 -> Kosaraju
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
