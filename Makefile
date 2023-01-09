@@ -47,8 +47,8 @@ buildDir = Build/
 allObjects = wg.o rg.o s.o p.o c.o
 writeGraphObjects = SubGraph.o WriteGraph.o
 readGraphObjects = SubGraph.o ReadGraph.o
-serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Serial.o
-parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o Parallel.o
+serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Serial.o
+parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Communication.o Merge.o Parallel.o
 compareObjects = TList.o TArray.o CompareResults.o SCCResult.o
 testObjects = wg.o rg.o s.o p.o c.o
 
@@ -170,6 +170,9 @@ Build/Merge.o : Source/Communication/Merge.c
 
 Build/Tarjan.o : Source/Tarjan/Tarjan.c
 	$(CC) $(CFLAGS) Source/Tarjan/Tarjan.c -o Build/Tarjan.o
+
+Build/Kosaraju.o : Source/Kosaraju/Kosaraju.c
+	$(CC) $(CFLAGS) Source/Kosaraju/Kosaraju.c -o Build/Kosaraju.o
 
 Build/Serial.o : Source/Serial/Serial.c 
 	$(CC) $(CFLAGS) Source/Serial/Serial.c  -o Build/Serial.o

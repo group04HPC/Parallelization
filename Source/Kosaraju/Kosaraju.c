@@ -87,7 +87,6 @@ void DFSUtil(ListGraph* g, int v, bool* visited, SCCResult* result, int key)
 ListGraph* getTranspose(ListGraph* g)
 {
     ListGraph* gT = ListGraphCreate(g->nE, g->nE, g->offset);
-    TNode *prev = NULL, *succ = NULL; 
     for (int v = 0; v < g->nV; v++)
     {
         // Recur for all the vertices adjacent to this vertex
@@ -95,7 +94,6 @@ ListGraph* getTranspose(ListGraph* g)
         while (values != NULL)
         {
             *gT->adj[values->value] = listInsert(*gT->adj[values->value], v);
-            prev = values;
             values = values->link;
         }
     
