@@ -48,9 +48,9 @@
 #include "../../Headers/Constants.h"
 
 #ifdef TARJAN_ALGO
-int k = 0; // Will be executed Tarjan's algorithm
+int k = 1; // Will be executed Tarjan's algorithm
 #else
-int k = 1; // Willbe executed Kosaraju's algorithm
+int k = 0; // Willbe executed Kosaraju's algorithm
 #endif
 
 /*
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    FILE *fp2 = fopen(k ? "Data/resultKosaraju.txt" : "Data/resultTarjan.txt", "w+");
+    FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");
     if (fp2 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
-    FILE *fp3 = fopen(k ? "Data/timeKosaraju.txt" : "Data/timeTarjan.txt", "a+");
+    FILE *fp3 = fopen(k ? "Data/timeTarjan.txt" : "Data/timeKosaraju.txt", "a+");
     if (fp3 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -132,12 +132,12 @@ int main(int argc, char *argv[])
     fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
     fprintf(fp3, "serial\n");
     fprintf(fp3, "read graph: %f\n", read_time_spent);
-    fprintf(fp3, "%s result: %f\n", k ? "Kosaraju" : "Tarjan", tarjan_time_spent);
+    fprintf(fp3, "%s result: %f\n", k ? "Tarjan" : "Kosaraju", tarjan_time_spent);
     fprintf(fp3, "write result: %f\n", write_time_spent);
     fprintf(fp3, "total time: %f\n", total_time_spent);
     fclose(fp3);
 
-    printf("Total excution time for %s serial: %f\n", k?"Kosaraju":"Tarjan",total_time_spent);
+    printf("Total excution time for %s serial: %f\n", k?"Tarjan":"Cosaraju",total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);

@@ -85,10 +85,10 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
     /* Go through all vertices adjacent to this */
     TList values = *g->adj[u - g->offset];
 
-    for (int i = 0; i < listCount(values); ++i)
+    while(values!=NULL)
     {
 
-        int v = listGet(values, i); /* v is the current adjacent of 'u' */
+        int v = values->value; /* v is the current adjacent of 'u' */
 
         if (v >= g->offset && v < g->offset + g->nV)
         {
@@ -109,6 +109,7 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
             else if (stackMember[v] == TRUE)
                 low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
         }
+        values = values->link;
     }
 
     /* Head node found, pop the stack and print an SCC */
@@ -138,6 +139,7 @@ void SCCUtil(ListGraph *g, int u, int disc[], int low[], TArray *st, int stackMe
  *  Returns:
  *  resultt: the resulting SCCResult structure
  */
+
 SCCResult *SCC(ListGraph **graph)
 {
 

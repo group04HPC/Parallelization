@@ -132,16 +132,16 @@ Build/rg.o :	$(readGraphObjects)
 Build/c.o : 	$(compareObjects)
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
-Build/s.o : 	$(serialObjects)
+Build/s.o : 	$(serialObjects) Source/Serial/Serial.c
 	$(CC) -DTARJAN_ALGO $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s.o 
     
-Build/p.o : 	$(parallelObjects)
+Build/p.o : 	$(parallelObjects) Source/Parallel/Parallel.c
 	$(CC) -DTARJAN_ALGO $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p.o
 
-Build/p_k.o :	$(parallelObjects)
+Build/p_k.o :	$(parallelObjects) Source/Parallel/Parallel.c
 	$(CC) $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p_k.o
 
-Build/s_k.o :	$(serialObjects)
+Build/s_k.o :	$(serialObjects) Source/Serial/Serial.c
 	$(CC) $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s_k.o 
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
