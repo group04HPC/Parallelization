@@ -52,10 +52,10 @@ if [ "$1" = "-t" ]; then
 	./test.sh 4
 
 	echo "Running a test on 8 processes"
-	./test.sh 4
+	./test.sh 8
 
 	echo "Running a test on 16 processes"
-	./test.sh 4
+	./test.sh 16
 	exit 0
 fi
 # Check if the number of arguments is correct
@@ -75,7 +75,6 @@ if [ $# -ge 2 ]; then
 fi
 
 # Each process creates its own binary file with a part of the full graph
-
 mpirun -np $1 ./Build/wg.o
 
 if [ "$serial" -ne 0 ]; then
