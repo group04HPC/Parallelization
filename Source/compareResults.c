@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     }
 
     int nMacroNodes, value, len;
+    bool errors=false;
     fscanf(fp, "%d", &nMacroNodes);
     SCCResult *result = SCCResultCreate(nMacroNodes);
     for (int i = 0; i < nMacroNodes; i++)
@@ -93,27 +94,31 @@ int main(int argc, char *argv[])
 
     if (result->nMacroNodes != result2->nMacroNodes)
     {
-        printf("Bad result, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
-        return 1;
+        printf("Tarjan: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        errors = true;
     }
-
-    for (int i = 0; i < result->nMacroNodes; i++)
+    else
     {
-        TList list = *result->vertices[i];
-        TList list2 = *result2->vertices[i];
-        while (list != NULL)
+
+        for (int i = 0; i < result->nMacroNodes; i++)
         {
-            if (list->value != list2->value)
+            TList list = *result->vertices[i];
+            TList list2 = *result2->vertices[i];
+            while (list != NULL)
             {
-                printf("Bad result, %d, %d\n", list->value, list2->value);
-                return 1;
+                if (list->value != list2->value)
+                {
+                    printf("Tarjan: Bad result, %d, %d\n", list->value, list2->value);
+                    errors=true;
+                    break;
+                }
+                list = list->link;
+                list2 = list2->link;
             }
-            list = list->link;
-            list2 = list2->link;
         }
     }
-
-    printf("Tarjan completed Successfully!\n");
+    if (!errors)
+        printf("Tarjan completed Successfully!\n");
 
     fp = fopen("Data/resultKosaraju.txt", "r");
     if (fp == NULL)
@@ -151,7 +156,7 @@ int main(int argc, char *argv[])
 
     if (result->nMacroNodes != result2->nMacroNodes)
     {
-        printf("Bad result, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        printf("Kosaraju: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
         return 1;
     }
 
@@ -163,7 +168,7 @@ int main(int argc, char *argv[])
         {
             if (list->value != list2->value)
             {
-                printf("Bad result, %d, %d\n", list->value, list2->value);
+                printf("Kosaraju: Bad result, %d, %d\n", list->value, list2->value);
                 return 1;
             }
             list = list->link;

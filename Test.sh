@@ -36,6 +36,36 @@
 # Purpose of the file:
 # This file contains the script used to test the program on the lecturer's cluster
 
+echo Comparing performances when changing number of edges
+graphSize=12000
+echo -e "\t"Testing executed on a $graphSize vertices graph and 4 processes
+
+echo 0-2000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 0 2000
+./run.sh 4
+
+echo 2000-4000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 2000 4000
+./run.sh 4
+
+echo 4000-6000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 4000 6000
+./run.sh 4
+
+echo 6000-8000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 6000 8000
+./run.sh 4
+
+echo 8000-10000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 8000 10000
+./run.sh 4
+
+echo 10000-12000 edges
+./Source/updateConstants.sh $(($graphSize / 4)) 10000 12000
+./run.sh 4
+
+echo Comparing performances when changing graph size and number of processes
+
 echo Case 3 - 16 processes
 ./Source/updateConstants.sh 250 0 250
 ./run.sh 16
@@ -48,21 +78,24 @@ echo Case 3 - 4 processes
 ./Source/updateConstants.sh 1000 0 1000
 ./run.sh 4 0
 
-echo Case 2 - 16 processes
-./run.sh 16
-
 echo Case 3 - 2 processes
 ./Source/updateConstants.sh 2000 0 2000
 ./run.sh 2 0
-
-echo Case 2 - 8 processes
-./run.sh 8 0
 
 echo Case 3 - 1 process
 ./Source/updateConstants.sh 4000 0 4000
 ./run.sh 1 0
 
+echo Case 2 - 16 processes
+./Source/updateConstants.sh 1000 0 1000
+./run.sh 16
+
+echo Case 2 - 8 processes
+./Source/updateConstants.sh 2000 0 2000
+./run.sh 8 0
+
 echo Case 2 - 4 processes
+./Source/updateConstants.sh 4000 0 4000
 ./run.sh 4 0
 
 echo Case 2 - 2 processes
@@ -89,6 +122,47 @@ echo Case 1 - 2 processes
 ./Source/updateConstants.sh 10000 0 10000
 ./run.sh 2 0
 
-echo Case 2 - 1 process
+echo Case 1 - 1 process
 ./Source/updateConstants.sh 20000 0 20000
+./run.sh 1 0
+
+echo Case 0 - 16 processes
+./Source/updateConstants.sh 1500 0 1500
+./run.sh 16 
+
+echo Case 0 - 8 processes
+./Source/updateConstants.sh 3000 0 3000
+./run.sh 8 0
+
+echo Case 0 - 4 processes
+./Source/updateConstants.sh 6000 0 6000
+./run.sh 4 0
+
+echo Case 0 - 2 processes
+./Source/updateConstants.sh 12000 0 12000
+./run.sh 2 0
+
+echo Case 0 - 1 process
+./Source/updateConstants.sh 24000 0 24000
+./run.sh 1 0
+
+# Da completare
+echo Case -1 - 16 processes
+./Source/updateConstants.sh 1500 0 1500
+./run.sh 16 
+
+echo Case -1 - 8 processes
+./Source/updateConstants.sh 3000 0 3000
+./run.sh 8 0
+
+echo Case -1 - 4 processes
+./Source/updateConstants.sh 6000 0 6000
+./run.sh 4 0
+
+echo Case -1 - 2 processes
+./Source/updateConstants.sh 12000 0 12000
+./run.sh 2 0
+
+echo Case -1 - 1 process
+./Source/updateConstants.sh 24000 0 24000
 ./run.sh 1 0
