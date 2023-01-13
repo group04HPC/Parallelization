@@ -64,7 +64,6 @@ def _extract(path_to_folder,plot_columns):
 	#Remove not csv files
 	#"SIZE-[0-9]+-NTH-[0-9]{2}-O[0-9]-?[0-9]*"
 	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and re.match(config["filenameRegex"],f) ]
-	print(filenames)
 
 	filenames = sorted(filenames)
 	means = {}
@@ -101,10 +100,8 @@ def _extract(path_to_folder,plot_columns):
 	return means
 
 def _compute_speedup(t,tp,nt,psize):
-    print(t,tp,nt,psize)
     speedup = t/tp
     efficiency = t/(tp*nt)
-    print("speedup: " + str(speedup) + ", efficiency: " + str(efficiency) )
     return speedup,efficiency
 
 def _make_table(header,rows,print_table=False,save=True,name=""):
@@ -195,7 +192,6 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 				cell.append(means[filename_key][col])
 				if cols[col]['computeSpeedup']:
 					psize = splitted_filename[1]
-					print(means)
 					speedup,efficiency = _compute_speedup(seq,means[filename_key][col],nt,psize)
 					cell.append(speedup)
 					cell.append(efficiency)

@@ -3,8 +3,7 @@
 TIME_STAMP=$(date +%s)
 NMEASURES=1
 
-# ARRAY_RC=(400 800 1200 1600 2000 2400)
-ARRAY_RC=(8000)
+ARRAY_RC=(400 800 1200 1600 2000 2400)
 ARRAY_THS=(0 1 2 4 8)
 
 trap "exit" INT
@@ -14,8 +13,19 @@ SCRIPTPATH=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
 
 for size in "${ARRAY_RC[@]}"; do
 
+	read=$(($size/4))
+
+	./Source/updateConstants.sh $read 0 $size
+	make -B
+
+	# write graphs
+	mpirun -np 4 ./Build/wg.o
+	# read graphs and write on file th whole matrix
+	mpirun -np 4 ./Build/rg.o
+
 	# update constants
 	./Source/updateConstants.sh $size 0 $size
+	make -B
 
 	for ths in "${ARRAY_THS[@]}"; do
         ths_str=$(printf "%02d" $ths)
@@ -42,15 +52,9 @@ for size in "${ARRAY_RC[@]}"; do
 		echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE2
 
         for ((i = 0 ; i < $NMEASURES; i++)); do
-			# write graphs
-			mpirun -np $ths ./Build/wg.o
-			# read graphs and write on file th whole matrix
-			mpirun -np $ths ./Build/rg.o
 			
 			if [[ $ths -eq 0 ]]; then
 				# serial
-				./Source/updateConstants.sh $size 0 $size
-				make -B
 				echo $size,$ths,$(./Build/s.o) >> $OUT_FILE
 				echo $size,$ths,$(./Build/s_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
@@ -59,6 +63,8 @@ for size in "${ARRAY_RC[@]}"; do
 				new=$(($size/$ths))
 				./Source/updateConstants.sh $new 0 $size
 				make -B
+				# write graphs
+				mpirun -np $ths ./Build/wg.o
 				echo $size,$ths,$(mpirun -np $ths ./Build/p.o) >> $OUT_FILE
 				echo $size,$ths,$(mpirun -np $ths ./Build/p_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
