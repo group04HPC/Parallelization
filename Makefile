@@ -46,7 +46,7 @@ buildDir = Build/
 
 allObjects = wg.o rg.o s.o p.o c.o p_k.o s_k.o
 writeGraphObjects = SubGraph.o WriteGraph.o
-readGraphObjects = SubGraph.o ReadGraph.o
+readGraphObjects = SubGraph.o ReadGraph.o ListGraph.o TList.o TArray.o
 serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o 
 parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Communication.o Merge.o 
 compareObjects = TList.o TArray.o CompareResults.o SCCResult.o

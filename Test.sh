@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 # Course: High Performance Computing 2022/2023
 #

@@ -61,7 +61,7 @@
 #ifdef TARJAN_ALGO
 int k = 1; // Will be executed Tarjan's algorithm
 #else
-int k = 0; // Willbe executed Kosaraju's algorithm
+int k = 0; // Will be executed Kosaraju's algorithm
 #endif
 
 int nextAvailableRank(bool *values, int size, int rank); // returns the next available rank
@@ -106,13 +106,13 @@ int main(int argc, char *argv[])
 
     /* Tarjan algorithm on the subgraph converted in list */
     ListGraph *list = createListGraphFromMatrix(sub);
+    destroySubGraph(sub);
     end = MPI_Wtime();
     read_time_spent += end - start;
 
     start = MPI_Wtime();
     SCCResult *result;
     result = (k) ? SCC(&list) : SCC_K(&list);
-    destroySubGraph(sub);
 
     /*
      * If the number of processes is equal to 1 then it has already finished
@@ -212,20 +212,8 @@ int main(int argc, char *argv[])
         end = MPI_Wtime();
         write_time_spent += end - start;
         total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
-        FILE *f2 = fopen(k ? "Data/timeTarjan.txt" : "Data/timeKosaraju.txt", "a+");
-        if (f2 == NULL)
-        {
-            printf("Error opening file in Parallel.c\n");
-            return 1;
-        }
-        fprintf(f2, "parallel\tsize: %d\n", size);
-        fprintf(f2, "read graph: %f\n", read_time_spent);
-        fprintf(f2, "%s result: %f\n", k ? "Tarjan" : "Kosaraju", tarjan_time_spent);
-        fprintf(f2, "write result: %f\n", write_time_spent);
-        fprintf(f2, "total time: %f\n", total_time_spent);
-        fprintf(f2, "\n");
-        fclose(f2);
-        printf("Total excution time for %s parallel: %f\n", k ? "Tarjan" : "Kosaraju", total_time_spent);
+        
+        printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
     }
 
     MPI_Finalize();

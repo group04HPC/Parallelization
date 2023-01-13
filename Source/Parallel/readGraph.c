@@ -45,6 +45,7 @@
 #include <mpi.h>
 #include "../../Headers/Constants.h"
 #include "../../Headers/SubGraph.h"
+#include "../../Headers/ListGraph.h"
 
 int main(int argc, char *argv[])
 {
@@ -89,6 +90,12 @@ int main(int argc, char *argv[])
     {
         /* The rank 0 process saves the whole graph on a text file, this file will then be used by the serial version
         of the program to execute Tarjan. */
+        ListGraph *graph = ListGraphCreate(WORK_LOAD*size, WORK_LOAD*size, 0);
+        for (int i = 0; i < WORK_LOAD * size; i++)
+            for (int j = 0; j < WORK_LOAD * size; j++)
+                if (matrix[i * WORK_LOAD * size + j] == 1)
+                    insertListGraph(graph, i, j);
+
         FILE *fp = fopen("Data/matrix.txt", "w+");
         if (fp == NULL)
         {
@@ -96,9 +103,15 @@ int main(int argc, char *argv[])
             return 1;
         }
         fprintf(fp, "%d\n", WORK_LOAD * size);
-        for (int i = 0; i < WORK_LOAD * size; i++)
-            for (int j = 0; j < WORK_LOAD * size; j++)
-                fprintf(fp, "%d ", matrix[i * WORK_LOAD * size + j]);
+        for (int i=0; i<graph->nV; i++){
+            TList list = *graph->adj[i];
+            fprintf(fp, "%d ", listCount(list));
+            while (list != NULL){
+                fprintf(fp, "%d ", list->value);
+                list = list->link;
+            }
+            fprintf(fp, "\n");
+        }
         fprintf(fp, "\n");
         fclose(fp);
     }

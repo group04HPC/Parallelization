@@ -67,7 +67,7 @@ int k = 0; // Willbe executed Kosaraju's algorithm
 int main(int argc, char *argv[])
 {
 
-    int size;
+    int size, len, value;
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
@@ -79,16 +79,20 @@ int main(int argc, char *argv[])
         printf("Error opening file in Serial.c\n");
         return 1;
     }
-    fscanf(fp, "%d", &size);
-    int *matrix = (int *)malloc(size * size * sizeof(int));
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
-            fscanf(fp, "%d", &matrix[i * size + j]);
-    fclose(fp);
 
-    SubGraph *sub = createSubGraph(size, size, 0);
-    sub->adj = matrix;
-    ListGraph *list = createListGraphFromMatrix(sub);
+    fscanf(fp, "%d", &size);
+
+    ListGraph *list = ListGraphCreate(size, size, 0);
+    for (int i = 0; i < size; i++)
+    {
+        fscanf(fp, "%d", &len);
+        for (int j = 0; j < len; j++)
+        {
+            fscanf(fp, "%d", &value);
+            insertListGraph(list, i, value);
+        }
+    }
+    fclose(fp);
 
     clock_t end = clock();
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
@@ -123,24 +127,9 @@ int main(int argc, char *argv[])
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
-    FILE *fp3 = fopen(k ? "Data/timeTarjan.txt" : "Data/timeKosaraju.txt", "a+");
-    if (fp3 == NULL)
-    {
-        printf("Error opening file in Serial.c\n");
-        return 1;
-    }
-    fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
-    fprintf(fp3, "serial\n");
-    fprintf(fp3, "read graph: %f\n", read_time_spent);
-    fprintf(fp3, "%s result: %f\n", k ? "Tarjan" : "Kosaraju", tarjan_time_spent);
-    fprintf(fp3, "write result: %f\n", write_time_spent);
-    fprintf(fp3, "total time: %f\n", total_time_spent);
-    fclose(fp3);
-
-    printf("Total excution time for %s serial: %f\n", k?"Tarjan":"Cosaraju",total_time_spent);
+    printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
-    destroySubGraph(sub);
 
     return 0;
 }
