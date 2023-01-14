@@ -75,12 +75,6 @@ optimize2: updateO2 all
 
 optimize3: updateO3 all
 
-optimize4: updateO4 all
-
-optimize5: updateO5 all
-
-optimize6: updateO6 all
-
 help: 
 	echo "Builds all the binaries required to test the program"
 	echo "Usage:\t make all\t-the default way to execute make, builds all the required files"
@@ -109,7 +103,6 @@ updateO1:
 
 updateO2:
 	$(eval CC = $(CC) -O2)
-	#$(info "$(CC)")
 
 updateO3:
 	$(eval CC = $(CC) -O3)

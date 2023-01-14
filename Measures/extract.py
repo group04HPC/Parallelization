@@ -13,8 +13,8 @@ import re
 # processes, read, SCC, write, elapsed
 config = {
 			'seqKey': "NP-00",
-			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}",
-			'folderRegex':"SIZE-[0-9]+",
+			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}(-[O,E]-[0-9])?",
+			'folderRegex':"SIZE-[0-9]+(-[O,E]-[0-9])?",
 			"cols":{
 				'read':{
 

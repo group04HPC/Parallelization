@@ -106,9 +106,9 @@ int main(int argc, char *argv[])
 
     /* Tarjan algorithm on the subgraph converted in list */
     ListGraph *list = createListGraphFromMatrix(sub);
-    destroySubGraph(sub);
     end = MPI_Wtime();
     read_time_spent += end - start;
+    destroySubGraph(sub);
 
     start = MPI_Wtime();
     SCCResult *result;
