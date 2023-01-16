@@ -109,7 +109,6 @@ updateO1:
 
 updateO2:
 	$(eval CC = $(CC) -O2)
-	#$(info "$(CC)")
 
 updateO3:
 	$(eval CC = $(CC) -O3)
