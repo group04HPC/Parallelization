@@ -116,6 +116,8 @@ int main(int argc, char *argv[])
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
+    printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
+
     FILE *fp3 = fopen("Data/time.txt", "a+");
     if (fp3 == NULL)
     {
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
     fprintf(fp3, "total time: %f\n", total_time_spent);
     fclose(fp3);
 
-    printf("Total excution time serial: %f\n", total_time_spent);
+    // printf("Total excution time serial: %f\n", total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);

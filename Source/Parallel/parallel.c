@@ -206,6 +206,9 @@ int main(int argc, char *argv[])
         end = MPI_Wtime();
         write_time_spent += end - start;
         total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
+
+        printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
+
         FILE *f2 = fopen("Data/time.txt", "a+");
         if (f2 == NULL)
         {
@@ -219,7 +222,7 @@ int main(int argc, char *argv[])
         fprintf(f2, "total time: %f\n", total_time_spent);
         fprintf(f2, "\n");
         fclose(f2);
-        printf("Total excution time parallel: %f\n", total_time_spent);
+        // printf("Total excution time parallel: %f\n", total_time_spent);
     }
 
     MPI_Finalize();
