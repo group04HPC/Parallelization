@@ -47,11 +47,11 @@
 #include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 
-#ifdef TARJAN_ALGO
-int k = 1; // Will be executed Tarjan's algorithm
-#else
-int k = 0; // Willbe executed Kosaraju's algorithm
-#endif
+// #ifdef TARJAN_ALGO
+// int k = 1; // Will be executed Tarjan's algorithm
+// #else
+// int k = 0; // Willbe executed Kosaraju's algorithm
+// #endif
 
 /*
  * Function:  main
@@ -67,11 +67,13 @@ int k = 0; // Willbe executed Kosaraju's algorithm
 int main(int argc, char *argv[])
 {
 
-    int size;
+    int size, value, k=0;
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
-    clock_t begin = clock();
+    clock_t begin, end; 
+    
+    begin = clock();
 
     FILE *fp = fopen("Data/matrix.txt", "r");
     if (fp == NULL)
@@ -79,26 +81,27 @@ int main(int argc, char *argv[])
         printf("Error opening file in Serial.c\n");
         return 1;
     }
-    
+
     fscanf(fp, "%d", &size);
-    int *matrix = (int *)malloc(size * size * sizeof(int));
+    ListGraph *list = ListGraphCreate(size, size, 0);
     for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
-            fscanf(fp, "%d", &matrix[i * size + j]);
+        for (int j = 0; j < size; j++){
+            fscanf(fp, "%d", &value);
+            if (value == 1)
+                insertListGraph(list, i, j);
+        }
     fclose(fp);
 
-    SubGraph *sub = createSubGraph(size, size, 0);
-    sub->adj = matrix;
-    ListGraph *list = createListGraphFromMatrix(sub);
-
-    clock_t end = clock();
+    end = clock();
+    printf("Read time: %f seconds \n", (double)(end - begin) / CLOCKS_PER_SEC);
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    SCCResult *result = NULL;
-    result = (k) ? SCC(&list) : SCC_K(&list);
+    SCCResult *result = (k) ? SCC(&list) : SCC_K(&list);
+    SCCResultPrint(result);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("Tarjan time: %f seconds \n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     begin = clock();
     FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");
@@ -127,7 +130,6 @@ int main(int argc, char *argv[])
     printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
-    destroySubGraph(sub);
 
     return 0;
 }
