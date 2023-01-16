@@ -47,11 +47,11 @@
 #include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 
-// #ifdef TARJAN_ALGO
-// int k = 1; // Will be executed Tarjan's algorithm
-// #else
-// int k = 0; // Willbe executed Kosaraju's algorithm
-// #endif
+#ifdef TARJAN_ALGO
+int k = 1; // Will be executed Tarjan's algorithm
+#else
+int k = 0; // Willbe executed Kosaraju's algorithm
+#endif
 
 /*
  * Function:  main
@@ -67,7 +67,7 @@
 int main(int argc, char *argv[])
 {
 
-    int size, value, k=0;
+    int size, value;
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
@@ -93,15 +93,12 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     end = clock();
-    printf("Read time: %f seconds \n", (double)(end - begin) / CLOCKS_PER_SEC);
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
     SCCResult *result = (k) ? SCC(&list) : SCC_K(&list);
-    SCCResultPrint(result);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("Tarjan time: %f seconds \n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     begin = clock();
     FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");

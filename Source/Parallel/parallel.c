@@ -111,8 +111,7 @@ int main(int argc, char *argv[])
     read_time_spent += end - start;
 
     start = MPI_Wtime();
-    SCCResult *result;
-    result = (k) ? SCC(&list) : SCC_K(&list);
+    SCCResult *result = (k) ? SCC(&list) : SCC_K(&list);
 
     /*
      * If the number of processes is equal to 1 then it has already finished

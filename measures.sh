@@ -45,7 +45,7 @@ for size in "${ARRAY_RC[@]}"; do
 			if [[ $ths -eq 0 ]]; then
 				# serial
 
-				./Source/updateConstants.sh $size 0 $size
+				./Source/updateConstants.sh $size $(($size/2)) $(($size/2))
 				make -B
 
 				# write graphs
@@ -60,7 +60,7 @@ for size in "${ARRAY_RC[@]}"; do
 			else
 				# parallel
 				new=$(($size/$ths))
-				./Source/updateConstants.sh $new 0 $size
+				./Source/updateConstants.sh $new $(($size/2)) $(($size/2))
 				make -B
 
 				# write graphs
