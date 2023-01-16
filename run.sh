@@ -85,7 +85,7 @@ if [ "$serial" -ne 0 ]; then
 
 	# The serial program executes and writes its result on a file
 	./Build/s.o
-	./Build/s_k.o
+	# ./Build/s_k.o
 fi
 
 # The parallel program executes and writes its result on a file

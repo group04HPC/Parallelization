@@ -64,6 +64,7 @@ int main(int argc, char* argv[]){
     sprintf(num, "%d", rank);
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);
+
     /* Each process saves its own subgraph on a binary file */
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);
