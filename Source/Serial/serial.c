@@ -44,7 +44,14 @@
 #include "../../Headers/SubGraph.h"
 #include "../../Headers/SCCResult.h"
 #include "../../Headers/Tarjan.h"
+#include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
+
+#ifdef TARJAN_ALGO
+int k = 1; // Will be executed Tarjan's algorithm
+#else
+int k = 0; // Willbe executed Kosaraju's algorithm
+#endif
 
 /*
  * Function:  main
@@ -72,13 +79,13 @@ int main(int argc, char *argv[])
         printf("Error opening file in Serial.c\n");
         return 1;
     }
+    
     fscanf(fp, "%d", &size);
     int *matrix = (int *)malloc(size * size * sizeof(int));
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             fscanf(fp, "%d", &matrix[i * size + j]);
     fclose(fp);
-
 
     SubGraph *sub = createSubGraph(size, size, 0);
     sub->adj = matrix;
@@ -88,12 +95,13 @@ int main(int argc, char *argv[])
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    SCCResult *result = SCC(&list);
+    SCCResult *result = NULL;
+    result = (k) ? SCC(&list) : SCC_K(&list);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    FILE *fp2 = fopen("Data/result.txt", "w+");
+    FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");
     if (fp2 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -116,21 +124,7 @@ int main(int argc, char *argv[])
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
-    FILE *fp3 = fopen("Data/time.txt", "a+");
-    if (fp3 == NULL)
-    {
-        printf("Error opening file in Serial.c\n");
-        return 1;
-    }
-    fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
-    fprintf(fp3, "serial\n");
-    fprintf(fp3, "read graph: %f\n", read_time_spent);
-    fprintf(fp3, "tarjan result: %f\n", tarjan_time_spent);
-    fprintf(fp3, "write result: %f\n", write_time_spent);
-    fprintf(fp3, "total time: %f\n", total_time_spent);
-    fclose(fp3);
-
-    printf("Total excution time serial: %f\n", total_time_spent);
+    printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);
