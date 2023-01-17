@@ -155,6 +155,7 @@ void generateRandomSubGraph(SubGraph *subgraph, int min_edges, int max_edges)
         array[i] = j;
         j++;
     }
+    
     shuffle(array, 0, subgraph->nV);
 
     /* Insert random edges for each vertex */
@@ -164,6 +165,8 @@ void generateRandomSubGraph(SubGraph *subgraph, int min_edges, int max_edges)
             subgraph->adj[i * subgraph->nE + j] = 1;
         shuffle(&subgraph->adj[i * subgraph->nE], 0, (subgraph->nE));
     }
+
+    free(array);
 }
 
 /**
