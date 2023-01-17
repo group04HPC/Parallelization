@@ -152,14 +152,14 @@ Build/SCCResult.o : Source/DataStructures/SCCResult.c
 Build/ListGraph.o : Source/DataStructures/ListGraph.c
 	$(CC) $(CFLAGS) Source/DataStructures/ListGraph.c -o Build/ListGraph.o
 
-Build/WriteGraph.o : Source/Parallel/WriteGraph.c    
-	$(CC) $(CFLAGS) Source/Parallel/WriteGraph.c -o Build/WriteGraph.o
+Build/WriteGraph.o : Source/Parallel/writeGraph.c    
+	$(CC) $(CFLAGS) Source/Parallel/writeGraph.c -o Build/WriteGraph.o
 
-Build/ReadGraph.o : Source/Parallel/ReadGraph.c
-	$(CC) $(CFLAGS) Source/Parallel/ReadGraph.c -o Build/ReadGraph.o
+Build/ReadGraph.o : Source/Parallel/readGraph.c
+	$(CC) $(CFLAGS) Source/Parallel/readGraph.c -o Build/ReadGraph.o
 
-Build/Parallel.o : Source/Parallel/Parallel.c
-	$(CC) $(CFLAGS) Source/Parallel/Parallel.c -o Build/Parallel.o
+Build/Parallel.o : Source/Parallel/parallel.c
+	$(CC) $(CFLAGS) Source/Parallel/parallel.c -o Build/Parallel.o
 
 Build/Communication.o : Source/Communication/Communication.c
 	$(CC) $(CFLAGS) Source/Communication/Communication.c -o Build/Communication.o
@@ -170,8 +170,8 @@ Build/Merge.o : Source/Communication/Merge.c
 Build/Tarjan.o : Source/Tarjan/Tarjan.c
 	$(CC) $(CFLAGS) Source/Tarjan/Tarjan.c -o Build/Tarjan.o
 
-Build/Serial.o : Source/Serial/Serial.c 
-	$(CC) $(CFLAGS) Source/Serial/Serial.c  -o Build/Serial.o
+Build/Serial.o : Source/Serial/serial.c 
+	$(CC) $(CFLAGS) Source/Serial/serial.c  -o Build/Serial.o
 
 Build/CompareResults.o : Source/CompareResults.c
 	$(CC) $(CFLAGS) Source/CompareResults.c -o Build/CompareResults.o
