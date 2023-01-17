@@ -48,32 +48,32 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 				if [[ $ths -eq 0 ]]; then
 					# serial
 
-					./Source/updateConstants.sh $(($size/$MAX_PROC)) $(($size/$shrink)) $(($size/$shrink))
+					./mpidir/Source/updateConstants.sh $(($size/$MAX_PROC)) $(($size/$shrink)) $(($size/$shrink))
 					make -B
 
 					# write graphs
-					mpirun -n $MAX_PROC --hostfile mpi_host_file mpidir/Build/./wg.o
+					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
 					# read graphs and write on file th whole matrix
-					mpirun -n $MAX_PROC --hostfile mpi_host_file mpidir/Build/./rg.o
+					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
-					./Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
+					./mpidir/Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
 					make -B
 
 					#execute serial
-					echo $size,$ths,$(mpidir/Build/./s.o) >> $OUT_FILE
+					echo $size,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
 					# echo $size,$ths,$(./mpidir/s_k.o) >> $OUT_FILE2
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				else
 					# parallel
 					new=$(($size/$ths))
-					./Source/updateConstants.sh $new $(($size/$shrink)) $(($size/$shrink))
+					./mpidir/Source/updateConstants.sh $new $(($size/$shrink)) $(($size/$shrink))
 					make -B
 
 					# write graphs
-					mpirun -n $ths --hostfile mpi_host_file mpidir/Build/./wg.o
+					mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/wg.o
 					
 					#execute parallel
-					echo $size,$ths,$(mpirun -n $ths --hostfile mpi_host_file mpidir/Build/./p.o) >> $OUT_FILE
+					echo $size,$ths,$(mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/p.o) >> $OUT_FILE
 					# echo $size,$ths,$(mpirun -n $ths ./mpidir/p_k.o) >> $OUT_FILE2
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				fi
@@ -126,32 +126,32 @@ for level in "${ARRAY_OPT[@]}"; do
 			if [[ $ths -eq 0 ]]; then
 				# serial
 
-				./Source/updateConstants.sh $(($TEST_SIZE/$MAX_PROC)) $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				./mpidir/Source/updateConstants.sh $(($TEST_SIZE/$MAX_PROC)) $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				make $opt -B
 
 				# write graphs
-				mpirun -n $MAX_PROC --hostfile mpi_host_file mpidir/Build/./wg.o
+				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
 				# read graphs and write on file th whole matrix
-				mpirun -n $MAX_PROC --hostfile mpi_host_file mpidir/Build/./rg.o
+				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
-				./Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				./mpidir/Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				make $opt -B
 
 				#execute serial
-				echo $TEST_SIZE,$ths,$(mpidir/Build/./s.o) >> $OUT_FILE
+				echo $TEST_SIZE,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
 				# echo $TEST_SIZE,$ths,$(./mpidir/s_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 			else
 				# parallel
 				new=$(($TEST_SIZE/$ths))
-				./Source/updateConstants.sh $new $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				./mpidir/Source/updateConstants.sh $new $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				make $opt -B
 
 				# write graphs
-				mpirun -n $ths --hostfile mpi_host_file mpidir/Build/./wg.o
+				mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/wg.o
 				
 				#execute parallel
-				echo $TEST_SIZE,$ths,$(mpirun -n $ths --hostfile mpi_host_file mpidir/Build/./p.o) >> $OUT_FILE
+				echo $TEST_SIZE,$ths,$(mpirun -n $ths --hostfile ./mpi_host_file mpidir/Build/p.o) >> $OUT_FILE
 				# echo $TEST_SIZE,$ths,$(mpirun -n $ths ./mpidir/p_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 			fi

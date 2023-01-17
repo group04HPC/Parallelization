@@ -101,5 +101,5 @@ echo -e "/*
 #define EXTENSION_LENGTH 14
 
 #endif
-" > Headers/Constants.h
+" > mpidir/Headers/Constants.h
 make -B
