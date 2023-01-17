@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
 
     /* each process creates a file with its own name */
     char filename[sizeof "mpidir/Data/file10.bin\0"];
-    snprintf(filename, "mpidir/Data/file%02d.bin\0", rank);
-
+    snprintf(filename, sizeof filename, "mpidir/Data/file%02d.bin", rank);
+    
     /* Each process reads its own subgraph from a binary file */
     MPI_Comm file_comm;
     MPI_Comm_split(MPI_COMM_WORLD, rank, rank, &file_comm);

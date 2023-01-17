@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     /* filenames init */
     /* each process creates a file with its own name */
     char filename[sizeof "mpidir/Data/file10.bin\0"];
-    snprintf(filename, "mpidir/Data/file%02d.bin\0", rank);
+    snprintf(filename, sizeof filename, "mpidir/Data/file%02d.bin", rank);
 
     start = MPI_Wtime();
     /* each process reads its own subgraph from its own file */
