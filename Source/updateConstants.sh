@@ -102,4 +102,4 @@ echo -e "/*
 
 #endif
 " > mpidir/Headers/Constants.h
-make -B
+# make -B

@@ -49,7 +49,9 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					# serial
 
 					./mpidir/Source/updateConstants.sh $(($size/$MAX_PROC)) $(($size/$shrink)) $(($size/$shrink))
+					cd mpidir
 					make -B
+					cd ..
 
 					# write graphs
 					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
@@ -57,7 +59,9 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
 					./mpidir/Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
+					cd mpidir
 					make -B
+					cd ..
 
 					#execute serial
 					echo $size,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
@@ -67,7 +71,9 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					# parallel
 					new=$(($size/$ths))
 					./mpidir/Source/updateConstants.sh $new $(($size/$shrink)) $(($size/$shrink))
+					cd mpidir
 					make -B
+					cd ..
 
 					# write graphs
 					mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/wg.o
@@ -127,7 +133,9 @@ for level in "${ARRAY_OPT[@]}"; do
 				# serial
 
 				./mpidir/Source/updateConstants.sh $(($TEST_SIZE/$MAX_PROC)) $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				cd mpidir
 				make $opt -B
+				cd ..
 
 				# write graphs
 				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
@@ -135,7 +143,9 @@ for level in "${ARRAY_OPT[@]}"; do
 				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
 				./mpidir/Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				cd mpidir
 				make $opt -B
+				cd ..
 
 				#execute serial
 				echo $TEST_SIZE,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
@@ -145,7 +155,9 @@ for level in "${ARRAY_OPT[@]}"; do
 				# parallel
 				new=$(($TEST_SIZE/$ths))
 				./mpidir/Source/updateConstants.sh $new $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				cd mpidir
 				make $opt -B
+				cd ..
 
 				# write graphs
 				mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/wg.o
