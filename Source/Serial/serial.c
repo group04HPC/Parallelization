@@ -60,7 +60,7 @@
 int main(int argc, char *argv[])
 {
 
-    int size;
+    int size, value;
 
     double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
@@ -73,16 +73,14 @@ int main(int argc, char *argv[])
         return 1;
     }
     fscanf(fp, "%d", &size);
-    int *matrix = (int *)malloc(size * size * sizeof(int));
+    ListGraph *list = ListGraphCreate(size, size, 0);
     for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
-            fscanf(fp, "%d", &matrix[i * size + j]);
+        for (int j = 0; j < size; j++){
+            fscanf(fp, "%d", &value);
+            if (value == 1)
+                insertListGraph(list, i, j);
+        }
     fclose(fp);
-
-
-    SubGraph *sub = createSubGraph(size, size, 0);
-    sub->adj = matrix;
-    ListGraph *list = createListGraphFromMatrix(sub);
 
     clock_t end = clock();
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
@@ -135,7 +133,6 @@ int main(int argc, char *argv[])
     // printf("Total excution time serial: %f\n", total_time_spent);
 
     SCCResultDestroy(result);
-    destroySubGraph(sub);
 
     return 0;
 }
