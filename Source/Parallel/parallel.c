@@ -182,44 +182,44 @@ int main(int argc, char *argv[])
     {
         start = MPI_Wtime();
         /* saves the result on a file */
-        FILE *f = fopen("mpidir/Data/result.txt", "a+");
-        if (f == NULL)
-        {
-            printf("Error opening file in Parallel.c\n");
-            return 1;
-        }
-        fprintf(f, "\n%d\n", result->nMacroNodes);
-        for (int i = 0; i < result->nMacroNodes; i++)
-        {
-            TList list = *result->vertices[i];
-            fprintf(f, "%d ", listCount(list));
-            while (list != NULL)
-            {
-                fprintf(f, "%d ", list->value);
-                list = list->link;
-            }
-            fprintf(f, "\n");
-        }
-        fclose(f);
+        // FILE *f = fopen("mpidir/Data/result.txt", "a+");
+        // if (f == NULL)
+        // {
+        //     printf("Error opening file in Parallel.c\n");
+        //     return 1;
+        // }
+        // fprintf(f, "\n%d\n", result->nMacroNodes);
+        // for (int i = 0; i < result->nMacroNodes; i++)
+        // {
+        //     TList list = *result->vertices[i];
+        //     fprintf(f, "%d ", listCount(list));
+        //     while (list != NULL)
+        //     {
+        //         fprintf(f, "%d ", list->value);
+        //         list = list->link;
+        //     }
+        //     fprintf(f, "\n");
+        // }
+        // fclose(f);
         end = MPI_Wtime();
         write_time_spent += end - start;
         total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
 
         printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
-        FILE *f2 = fopen("mpidir/Data/time.txt", "a+");
-        if (f2 == NULL)
-        {
-            printf("Error opening file in Parallel.c\n");
-            return 1;
-        }
-        fprintf(f2, "parallel\tsize: %d\n", size);
-        fprintf(f2, "read graph: %f\n", read_time_spent);
-        fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
-        fprintf(f2, "write result: %f\n", write_time_spent);
-        fprintf(f2, "total time: %f\n", total_time_spent);
-        fprintf(f2, "\n");
-        fclose(f2);
+        // FILE *f2 = fopen("mpidir/Data/time.txt", "a+");
+        // if (f2 == NULL)
+        // {
+        //     printf("Error opening file in Parallel.c\n");
+        //     return 1;
+        // }
+        // fprintf(f2, "parallel\tsize: %d\n", size);
+        // fprintf(f2, "read graph: %f\n", read_time_spent);
+        // fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
+        // fprintf(f2, "write result: %f\n", write_time_spent);
+        // fprintf(f2, "total time: %f\n", total_time_spent);
+        // fprintf(f2, "\n");
+        // fclose(f2);
         // printf("Total excution time parallel: %f\n", total_time_spent);
     }
 

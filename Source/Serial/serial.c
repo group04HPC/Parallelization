@@ -91,44 +91,44 @@ int main(int argc, char *argv[])
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    FILE *fp2 = fopen("mpidir/Data/result.txt", "w+");
-    if (fp2 == NULL)
-    {
-        printf("Error opening file in Serial.c\n");
-        return 1;
-    }
-    fprintf(fp2, "%d\n", result->nMacroNodes);
-    for (int i = 0; i < result->nMacroNodes; i++)
-    {
-        TList list = *result->vertices[i];
-        fprintf(fp2, "%d ", listCount(list));
-        while (list != NULL)
-        {
-            fprintf(fp2, "%d ", list->value);
-            list = list->link;
-        }
-        fprintf(fp2, "\n");
-    }
-    fclose(fp2);
+    // FILE *fp2 = fopen("mpidir/Data/result.txt", "w+");
+    // if (fp2 == NULL)
+    // {
+    //     printf("Error opening file in Serial.c\n");
+    //     return 1;
+    // }
+    // fprintf(fp2, "%d\n", result->nMacroNodes);
+    // for (int i = 0; i < result->nMacroNodes; i++)
+    // {
+    //     TList list = *result->vertices[i];
+    //     fprintf(fp2, "%d ", listCount(list));
+    //     while (list != NULL)
+    //     {
+    //         fprintf(fp2, "%d ", list->value);
+    //         list = list->link;
+    //     }
+    //     fprintf(fp2, "\n");
+    // }
+    // fclose(fp2);
     end = clock();
     write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
     total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
     printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
-    FILE *fp3 = fopen("mpidir/Data/time.txt", "a+");
-    if (fp3 == NULL)
-    {
-        printf("Error opening file in Serial.c\n");
-        return 1;
-    }
-    fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
-    fprintf(fp3, "serial\n");
-    fprintf(fp3, "read graph: %f\n", read_time_spent);
-    fprintf(fp3, "tarjan result: %f\n", tarjan_time_spent);
-    fprintf(fp3, "write result: %f\n", write_time_spent);
-    fprintf(fp3, "total time: %f\n", total_time_spent);
-    fclose(fp3);
+    // FILE *fp3 = fopen("mpidir/Data/time.txt", "a+");
+    // if (fp3 == NULL)
+    // {
+    //     printf("Error opening file in Serial.c\n");
+    //     return 1;
+    // }
+    // fprintf(fp3, "workload: %d\tmin: %d\tmax: %d\n", size, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
+    // fprintf(fp3, "serial\n");
+    // fprintf(fp3, "read graph: %f\n", read_time_spent);
+    // fprintf(fp3, "tarjan result: %f\n", tarjan_time_spent);
+    // fprintf(fp3, "write result: %f\n", write_time_spent);
+    // fprintf(fp3, "total time: %f\n", total_time_spent);
+    // fclose(fp3);
 
     // printf("Total excution time serial: %f\n", total_time_spent);
 
