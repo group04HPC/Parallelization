@@ -66,11 +66,9 @@ int main(int argc, char *argv[])
         matrix = (int *)malloc(WORK_LOAD * WORK_LOAD * size * size * sizeof(int));
     }
 
-    char filename[20], num[2];
-    strcpy(filename, "mpidir/Data/file");
-    sprintf(num, "%d", rank);
-    strncat(filename, num, 10);
-    strncat(filename, ".bin", 14);
+    /* each process creates a file with its own name */
+    char filename[sizeof "mpidir/Data/file10.bin\0"];
+    snprintf(filename, "mpidir/Data/file%02d.bin\0", rank);
 
     /* Each process reads its own subgraph from a binary file */
     MPI_Comm file_comm;
