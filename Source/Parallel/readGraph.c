@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     }
 
     char filename[20], num[2];
-    strcpy(filename, "Data/file");
+    strcpy(filename, "mpidir/Data/file");
     sprintf(num, "%d", rank);
     strncat(filename, num, 10);
     strncat(filename, ".bin", 14);
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     {
         /* The rank 0 process saves the whole graph on a text file, this file will then be used by the serial version
         of the program to execute Tarjan. */
-        FILE *fp = fopen("Data/matrix.txt", "w+");
+        FILE *fp = fopen("mpidir/Data/matrix.txt", "w+");
         if (fp == NULL)
         {
             printf("Error opening file in readGraph.c\n");

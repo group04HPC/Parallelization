@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
     /* filenames init */
     char filename[FILENAME_LENGTH], num[NUM_LENGTH];
-    strcpy(filename, "Data/file");
+    strcpy(filename, "mpidir/Data/file");
     sprintf(num, "%d", rank);
     strncat(filename, num, MEDIUM_FILENAME_LENGTH);
     strncat(filename, ".bin", EXTENSION_LENGTH);
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
     {
         start = MPI_Wtime();
         /* saves the result on a file */
-        FILE *f = fopen("Data/result.txt", "a+");
+        FILE *f = fopen("mpidir/Data/result.txt", "a+");
         if (f == NULL)
         {
             printf("Error opening file in Parallel.c\n");
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 
         printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
-        FILE *f2 = fopen("Data/time.txt", "a+");
+        FILE *f2 = fopen("mpidir/Data/time.txt", "a+");
         if (f2 == NULL)
         {
             printf("Error opening file in Parallel.c\n");

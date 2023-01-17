@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
     clock_t begin = clock();
 
-    FILE *fp = fopen("Data/matrix.txt", "r");
+    FILE *fp = fopen("mpidir/Data/matrix.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    FILE *fp2 = fopen("Data/result.txt", "w+");
+    FILE *fp2 = fopen("mpidir/Data/result.txt", "w+");
     if (fp2 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
     printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
-    FILE *fp3 = fopen("Data/time.txt", "a+");
+    FILE *fp3 = fopen("mpidir/Data/time.txt", "a+");
     if (fp3 == NULL)
     {
         printf("Error opening file in Serial.c\n");

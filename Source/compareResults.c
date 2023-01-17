@@ -56,7 +56,7 @@
 int main(int argc, char *argv[])
 {
 
-    FILE *fp = fopen("Data/result.txt", "r");
+    FILE *fp = fopen("mpidir/Data/result.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file in compareResults.c\n");
