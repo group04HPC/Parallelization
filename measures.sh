@@ -52,9 +52,9 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					make -B
 
 					# write graphs
-					mpirun -n $MAX_PROC ./Build/wg.o
+					mpirun -n $MAX_PROC --hostfile mpi_host_file ./Build/wg.o
 					# read graphs and write on file th whole matrix
-					mpirun -n $MAX_PROC ./Build/rg.o
+					mpirun -n $MAX_PROC --hostfile mpi_host_file ./Build/rg.o
 
 					./Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
 					make -B
@@ -70,10 +70,10 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					make -B
 
 					# write graphs
-					mpirun -n $ths ./Build/wg.o
+					mpirun -n $ths --hostfile mpi_host_file ./Build/wg.o
 					
 					#execute parallel
-					echo $size,$ths,$(mpirun -n $ths ./Build/p.o) >> $OUT_FILE
+					echo $size,$ths,$(mpirun -n $ths --hostfile mpi_host_file ./Build/p.o) >> $OUT_FILE
 					# echo $size,$ths,$(mpirun -n $ths ./Build/p_k.o) >> $OUT_FILE2
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				fi
@@ -130,9 +130,9 @@ for level in "${ARRAY_OPT[@]}"; do
 				make $opt -B
 
 				# write graphs
-				mpirun -n $MAX_PROC ./Build/wg.o
+				mpirun -n $MAX_PROC --hostfile mpi_host_file ./Build/wg.o
 				# read graphs and write on file th whole matrix
-				mpirun -n $MAX_PROC ./Build/rg.o
+				mpirun -n $MAX_PROC --hostfile mpi_host_file ./Build/rg.o
 
 				./Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				make $opt -B
@@ -148,10 +148,10 @@ for level in "${ARRAY_OPT[@]}"; do
 				make $opt -B
 
 				# write graphs
-				mpirun -n $ths ./Build/wg.o
+				mpirun -n $ths --hostfile mpi_host_file ./Build/wg.o
 				
 				#execute parallel
-				echo $TEST_SIZE,$ths,$(mpirun -n $ths ./Build/p.o) >> $OUT_FILE
+				echo $TEST_SIZE,$ths,$(mpirun -n $ths --hostfile mpi_host_file ./Build/p.o) >> $OUT_FILE
 				# echo $TEST_SIZE,$ths,$(mpirun -n $ths ./Build/p_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 			fi
