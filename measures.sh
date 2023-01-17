@@ -5,7 +5,7 @@ NMEASURES=3
 MAX_PROC=4
 
 ARRAY_RC=(400 800 1200 1600 2000 2400)
-ARRAY_THS=(0 1 2 4 8)
+ARRAY_THS=(0 1 2 4 8 16)
 
 # edges shrink factor
 ARRAY_SHRINK=(1 2 4) # try with all the edges, then with the half and then with the quarter
