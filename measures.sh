@@ -2,7 +2,7 @@
 
 TIME_STAMP=$(date +%s)
 NMEASURES=3
-MAX_PROC=4
+MAX_PROC=16
 
 ARRAY_RC=(400 800 1200 1600 2000 2400)
 ARRAY_THS=(0 1 2 4 8 16)
@@ -51,17 +51,13 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					./mpidir/Source/updateConstants.sh $(($size/$MAX_PROC)) $(($size/$shrink)) $(($size/$shrink))
 					cd mpidir
 					make -B
+					make cleanBin
 					cd ..
 
 					# write graphs
 					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
 					# read graphs and write on file th whole matrix
 					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
-
-					./mpidir/Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
-					cd mpidir
-					make -B
-					cd ..
 
 					#execute serial
 					echo $size,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
@@ -73,6 +69,7 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					./mpidir/Source/updateConstants.sh $new $(($size/$shrink)) $(($size/$shrink))
 					cd mpidir
 					make -B
+					make cleanBin
 					cd ..
 
 					# write graphs
@@ -135,17 +132,13 @@ for level in "${ARRAY_OPT[@]}"; do
 				./mpidir/Source/updateConstants.sh $(($TEST_SIZE/$MAX_PROC)) $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				cd mpidir
 				make $opt -B
+				make cleanBin
 				cd ..
 
 				# write graphs
 				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/wg.o
 				# read graphs and write on file th whole matrix
 				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
-
-				./mpidir/Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
-				cd mpidir
-				make $opt -B
-				cd ..
 
 				#execute serial
 				echo $TEST_SIZE,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
@@ -157,6 +150,7 @@ for level in "${ARRAY_OPT[@]}"; do
 				./mpidir/Source/updateConstants.sh $new $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				cd mpidir
 				make $opt -B
+				make cleanBin
 				cd ..
 
 				# write graphs
