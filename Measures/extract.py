@@ -10,7 +10,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-# processes, read, SCC, write, elapsed
+# processes, read, SCC, elapsed
 config = {
 			'seqKey': "NP-00",
 			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}(-[O,E]-[0-9])?",
@@ -28,12 +28,6 @@ config = {
 					'computeSpeedup':False,
 
 				},
-				'write':{
-
-					'jpg':False,
-					'computeSpeedup':False,
-
-				},
 				'elapsed':{
 
 					'jpg':False,
@@ -43,7 +37,7 @@ config = {
 			},
 
 			"table":{
-				"header": ['Version','Processes','ReadFromFile','SCC','WriteToFile','Elapsed','Speedup','Efficiency'],
+				"header": ['Version','Processes','ReadFromFile','SCC','Elapsed','Speedup','Efficiency'],
 			},
 			"plot":{
 				"x_from_table":"Processes",
