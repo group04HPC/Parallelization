@@ -8,7 +8,7 @@ ARRAY_RC=(2800 3200 3600 4000 4400)
 ARRAY_THS=(0 1 2 4 8 16)
 
 # edges shrink factor
-ARRAY_SHRINK=(1 2 4) # try with all the edges, then with the half and then with the quarter
+ARRAY_SHRINK=(2 4) # try with all the edges, then with the half and then with the quarter
 
 trap "exit" INT
 
