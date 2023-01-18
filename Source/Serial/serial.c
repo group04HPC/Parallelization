@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     int size, value;
 
-    double total_time_spent = 0.0, read_time_spent = 0.0, tarjan_time_spent = 0.0;
+    double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
 
     clock_t begin = clock();
 
@@ -110,9 +110,9 @@ int main(int argc, char *argv[])
     // }
     // fclose(fp2);
 
-    total_time_spent = read_time_spent + tarjan_time_spent;
+    total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
 
-    printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
+    printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
 
     // FILE *fp3 = fopen("mpidir/Data/time.txt", "a+");
     // if (fp3 == NULL)
