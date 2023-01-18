@@ -2,7 +2,7 @@
 
 TIME_STAMP=$(date +%s)
 NMEASURES=3
-MAX_PROC=16
+MAX_PROC=4
 
 ARRAY_RC=(400 800 1200 1600 2000 2400)
 ARRAY_THS=(0 1 2 4 8 16)
@@ -23,8 +23,10 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 			ths_str=$(printf "%02d" $ths)
 
 			OUT_FILE=$SCRIPTPATH/Measures/Tarjan/SIZE-$size-E-$shrink/SIZE-$size-NP-$ths_str-E-$shrink.csv
+			# OUT_FILE2=$SCRIPTPATH/Measures/Kosaraju/SIZE-$size-E-$shrink/SIZE-$size-NP-$ths_str-E-$shrink.csv
 
 			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+			# mkdir -p $(dirname $OUT_FILE2) 2> /dev/null
 
 			echo $(basename $OUT_FILE)
 
@@ -32,10 +34,14 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					OLD_OUT_FILE=$SCRIPTPATH/Measures/Tarjan/SIZE-$size-E-$shrink/SIZE-$size-NP-$ths_str-E-$shrink.csv
 					ln -srf -T $OLD_OUT_FILE $OUT_FILE
 					echo Created symbolic link to $(basename $OLD_OUT_FILE)
+					# OLD_OUT_FILE2=$SCRIPTPATH/Measures/Kosaraju/SIZE-$size-E-$shrink/SIZE-$size-NP-$ths_str-E-$shrink.csv
+					# ln -srf -T $OLD_OUT_FILE2 $OUT_FILE2
+					# echo Created symbolic link to $(basename $OLD_OUT_FILE2)
 					continue
 				fi
 
-			echo "size,processes,read,SCC,elapsed" >$OUT_FILE
+			echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE
+			# echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE2
 
 			for ((i = 0 ; i < $NMEASURES; i++)); do
 				
@@ -45,7 +51,6 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					./mpidir/Source/updateConstants.sh $(($size/$MAX_PROC)) $(($size/$shrink)) $(($size/$shrink))
 					cd mpidir
 					make -B
-					make cleanBin
 					cd ..
 
 					# write graphs
@@ -53,8 +58,14 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					# read graphs and write on file th whole matrix
 					mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
+					./mpidir/Source/updateConstants.sh $size $(($size/$shrink)) $(($size/$shrink))
+					cd mpidir
+					make -B
+					cd ..
+
 					#execute serial
 					echo $size,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
+					# echo $size,$ths,$(./mpidir/s_k.o) >> $OUT_FILE2
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				else
 					# parallel
@@ -62,7 +73,6 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					./mpidir/Source/updateConstants.sh $new $(($size/$shrink)) $(($size/$shrink))
 					cd mpidir
 					make -B
-					make cleanBin
 					cd ..
 
 					# write graphs
@@ -70,6 +80,7 @@ for shrink in "${ARRAY_SHRINK[@]}"; do
 					
 					#execute parallel
 					echo $size,$ths,$(mpirun -n $ths --hostfile mpi_host_file ./mpidir/Build/p.o) >> $OUT_FILE
+					# echo $size,$ths,$(mpirun -n $ths ./mpidir/p_k.o) >> $OUT_FILE2
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				fi
 
@@ -97,6 +108,7 @@ for level in "${ARRAY_OPT[@]}"; do
 		ths_str=$(printf "%02d" $ths)
 
 		OUT_FILE=$SCRIPTPATH/Measures/Tarjan/SIZE-$TEST_SIZE-O-$level/SIZE-$TEST_SIZE-NP-$ths_str-O-$level.csv
+		# OUT_FILE2=$SCRIPTPATH/Measures/Kosaraju/SIZE-$TEST_SIZE-O-$level/SIZE-$TEST_SIZE-NP-$ths_str-O-$level.csv
 
 		mkdir -p $(dirname $OUT_FILE) 2> /dev/null
 		# mkdir -p $(dirname $OUT_FILE2) 2> /dev/null
@@ -106,10 +118,14 @@ for level in "${ARRAY_OPT[@]}"; do
 			OLD_OUT_FILE=$SCRIPTPATH/Measures/Tarjan/SIZE-$TEST_SIZE-O-$level/SIZE-$TEST_SIZE-NP-$ths_str-O-$level.csv
 			ln -srf -T $OLD_OUT_FILE $OUT_FILE
 			echo Created symbolic link to $(basename $OLD_OUT_FILE)
+			# OLD_OUT_FILE2=$SCRIPTPATH/Measures/Kosaraju/SIZE-$TEST_SIZE-O-$level/SIZE-$TEST_SIZE-NP-$ths_str-O-$level.csv
+			# ln -srf -T $OLD_OUT_FILE2 $OUT_FILE2
+			# echo Created symbolic link to $(basename $OLD_OUT_FILE2)
 			continue
 		fi
 
-        echo "size,processes,read,SCC,elapsed" >$OUT_FILE
+        echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE
+		# echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE2
 
 		for ((i = 0 ; i < $NMEASURES; i++)); do
 			
@@ -119,7 +135,6 @@ for level in "${ARRAY_OPT[@]}"; do
 				./mpidir/Source/updateConstants.sh $(($TEST_SIZE/$MAX_PROC)) $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				cd mpidir
 				make $opt -B
-				make cleanBin
 				cd ..
 
 				# write graphs
@@ -127,8 +142,14 @@ for level in "${ARRAY_OPT[@]}"; do
 				# read graphs and write on file th whole matrix
 				mpirun -n $MAX_PROC --hostfile mpi_host_file ./mpidir/Build/rg.o
 
+				./mpidir/Source/updateConstants.sh $TEST_SIZE $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
+				cd mpidir
+				make $opt -B
+				cd ..
+
 				#execute serial
 				echo $TEST_SIZE,$ths,$(./mpidir/Build/s.o) >> $OUT_FILE
+				# echo $TEST_SIZE,$ths,$(./mpidir/s_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 			else
 				# parallel
@@ -136,7 +157,6 @@ for level in "${ARRAY_OPT[@]}"; do
 				./mpidir/Source/updateConstants.sh $new $(($TEST_SIZE/$SHRINK)) $(($TEST_SIZE/$SHRINK))
 				cd mpidir
 				make $opt -B
-				make cleanBin
 				cd ..
 
 				# write graphs
@@ -144,6 +164,7 @@ for level in "${ARRAY_OPT[@]}"; do
 				
 				#execute parallel
 				echo $TEST_SIZE,$ths,$(mpirun -n $ths --hostfile ./mpi_host_file mpidir/Build/p.o) >> $OUT_FILE
+				# echo $TEST_SIZE,$ths,$(mpirun -n $ths ./mpidir/p_k.o) >> $OUT_FILE2
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 			fi
 
