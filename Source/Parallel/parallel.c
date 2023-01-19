@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
+    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, tarjan_time_spent = 0.0;
 
     /* subgraph creation */
     SubGraph *sub = createSubGraph(WORK_LOAD, WORK_LOAD * size, rank);
@@ -187,7 +187,6 @@ int main(int argc, char *argv[])
     // last process
     if (rank == size - 1)
     {
-        start = MPI_Wtime();
         /* saves the result on a file */
         FILE *f = fopen(k ? "Data/resultTarjan.txt" : "Data/resultKosaraju.txt", "a+");
         if (f == NULL)
@@ -208,11 +207,10 @@ int main(int argc, char *argv[])
             fprintf(f, "\n");
         }
         fclose(f);
-        end = MPI_Wtime();
-        write_time_spent += end - start;
-        total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
+
+        total_time_spent = read_time_spent + tarjan_time_spent;
         
-        printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
+        printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
     }
 
     MPI_Finalize();

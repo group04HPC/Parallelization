@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
     int size;
 
-    double total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;
+    double total_time_spent = 0.0, read_time_spent = 0.0, tarjan_time_spent = 0.0;
 
     clock_t begin = clock();
 
@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
-    begin = clock();
     FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");
     if (fp2 == NULL)
     {
@@ -120,11 +119,9 @@ int main(int argc, char *argv[])
         fprintf(fp2, "\n");
     }
     fclose(fp2);
-    end = clock();
-    write_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
-    total_time_spent = read_time_spent + write_time_spent + tarjan_time_spent;
+    total_time_spent = read_time_spent + tarjan_time_spent;
 
-    printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
+    printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
     destroySubGraph(sub);

@@ -4,8 +4,8 @@ TIME_STAMP=$(date +%s)
 NMEASURES=3
 MAX_PROC=4
 
-ARRAY_RC=(400 800 1200 1600 2000 2400)
-# ARRAY_RC=(400)
+#ARRAY_RC=(400 800 1200 1600 2000 2400)
+ARRAY_RC=(400)
 ARRAY_THS=(0 1 2 4 8)
 # ARRAY_THS=(0 1)
 
@@ -37,8 +37,8 @@ for size in "${ARRAY_RC[@]}"; do
 				continue
 			fi
 
-        echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE
-		echo "size,processes,read,SCC,write,elapsed" >$OUT_FILE2
+        echo "size,processes,read,SCC,elapsed" >$OUT_FILE
+		echo "size,processes,read,SCC,elapsed" >$OUT_FILE2
 
         for ((i = 0 ; i < $NMEASURES; i++)); do
 			

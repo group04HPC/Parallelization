@@ -147,47 +147,29 @@ void fillOrder(ListGraph* g, int v, bool* visited, TArray* stack)
 
 SCCResult* SCC_K(ListGraph** graph)
 {
-    clock_t start, end;
-
-    start = clock();
     ListGraph* g = *graph;
     SCCResult* result = SCCResultCreate(g->nV);
     result->offset = g->offset;
     TArray* stack = stackCreate(g->nV);
-    end = clock();
-    printf("Creation: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
  
     // Mark all the vertices as not visited (For first DFS)
-    start = clock();
     bool *visited = (bool*)malloc(g->nV * sizeof(bool));
     for(int i = 0; i < g->nV; i++)
         visited[i] = false;
-    end = clock();
-    printf("Visited: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
  
     // Fill vertices in stack according to their finishing times
-    start = clock();
     for(int i = 0; i < g->nV; i++)
         if(visited[i] == false)
             fillOrder(g, i, visited, stack);
-    end = clock();
-    printf("FillOrder: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
  
     // Create a reversed graph
-    start = clock();
     ListGraph* gr = getTranspose(g);
-    end = clock();
-    printf("Transpose: %f \n", (double)(end - start) / CLOCKS_PER_SEC);
  
     // Mark all the vertices as not visited (For second DFS)
-    start = clock();
     for(int i = 0; i < g->nV; i++)
         visited[i] = false;
-    end = clock();
-    printf("Visited: %f \n", (double)(end - start) / CLOCKS_PER_SEC);
  
     // Now process all vertices in order defined by Stack
-    start = clock();
     int i=0;
     while (!stackIsEmpty(stack))
     {
@@ -201,7 +183,6 @@ SCCResult* SCC_K(ListGraph** graph)
         }
         i++;
     }
-    end = clock();
 
     stackDestroy(stack);
     result = SCCResultRescale(result);

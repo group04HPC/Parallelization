@@ -28,12 +28,6 @@ config = {
 					'computeSpeedup':False,
 
 				},
-				'write':{
-
-					'jpg':False,
-					'computeSpeedup':False,
-
-				},
 				'elapsed':{
 
 					'jpg':False,
@@ -43,7 +37,7 @@ config = {
 			},
 
 			"table":{
-				"header": ['Version','Processes','ReadFromFile','SCC','WriteToFile','Elapsed','Speedup','Efficiency'],
+				"header": ['Version','Processes','ReadFromFile','SCC','Elapsed','Speedup','Efficiency'],
 			},
 			"plot":{
 				"x_from_table":"Processes",
