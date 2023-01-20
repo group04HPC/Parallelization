@@ -96,12 +96,14 @@ int main(int argc, char *argv[])
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
     begin = clock();
-    SCCResult *result = NULL;
-    result = (k) ? SCC(&list) : SCC_K(&list);
+    SCCResult *result = (k) ? SCC(&list) : SCC_K(&list);
     end = clock();
     tarjan_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
 
-    FILE *fp2 = fopen(k ?  "Data/resultTarjan.txt":"Data/resultKosaraju.txt" , "w+");
+    total_time_spent = read_time_spent + tarjan_time_spent;
+    printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
+
+    FILE *fp2 = fopen(k ? "Data/resultTarjan.txt" : "Data/resultKosaraju.txt", "w+");
     if (fp2 == NULL)
     {
         printf("Error opening file in Serial.c\n");
@@ -120,9 +122,6 @@ int main(int argc, char *argv[])
         fprintf(fp2, "\n");
     }
     fclose(fp2);
-    total_time_spent = read_time_spent + tarjan_time_spent;
-
-    printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
     destroyListGraph(list);

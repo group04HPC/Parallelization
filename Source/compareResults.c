@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
     if (result->nMacroNodes != result2->nMacroNodes)
     {
-        printf("Tarjan: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        printf("\nTarjan: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
         errors = true;
     }
     else
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
             {
                 if (list->value != list2->value)
                 {
-                    printf("Tarjan: Bad result, %d, %d\n", list->value, list2->value);
+                    printf("\nTarjan: Bad result, %d, %d\n", list->value, list2->value);
                     errors=true;
                     break;
                 }
@@ -118,7 +118,10 @@ int main(int argc, char *argv[])
         }
     }
     if (!errors)
-        printf("Tarjan completed Successfully!\n");
+        printf("\nTarjan completed Successfully!\n");
+
+    SCCResultDestroy(result);
+    SCCResultDestroy(result2);
 
     fp = fopen("Data/resultKosaraju.txt", "r");
     if (fp == NULL)
@@ -177,6 +180,9 @@ int main(int argc, char *argv[])
     }
 
     printf("Kosaraju completed Successfully!\n");
+
+    SCCResultDestroy(result);
+    SCCResultDestroy(result2);
 
     return 0;
 }

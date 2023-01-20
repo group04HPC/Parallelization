@@ -144,6 +144,9 @@ int main(int argc, char *argv[])
                     /* generates the matrix subgraph from the list graph in order to send it */
                     sub = createMatrixGraphFromList(list);
                     send_all(sub, result, shrink, next);
+                    destroySubGraph(sub);
+                    destroyListGraph(list);
+                    SCCResultDestroy(result);
                     break;
                 }
             }
@@ -161,17 +164,20 @@ int main(int argc, char *argv[])
                 mergedResult = mergeResults(receivedResult, result);
                 mergedList = mergeGraphs(receivedList, list, recivedShrink, shrink, mergedResult);
 
+                destroySubGraph(receivedGraph);
+                SCCResultDestroy(receivedResult);
+                destroyListGraph(receivedList);
+
                 /*
                  * applies Tarjan's algorithm on the merged graph and rescales both the result
                  * and the graph
                  */
-
                 result = (k) ? SCC(&mergedList) : SCC_K(&mergedList);
 
                 /* combined the result of tarjan with the merged result */
                 result = SCCResultCombine(result, mergedResult);
-
                 list = mergedList;
+                
                 shrink = list->nV - result->nV;
             }
 
@@ -184,6 +190,10 @@ int main(int argc, char *argv[])
     // last process
     if (rank == size - 1)
     {
+        total_time_spent = read_time_spent + tarjan_time_spent;
+        
+        printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
+
         /* saves the result on a file */
         FILE *f = fopen(k ? "Data/resultTarjan.txt" : "Data/resultKosaraju.txt", "a+");
         if (f == NULL)
@@ -205,9 +215,8 @@ int main(int argc, char *argv[])
         }
         fclose(f);
 
-        total_time_spent = read_time_spent + tarjan_time_spent;
-        
-        printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
+        SCCResultDestroy(result);
+        destroyListGraph(list);
     }
 
     MPI_Finalize();
