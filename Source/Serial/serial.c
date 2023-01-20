@@ -67,7 +67,7 @@ int k = 0; // Willbe executed Kosaraju's algorithm
 int main(int argc, char *argv[])
 {
 
-    int size;
+    int size, value;
 
     double total_time_spent = 0.0, read_time_spent = 0.0, tarjan_time_spent = 0.0;
 
@@ -81,15 +81,16 @@ int main(int argc, char *argv[])
     }
     
     fscanf(fp, "%d", &size);
-    int *matrix = (int *)malloc(size * size * sizeof(int));
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++)
-            fscanf(fp, "%d", &matrix[i * size + j]);
-    fclose(fp);
+    ListGraph *list = ListGraphCreate(size, size, 0);
 
-    SubGraph *sub = createSubGraph(size, size, 0);
-    sub->adj = matrix;
-    ListGraph *list = createListGraphFromMatrix(sub);
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++){
+            fscanf(fp, "%d", &value);
+            if (value == 1)
+                insertListGraph(list, i, j);
+        }
+            
+    fclose(fp);
 
     clock_t end = clock();
     read_time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
     printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
 
     SCCResultDestroy(result);
-    destroySubGraph(sub);
+    destroyListGraph(list);
 
     return 0;
 }

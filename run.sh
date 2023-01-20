@@ -75,24 +75,24 @@ if [ $# -ge 2 ]; then
 fi
 
 # Each process creates its own binary file with a part of the full graph
-mpirun -np 1 ./Build/wg.o
+mpirun -np $1 ./Build/wg.o
 
 if [ "$serial" -ne 0 ]; then
 	# This program reads all the binary files and creates a single graph, writing it into a text file
 	# so that the serial version can be used to compare the results
 
-	mpirun -np 1 ./Build/rg.o
+	mpirun -np $1 ./Build/rg.o
 
 	# The serial program executes and writes its result on a file
 	./Build/s.o
-	# ./Build/s_k.o
+	./Build/s_k.o
 fi
 
 # The parallel program executes and writes its result on a file
-# mpirun -np $1 ./Build/p.o
-# mpirun -np $1 ./Build/p_k.o
+mpirun -np $1 ./Build/p.o
+mpirun -np $1 ./Build/p_k.o
 
-# if [ "$serial" -ne 0 ]; then
-# 	# The results of both the serial and the parallel version are compared  
-# 	./Build/c.o
-# fi
+if [ "$serial" -ne 0 ]; then
+	# The results of both the serial and the parallel version are compared  
+	./Build/c.o
+fi

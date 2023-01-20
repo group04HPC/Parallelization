@@ -228,7 +228,7 @@ void listPrint(TList list)
 TNode *listSearch(TList list, int value)
 {
     TNode *node = list;
-    while (node != NULL)
+    while (node != NULL && !valueGreater(node->value, value))
     {
         if (valueEqual(node->value, value))
             return node;
