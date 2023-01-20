@@ -59,11 +59,8 @@ int main(int argc, char* argv[]){
     generateRandomSubGraph(sub, MIN_EDGES_PARALLEL, MAX_EDGES_PARALLEL);
     int* edges = getEdges(sub, 0);
 
-    char filename[FILENAME_LENGTH], num[NUM_LENGTH];
-    strcpy(filename, "Data/file");
-    sprintf(num, "%d", rank);
-    strncat(filename, num, MEDIUM_FILENAME_LENGTH);
-    strncat(filename, ".bin", EXTENSION_LENGTH);
+    char filename[sizeof "Data/file10.bin\0"];
+    snprintf(filename, sizeof filename, "Data/file%02d.bin", rank);
 
     /* Each process saves its own subgraph on a binary file */
     MPI_Comm file_comm;

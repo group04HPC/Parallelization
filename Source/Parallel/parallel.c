@@ -88,11 +88,8 @@ int main(int argc, char *argv[])
     int *edges = getEdges(sub, 0);
 
     /* filenames init */
-    char filename[FILENAME_LENGTH], num[NUM_LENGTH];
-    strcpy(filename, "Data/file");
-    sprintf(num, "%d", rank);
-    strncat(filename, num, MEDIUM_FILENAME_LENGTH);
-    strncat(filename, ".bin", EXTENSION_LENGTH);
+    char filename[sizeof "Data/file10.bin\0"];
+    snprintf(filename, sizeof filename, "Data/file%02d.bin", rank);
 
     start = MPI_Wtime();
     /* each process reads its own subgraph from its own file */
