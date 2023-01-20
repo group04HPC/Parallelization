@@ -94,7 +94,7 @@ ListGraph* getTranspose(ListGraph* g)
         TList values = *g->adj[v];
         while (values != NULL)
         {
-            *gT->adj[values->value] = listInsert(*gT->adj[values->value], v);
+            *gT->adj[values->value] = listInsertHead(*gT->adj[values->value], v);
             values = values->link;
         }
     
