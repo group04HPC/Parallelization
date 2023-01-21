@@ -96,7 +96,7 @@ cleanTxt:
 	-rm Data/*.txt
 
 runTest:
-	./test.sh -t
+	./measures.sh -t
 
 updateO1:
 	$(eval CC = $(CC) -O1)

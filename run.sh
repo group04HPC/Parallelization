@@ -48,14 +48,7 @@ fi
 
 # Run various tests
 if [ "$1" = "-t" ]; then
-	echo "Running a test on 4 processes"
-	./test.sh 4
-
-	echo "Running a test on 8 processes"
-	./test.sh 8
-
-	echo "Running a test on 16 processes"
-	./test.sh 16
+	./test.sh
 	exit 0
 fi
 # Check if the number of arguments is correct
