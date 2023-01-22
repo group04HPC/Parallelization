@@ -61,7 +61,7 @@ parallelObjects := $(foreach object,$(parallelObjects),$(buildDir)$(object))
 compareObjects := $(foreach object,$(compareObjects),$(buildDir)$(object))
 testObjects := $(foreach object,$(testObjects),$(buildDir)$(object))
 
-.PHONY: help test all clean cleanBin cleanObj cleanTxt optimize1 optimize2 optimize3 optimize4 optimize5 optimize6
+.PHONY: help test all clean cleanBin cleanObj cleanTxt optimize1 optimize2 optimize3
 
 all:  $(allObjects) 
 
@@ -75,12 +75,6 @@ optimize2: updateO2 all
 
 optimize3: updateO3 all
 
-optimize4: updateO4 all
-
-optimize5: updateO5 all
-
-optimize6: updateO6 all
-
 help: 
 	echo "Builds all the binaries required to test the program"
 	echo "Usage:\t make all\t-the default way to execute make, builds all the required files"
@@ -89,7 +83,7 @@ help:
 	echo "\t make cleanObj\t-cleans the working directory, deleting the object files"
 	echo "\t make cleanBin\t-cleans the working directory, deleting the binary output files"
 	echo "\t make cleanTxt\t-cleans the working directory, deleting the textual output files"
-	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-6]"
+	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-3]"
 	echo "\t make help\t-prints this output"
 
 cleanObj:
@@ -113,28 +107,19 @@ updateO2:
 updateO3:
 	$(eval CC = $(CC) -O3)
 
-updateO4:
-	$(eval CC = $(CC) -O4)
-
-updateO5:
-	$(eval CC = $(CC) -O5)
-
-updateO6:
-	$(eval CC = $(CC) -O6)
-
-Build/wg.o :	$(writeGraphObjects)
+Build/wg.o :	$(writeGraphObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o
 
-Build/rg.o :	$(readGraphObjects)
+Build/rg.o :	$(readGraphObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
-Build/s.o : 	$(serialObjects)
+Build/s.o : 	$(serialObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
     
-Build/p.o : 	$(parallelObjects)
+Build/p.o : 	$(parallelObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
 
-Build/c.o : 	$(compareObjects)
+Build/c.o : 	$(compareObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
