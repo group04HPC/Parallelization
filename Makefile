@@ -83,7 +83,7 @@ help:
 	echo "\t make cleanObj\t-cleans the working directory, deleting the object files"
 	echo "\t make cleanBin\t-cleans the working directory, deleting the binary output files"
 	echo "\t make cleanTxt\t-cleans the working directory, deleting the textual output files"
-	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-6]"
+	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-3]"
 	echo "\t make help\t-prints this output"
 
 cleanObj:
@@ -106,15 +106,6 @@ updateO2:
 
 updateO3:
 	$(eval CC = $(CC) -O3)
-
-updateO4:
-	$(eval CC = $(CC) -O4)
-
-updateO5:
-	$(eval CC = $(CC) -O5)
-
-updateO6:
-	$(eval CC = $(CC) -O6)
 
 Build/wg.o :	$(writeGraphObjects)
 	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o

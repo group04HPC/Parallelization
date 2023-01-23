@@ -77,15 +77,18 @@ if [ "$serial" -ne 0 ]; then
 	mpirun -np $1 ./Build/rg.o
 
 	# The serial program executes and writes its result on a file
-	./Build/s.o
-	./Build/s_k.o
+	./Build/s.o >/dev/null
+	./Build/s_k.o >/dev/null
 fi
 
 # The parallel program executes and writes its result on a file
-mpirun -np $1 ./Build/p.o
-mpirun -np $1 ./Build/p_k.o
+mpirun -np $1 ./Build/p.o >/dev/null
+mpirun -np $1 ./Build/p_k.o >/dev/null
 
 if [ "$serial" -ne 0 ]; then
 	# The results of both the serial and the parallel version are compared  
 	./Build/c.o
+	echo -e "\n"
 fi
+
+make clean

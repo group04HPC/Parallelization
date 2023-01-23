@@ -37,16 +37,16 @@
 # This file contains the script used to try some test cases 
 
 ARRAY_SZ=(400 800 1200 1600 2000 2400)
-ARRAY_PROC=(0 1 2 4 8)
+ARRAY_PROC=(1 2 4 8)
 ARRAY_SHRINK=(1 2 4)
 
 for graphSize in "${ARRAY_SZ[@]}"; do
     for proc in "${ARRAY_PROC[@]}"; do
         for shrink in "${ARRAY_SHRINK[@]}"; do
             echo -e "\t"Testing executed on a $graphSize vertices graph
-            echo -e "\t"Testing executed with $proc threads
+            echo -e "\t"Testing executed with $proc processes
             echo -e "\t"Testing executed with $shrink shrink factor
-            wl=$(($graphSize/$shrink))
+            wl=$(($graphSize/$proc))
             min=$(($graphSize/$shrink))
             min=$min-10
             max=$(($graphSize/$shrink))
