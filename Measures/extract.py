@@ -77,7 +77,7 @@ def _extract(path_to_folder,plot_columns):
 			#compute gaussian mean
 			mean,std=stats.norm.fit(x_data)
 			#compute mean as usual, to use when only few measures are taken
-			np_mean = np.mean(x_data)
+			np_mean = round(np.mean(x_data),5)
 
 			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
 			x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
@@ -94,8 +94,8 @@ def _extract(path_to_folder,plot_columns):
 	return means
 
 def _compute_speedup(t,tp,nt,psize):
-    speedup = t/tp
-    efficiency = t/(tp*nt)
+    speedup = round(t/tp,5)
+    efficiency = round(t/(tp*nt),5)
     return speedup,efficiency
 
 def _make_table(header,rows,print_table=False,save=True,name=""):
@@ -114,6 +114,7 @@ def _save_table(table,filename):
 	with open(filename,"w") as table_file:
 		table.set_style(MSWORD_FRIENDLY)
 		data = table.get_string()
+		# data = data.replace("|",",")
 		table_file.write(data)
 
 def _plot_from_table(header,rows,save=True,name="",show_plot=False):
