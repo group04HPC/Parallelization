@@ -89,5 +89,4 @@ echo -e "/*
 #define MAX_EDGES_PARALLEL $3
 
 #endif
-" > mpidir/Headers/Constants.h
-# make -B
+" > Headers/Constants.h

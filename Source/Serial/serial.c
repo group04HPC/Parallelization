@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
     clock_t begin = clock();
 
-    FILE *fp = fopen("mpidir/Data/matrix.txt", "r");
+    FILE *fp = fopen("Data/matrix.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file in Serial.c\n");

@@ -51,6 +51,7 @@ for graphSize in "${ARRAY_SZ[@]}"; do
             min=$min-10
             max=$(($graphSize/$shrink))
             ./Source/updateConstants.sh $wl $min $max
+            make -B
             ./run.sh $proc
         done
     done

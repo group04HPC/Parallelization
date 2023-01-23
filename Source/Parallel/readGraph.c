@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     {
         /* The rank 0 process saves the whole graph on a text file, this file will then be used by the serial version
         of the program to execute Tarjan. */
-        FILE *fp = fopen("mpidir/Data/matrix.txt", "w+");
+        FILE *fp = fopen("Data/matrix.txt", "w+");
         if (fp == NULL)
         {
             printf("Error opening file in readGraph.c\n");

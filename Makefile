@@ -113,12 +113,6 @@ Build/wg.o :	$(writeGraphObjects) ./Headers/Constants.h
 Build/rg.o :	$(readGraphObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
-Build/s.o : 	$(serialObjects) ./Headers/Constants.h
-	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
-    
-Build/p.o : 	$(parallelObjects) ./Headers/Constants.h
-	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
-
 Build/c.o : 	$(compareObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
