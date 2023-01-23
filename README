@@ -76,3 +76,5 @@ How to run
             make optimizeX -builds all the required files allpying the specified level of optimization X=[1-3]
             make help      -prints this output
     "
+6. To make the measures run './measures.sh'
+7. To extract the measures in the Measure folder run 'pipenv run python Measures/extract.py'
