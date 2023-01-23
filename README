@@ -78,4 +78,4 @@ How to run
             make help      -prints this output
     "
 6. To make the measures run './measures.sh'
-7. To extract the measures in the Measure folder run 'pipenv run python Measures/extract.py'
+7. To extract the measures in the Measure folder first run 'pipenv install' and then run 'pipenv run python Measures/extract.py'
