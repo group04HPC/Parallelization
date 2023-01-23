@@ -9,6 +9,7 @@ from prettytable import PrettyTable
 from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
+import csv
 
 # processes, read, SCC, write, elapsed
 config = {
@@ -112,7 +113,6 @@ def _make_table(header,rows,print_table=False,save=True,name=""):
 
 def _save_table(table,filename):
 	with open(filename,"w") as table_file:
-		#table.set_style(MARKDOWN)
 		table.set_style(MSWORD_FRIENDLY)
 		data = table.get_string()
 		table_file.write(data)
