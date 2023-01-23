@@ -332,9 +332,6 @@ SCCResult *SCCResultCombine(SCCResult *tarjanResult, SCCResult *mergedSCC)
 
     result->offset = tarjanResult->offset;
 
-    SCCResultDestroy(tarjanResult);
-    SCCResultDestroy(mergedSCC);
-
     return result;
 }
 
