@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 # Course: High Performance Computing 2022/2023
 #
@@ -34,61 +34,24 @@
 # represent the graph in memory.
 #
 # Purpose of the file:
-# This file contains the script used to test the program on the lecturer's cluster
+# This file contains the script used to try some test cases 
 
-echo Case 3 - 16 processes
-./Source/updateConstants.sh 250 0 250
-./run.sh 16
+ARRAY_SZ=(400 800 1200 1600 2000 2400)
+ARRAY_PROC=(1 2 4 8)
+ARRAY_SHRINK=(1 2 4)
 
-echo Case 3 - 8 processes
-./Source/updateConstants.sh 500 0 500
-./run.sh 8 0
-
-echo Case 3 - 4 processes
-./Source/updateConstants.sh 1000 0 1000
-./run.sh 4 0
-
-echo Case 2 - 16 processes
-./run.sh 16
-
-echo Case 3 - 2 processes
-./Source/updateConstants.sh 2000 0 2000
-./run.sh 2 0
-
-echo Case 2 - 8 processes
-./run.sh 8 0
-
-echo Case 3 - 1 process
-./Source/updateConstants.sh 4000 0 4000
-./run.sh 1 0
-
-echo Case 2 - 4 processes
-./run.sh 4 0
-
-echo Case 2 - 2 processes
-./Source/updateConstants.sh 8000 0 8000
-./run.sh 2 0
-
-echo Case 2 - 1 process
-./Source/updateConstants.sh 16000 0 16000
-./run.sh 1 0
-
-echo Case 1 - 16 processes
-./Source/updateConstants.sh 1250 0 1250
-./run.sh 16 
-
-echo Case 1 - 8 processes
-./Source/updateConstants.sh 2500 0 2500
-./run.sh 8 0
-
-echo Case 1 - 4 processes
-./Source/updateConstants.sh 5000 0 5000
-./run.sh 4 0
-
-echo Case 1 - 2 processes
-./Source/updateConstants.sh 10000 0 10000
-./run.sh 2 0
-
-echo Case 2 - 1 process
-./Source/updateConstants.sh 20000 0 20000
-./run.sh 1 0
+for graphSize in "${ARRAY_SZ[@]}"; do
+    for proc in "${ARRAY_PROC[@]}"; do
+        for shrink in "${ARRAY_SHRINK[@]}"; do
+            echo -e "\t"Testing executed on a $graphSize vertices graph
+            echo -e "\t"Testing executed with $proc processes
+            echo -e "\t"Testing executed with $shrink shrink factor
+            wl=$(($graphSize/$proc))
+            min=$(($graphSize/$shrink))
+            min=$min-10
+            max=$(($graphSize/$shrink))
+            ./Source/updateConstants.sh $wl $min $max
+            ./run.sh $proc
+        done
+    done
+done

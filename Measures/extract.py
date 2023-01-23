@@ -10,7 +10,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-# processes, read, SCC, elapsed
+# processes, read, SCC, write, elapsed
 config = {
 			'seqKey': "NP-00",
 			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}(-[O,E]-[0-9])?",
@@ -112,7 +112,6 @@ def _make_table(header,rows,print_table=False,save=True,name=""):
 
 def _save_table(table,filename):
 	with open(filename,"w") as table_file:
-		#table.set_style(MARKDOWN)
 		table.set_style(MSWORD_FRIENDLY)
 		data = table.get_string()
 		table_file.write(data)
@@ -201,4 +200,4 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 
 if __name__ == "__main__":
 	extraction(os.path.join(os.path.dirname(os.path.realpath(__file__)),"Tarjan/"))
-	# extraction(os.path.join(os.path.dirname(os.path.realpath(__file__)),"Kosaraju/"))
+	extraction(os.path.join(os.path.dirname(os.path.realpath(__file__)),"Kosaraju/"))

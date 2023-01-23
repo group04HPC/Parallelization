@@ -56,7 +56,7 @@
 int main(int argc, char *argv[])
 {
 
-    FILE *fp = fopen("mpidir/Data/result.txt", "r");
+    FILE *fp = fopen("Data/resultTarjan.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file in compareResults.c\n");
@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     }
 
     int nMacroNodes, value, len;
+    bool errors=false;
     fscanf(fp, "%d", &nMacroNodes);
     SCCResult *result = SCCResultCreate(nMacroNodes);
     for (int i = 0; i < nMacroNodes; i++)
@@ -93,7 +94,72 @@ int main(int argc, char *argv[])
 
     if (result->nMacroNodes != result2->nMacroNodes)
     {
-        printf("Bad result, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        printf("\nTarjan: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
+        errors = true;
+    }
+    else
+    {
+
+        for (int i = 0; i < result->nMacroNodes; i++)
+        {
+            TList list = *result->vertices[i];
+            TList list2 = *result2->vertices[i];
+            while (list != NULL)
+            {
+                if (list->value != list2->value)
+                {
+                    printf("\nTarjan: Bad result, %d, %d\n", list->value, list2->value);
+                    errors=true;
+                    break;
+                }
+                list = list->link;
+                list2 = list2->link;
+            }
+        }
+    }
+    if (!errors)
+        printf("\nTarjan completed Successfully!\n");
+
+    SCCResultDestroy(result);
+    SCCResultDestroy(result2);
+
+    fp = fopen("Data/resultKosaraju.txt", "r");
+    if (fp == NULL)
+    {
+        printf("Error opening file in compareResults.c\n");
+        return 1;
+    }
+
+    fscanf(fp, "%d", &nMacroNodes);
+    result = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
+        fscanf(fp, "%d", &len);
+        for (int j = 0; j < len; j++)
+        {
+            fscanf(fp, "%d", &value);
+            SCCResultInsert(result, i, value);
+        }
+    }
+
+    fscanf(fp, "%d", &nMacroNodes);
+
+    result2 = SCCResultCreate(nMacroNodes);
+    for (int i = 0; i < nMacroNodes; i++)
+    {
+        fscanf(fp, "%d", &len);
+        for (int j = 0; j < len; j++)
+        {
+            fscanf(fp, "%d", &value);
+            SCCResultInsert(result2, i, value);
+        }
+    }
+
+    fclose(fp);
+
+    if (result->nMacroNodes != result2->nMacroNodes)
+    {
+        printf("Kosaraju: Wrong macronodes, %d, %d\n", result->nMacroNodes, result2->nMacroNodes);
         return 1;
     }
 
@@ -105,7 +171,7 @@ int main(int argc, char *argv[])
         {
             if (list->value != list2->value)
             {
-                printf("Bad result, %d, %d\n", list->value, list2->value);
+                printf("Kosaraju: Bad result, %d, %d\n", list->value, list2->value);
                 return 1;
             }
             list = list->link;
@@ -113,7 +179,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("Completed Successfully!\n");
+    printf("Kosaraju completed Successfully!\n");
+
+    SCCResultDestroy(result);
+    SCCResultDestroy(result2);
 
     return 0;
 }

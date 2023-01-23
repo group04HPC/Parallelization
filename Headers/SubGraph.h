@@ -54,6 +54,7 @@ typedef struct
 } SubGraph;
 
 SubGraph *createSubGraph(int n_vertices, int n_edges, int rank);               /* Genartes a random subgraph with a number of edges for each vertex between min_edges and max_edges */
+SubGraph* createSubGraphFromMatrix(int* matrix, int nE, int nV);                               /* Creates a subgraph from a matrix */
 void swap(int *a, int *b);                                                     /* Swaps two integers */
 void shuffle(int *array, int min, int max);                                    /* Shuffles an array of integers */
 void initSubGraph(SubGraph *subgraph);                                         /* Initializes a subgraph */

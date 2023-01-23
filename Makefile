@@ -44,11 +44,11 @@ dependendecyFlags = -c
 
 buildDir = Build/
 
-allObjects = wg.o rg.o s.o p.o c.o
+allObjects = wg.o rg.o s.o p.o c.o p_k.o s_k.o
 writeGraphObjects = SubGraph.o WriteGraph.o
-readGraphObjects = SubGraph.o ReadGraph.o
-serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Serial.o
-parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Communication.o Merge.o Parallel.o
+readGraphObjects = SubGraph.o ReadGraph.o ListGraph.o TList.o TArray.o
+serialObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o 
+parallelObjects = TList.o TArray.o ListGraph.o SCCResult.o SubGraph.o Tarjan.o Kosaraju.o Communication.o Merge.o 
 compareObjects = TList.o TArray.o CompareResults.o SCCResult.o
 testObjects = wg.o rg.o s.o p.o c.o
 
@@ -75,12 +75,6 @@ optimize2: updateO2 all
 
 optimize3: updateO3 all
 
-optimize4: updateO4 all
-
-optimize5: updateO5 all
-
-optimize6: updateO6 all
-
 help: 
 	echo "Builds all the binaries required to test the program"
 	echo "Usage:\t make all\t-the default way to execute make, builds all the required files"
@@ -89,7 +83,7 @@ help:
 	echo "\t make cleanObj\t-cleans the working directory, deleting the object files"
 	echo "\t make cleanBin\t-cleans the working directory, deleting the binary output files"
 	echo "\t make cleanTxt\t-cleans the working directory, deleting the textual output files"
-	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-6]"
+	echo "\t make optimizeX\t-builds all the required files allpying the specified level of optimization X=[1-3]"
 	echo "\t make help\t-prints this output"
 
 cleanObj:
@@ -102,7 +96,7 @@ cleanTxt:
 	-rm Data/*.txt
 
 runTest:
-	./test.sh -t
+	./Test.sh -t
 
 updateO1:
 	$(eval CC = $(CC) -O1)
@@ -113,29 +107,26 @@ updateO2:
 updateO3:
 	$(eval CC = $(CC) -O3)
 
-updateO4:
-	$(eval CC = $(CC) -O4)
-
-updateO5:
-	$(eval CC = $(CC) -O5)
-
-updateO6:
-	$(eval CC = $(CC) -O6)
-
 Build/wg.o :	$(writeGraphObjects)
 	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o
 
 Build/rg.o :	$(readGraphObjects)
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
-Build/s.o : 	$(serialObjects)
-	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
-    
-Build/p.o : 	$(parallelObjects)
-	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
-
 Build/c.o : 	$(compareObjects)
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
+
+Build/s.o : 	$(serialObjects) Source/Serial/Serial.c
+	$(CC) -DTARJAN_ALGO $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s.o 
+    
+Build/p.o : 	$(parallelObjects) Source/Parallel/Parallel.c
+	$(CC) -DTARJAN_ALGO $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p.o
+
+Build/p_k.o :	$(parallelObjects) Source/Parallel/Parallel.c
+	$(CC) $(commonFlags) $(parallelObjects) Source/Parallel/Parallel.c -o Build/p_k.o
+
+Build/s_k.o :	$(serialObjects) Source/Serial/Serial.c
+	$(CC) $(commonFlags) $(serialObjects) Source/Serial/Serial.c -o Build/s_k.o 
 
 Build/SubGraph.o : Source/DataStructures/SubGraph.c 
 	$(CC) $(CFLAGS) Source/DataStructures/SubGraph.c -o Build/SubGraph.o
@@ -158,9 +149,6 @@ Build/WriteGraph.o : Source/Parallel/writeGraph.c
 Build/ReadGraph.o : Source/Parallel/readGraph.c
 	$(CC) $(CFLAGS) Source/Parallel/readGraph.c -o Build/ReadGraph.o
 
-Build/Parallel.o : Source/Parallel/parallel.c
-	$(CC) $(CFLAGS) Source/Parallel/parallel.c -o Build/Parallel.o
-
 Build/Communication.o : Source/Communication/Communication.c
 	$(CC) $(CFLAGS) Source/Communication/Communication.c -o Build/Communication.o
 
@@ -170,8 +158,8 @@ Build/Merge.o : Source/Communication/Merge.c
 Build/Tarjan.o : Source/Tarjan/Tarjan.c
 	$(CC) $(CFLAGS) Source/Tarjan/Tarjan.c -o Build/Tarjan.o
 
-Build/Serial.o : Source/Serial/serial.c 
-	$(CC) $(CFLAGS) Source/Serial/serial.c  -o Build/Serial.o
+Build/Kosaraju.o : Source/Kosaraju/Kosaraju.c
+	$(CC) $(CFLAGS) Source/Kosaraju/Kosaraju.c -o Build/Kosaraju.o
 
 Build/CompareResults.o : Source/CompareResults.c
 	$(CC) $(CFLAGS) Source/CompareResults.c -o Build/CompareResults.o

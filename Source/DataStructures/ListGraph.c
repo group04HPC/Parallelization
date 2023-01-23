@@ -110,7 +110,7 @@ ListGraph *createListGraphFromMatrix(SubGraph *sub)
         {
             if (hasEdge(sub, i, j))
             {
-                *list->adj[i] = listInsert(*list->adj[i], j);
+                *list->adj[i] = listInsertHead(*list->adj[i], j);
             }
         }
     }
@@ -201,5 +201,5 @@ void destroyListGraph(ListGraph *graph)
  */
 void insertListGraph(ListGraph *newList, int v, int u)
 {
-    *newList->adj[v] = listInsert(*newList->adj[v], u);
+    *newList->adj[v] = listInsertHead(*newList->adj[v], u);
 }

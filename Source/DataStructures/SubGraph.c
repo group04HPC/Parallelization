@@ -75,6 +75,27 @@ SubGraph *createSubGraph(int n_vertices, int n_edges, int rank)
 }
 
 /**
+ * Function: createSubGraphFromMatrix
+ * ----------------------------------
+ * Creates a new subgraph from a matrix
+ * 
+ * Parameters:
+ * matrix: pointer to the matrix
+ * 
+ * Returns:
+ * A pointer to the newly created subgraph
+*/
+SubGraph* createSubGraphFromMatrix(int* matrix, int nE, int nV){
+    SubGraph *g = malloc(sizeof(SubGraph));
+    assert(g != NULL);
+    g->offset = 0;
+    g->nV = nV;
+    g->nE = nE;
+    g->adj = matrix;
+    return g;
+}
+
+/**
  * Function: swap
  * --------------
  * Swaps the values of two integers

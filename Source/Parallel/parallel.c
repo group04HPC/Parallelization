@@ -53,9 +53,16 @@
 #include "../../Headers/SubGraph.h"
 #include "../../Headers/SCCResult.h"
 #include "../../Headers/Tarjan.h"
+#include "../../Headers/Kosaraju.h"
 #include "../../Headers/Constants.h"
 #include "../../Headers/Merge.h"
 #include "../../Headers/Communication.h"
+
+#ifdef TARJAN_ALGO
+int k = 1; // Will be executed Tarjan's algorithm
+#else
+int k = 0; // Will be executed Kosaraju's algorithm
+#endif
 
 int nextAvailableRank(bool *values, int size, int rank); // returns the next available rank
 int prevAvailableRank(bool *values, int size, int rank); // returns the previous available rank
@@ -74,16 +81,15 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, write_time_spent = 0.0, tarjan_time_spent = 0.0;;
+    double start, end, total_time_spent = 0.0, read_time_spent = 0.0, tarjan_time_spent = 0.0;
 
     /* subgraph creation */
     SubGraph *sub = createSubGraph(WORK_LOAD, WORK_LOAD * size, rank);
     int *edges = getEdges(sub, 0);
 
     /* filenames init */
-    /* each process creates a file with its own name */
-    char filename[sizeof "mpidir/Data/file10.bin\0"];
-    snprintf(filename, sizeof filename, "mpidir/Data/file%02d.bin", rank);
+    char filename[sizeof "Data/file10.bin\0"];
+    snprintf(filename, sizeof filename, "Data/file%02d.bin", rank);
 
     start = MPI_Wtime();
     /* each process reads its own subgraph from its own file */
@@ -97,18 +103,18 @@ int main(int argc, char *argv[])
 
     /* Tarjan algorithm on the subgraph converted in list */
     ListGraph *list = createListGraphFromMatrix(sub);
+    destroySubGraph(sub);
     end = MPI_Wtime();
     read_time_spent += end - start;
 
     start = MPI_Wtime();
-    SCCResult *result = SCC(&list);
-    destroySubGraph(sub);
+    SCCResult *result = (k) ? SCC(&list) : SCC_K(&list);
 
     /*
      * If the number of processes is equal to 1 then it has already finished
      * otherwise it executes the content of this statement
      */
-    
+
     if (size > 1)
     {
         int shrink = list->nV - result->nV, recivedShrink = 0, next, prev, curr_av = 1;
@@ -129,7 +135,6 @@ int main(int argc, char *argv[])
         {
 
             curr_av = countAvailableRanks(values, rank);
-
             if (curr_av % 2 == 0)
             {
                 // send to next
@@ -139,6 +144,9 @@ int main(int argc, char *argv[])
                     /* generates the matrix subgraph from the list graph in order to send it */
                     sub = createMatrixGraphFromList(list);
                     send_all(sub, result, shrink, next);
+                    destroySubGraph(sub);
+                    destroyListGraph(list);
+                    SCCResultDestroy(result);
                     break;
                 }
             }
@@ -146,7 +154,6 @@ int main(int argc, char *argv[])
             {
                 // rcv from prev
                 prev = prevAvailableRank(values, size, rank);
-
                 recv_all(&receivedGraph, &receivedResult, &recivedShrink, prev);
                 receivedGraph->offset = receivedGraph->offset / WORK_LOAD;
                 receivedResult->offset = receivedGraph->offset;
@@ -157,69 +164,59 @@ int main(int argc, char *argv[])
                 mergedResult = mergeResults(receivedResult, result);
                 mergedList = mergeGraphs(receivedList, list, recivedShrink, shrink, mergedResult);
 
-                /* 
+                destroySubGraph(receivedGraph);
+                SCCResultDestroy(receivedResult);
+                destroyListGraph(receivedList);
+
+                /*
                  * applies Tarjan's algorithm on the merged graph and rescales both the result
-                 * and the graph 
+                 * and the graph
                  */
-                result = SCC(&mergedList);
+                result = (k) ? SCC(&mergedList) : SCC_K(&mergedList);
 
                 /* combined the result of tarjan with the merged result */
                 result = SCCResultCombine(result, mergedResult);
-
                 list = mergedList;
+                
                 shrink = list->nV - result->nV;
             }
 
             updateAvailableRanks(values, size);
         }
     }
-
     end = MPI_Wtime();
     tarjan_time_spent += end - start;
 
     // last process
     if (rank == size - 1)
     {
+        total_time_spent = read_time_spent + tarjan_time_spent;
+        
+        printf("%f,%f,%f", read_time_spent, tarjan_time_spent, total_time_spent);
 
-        // /* saves the result on a file */
-        // FILE *f = fopen("mpidir/Data/result.txt", "a+");
-        // if (f == NULL)
-        // {
-        //     printf("Error opening file in Parallel.c\n");
-        //     return 1;
-        // }
-        // fprintf(f, "\n%d\n", result->nMacroNodes);
-        // for (int i = 0; i < result->nMacroNodes; i++)
-        // {
-        //     TList list = *result->vertices[i];
-        //     fprintf(f, "%d ", listCount(list));
-        //     while (list != NULL)
-        //     {
-        //         fprintf(f, "%d ", list->value);
-        //         list = list->link;
-        //     }
-        //     fprintf(f, "\n");
-        // }
-        // fclose(f);
+        /* saves the result on a file */
+        FILE *f = fopen(k ? "Data/resultTarjan.txt" : "Data/resultKosaraju.txt", "a+");
+        if (f == NULL)
+        {
+            printf("Error opening file in Parallel.c\n");
+            return 1;
+        }
+        fprintf(f, "\n%d\n", result->nMacroNodes);
+        for (int i = 0; i < result->nMacroNodes; i++)
+        {
+            TList list = *result->vertices[i];
+            fprintf(f, "%d ", listCount(list));
+            while (list != NULL)
+            {
+                fprintf(f, "%d ", list->value);
+                list = list->link;
+            }
+            fprintf(f, "\n");
+        }
+        fclose(f);
 
-        total_time_spent = read_time_spent + tarjan_time_spent + write_time_spent;
-
-        printf("%f,%f,%f,%f", read_time_spent, tarjan_time_spent, write_time_spent, total_time_spent);
-
-        // FILE *f2 = fopen("mpidir/Data/time.txt", "a+");
-        // if (f2 == NULL)
-        // {
-        //     printf("Error opening file in Parallel.c\n");
-        //     return 1;
-        // }
-        // fprintf(f2, "parallel\tsize: %d\n", size);
-        // fprintf(f2, "read graph: %f\n", read_time_spent);
-        // fprintf(f2, "tarjan result: %f\n", tarjan_time_spent);
-        // fprintf(f2, "write result: %f\n", write_time_spent);
-        // fprintf(f2, "total time: %f\n", total_time_spent);
-        // fprintf(f2, "\n");
-        // fclose(f2);
-        // printf("Total excution time parallel: %f\n", total_time_spent);
+        SCCResultDestroy(result);
+        destroyListGraph(list);
     }
 
     MPI_Finalize();

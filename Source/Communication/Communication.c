@@ -50,28 +50,28 @@
  * Function:  send_all
  * --------------------
  * Sends all the needed informations to the "dest" node
- *  
+ *
  *  Parameters:
  *  graph: a reference to the SubGraph structure that has to be sent
  *  result: a referemce to the SCCResult structure that has to be sent
  *  shrink: a int representing the number of nodes that have been merged
  *  dest: the receiver of the communication
  */
-void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
+void send_all(SubGraph *graph, SCCResult *result, int shrink, int dest)
 {
     // Firstly we send the dimensions of the graph's matrix as an array
-    int v = graph->nV, k = graph->nE, offset = graph->offset/WORK_LOAD;
-    int size[4] = {v, k, offset,shrink};
+    int v = graph->nV, k = graph->nE, offset = graph->offset / WORK_LOAD;
+    int size[4] = {v, k, offset, shrink};
     MPI_Send(size, 4, MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     // Then we prepare a buffer that will contain the graph's matrix togheter
     // with the length of the internal array for each macrovertex.
     // We also count the sum of all the lengths for the next communication
     int dim = v * (k + 1);
-    int *send_buf = (int*)malloc(dim * sizeof(int));
-    int sum = 0, length[v];
+    int *send_buf = (int *)malloc(dim * sizeof(int));
+    int sum = 0, *length = (int *)malloc(v * sizeof(int));
     int *adjacent;
-
+    
     for (int i = 0; i < v; i++)
     {
         adjacent = getEdges(graph, i);
@@ -83,7 +83,6 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
         send_buf[i * (k + 1) + k] = length[i];
         sum += length[i];
     }
-
     MPI_Send(send_buf, v * (k + 1), MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     // In the end we collapse all the arrays of internal vertexes in one array of,
@@ -102,6 +101,7 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
     MPI_Send(adj, sum, MPI_INT, dest, 0, MPI_COMM_WORLD);
 
     free(send_buf);
+    free(length);
 }
 
 /*
@@ -116,9 +116,8 @@ void send_all(SubGraph *graph, SCCResult *result, int shrink,int dest)
  *  shrink: a reference to a int representing the number of nodes that have been merged
  *  source: the sender of the communication
  */
-void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
+void recv_all(SubGraph **graph, SCCResult **result, int *shrink, int source)
 {
-    
 
     MPI_Status status;
 
@@ -129,7 +128,7 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
     int size[4];
     MPI_Recv(size, 4, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
     int v = size[0], k = size[1];
-    *shrink=size[3];
+    *shrink = size[3];
 
     // External var allocation
     *graph = createSubGraph(v, k, size[2]);
@@ -140,7 +139,7 @@ void recv_all(SubGraph **graph, SCCResult **result, int *shrink,int source)
     //   recive what has been sent.
 
     int dim = v * (k + 1);
-    int* recv_graph = (int*)malloc(dim * sizeof(int));
+    int *recv_graph = (int *)malloc(dim * sizeof(int));
     MPI_Recv(recv_graph, v * (k + 1), MPI_INT, source, 0, MPI_COMM_WORLD, &status);
 
     // Then we split the recived matrix in the original graph and lengths array
