@@ -37,13 +37,13 @@
 #define CONSTANTS_H
 
 /* The number of vertices for each process */
-#define WORK_LOAD 1250
+#define WORK_LOAD 1200
 
 /* The minimum number of edges for each vertex in the starting graph */
-#define MIN_EDGES_PARALLEL 10000
+#define MIN_EDGES_PARALLEL 1200-10
 
 /* The maximum number of edges for each vertex in the starting graph */
-#define MAX_EDGES_PARALLEL 10000
+#define MAX_EDGES_PARALLEL 1200
 
 #endif
 

@@ -34,81 +34,24 @@
 # represent the graph in memory.
 #
 # Purpose of the file:
-# This file contains the script used to test the program on the lecturer's cluster
+# This file contains the script used to try some test cases 
 
-ARRAY_RC=(400 800 1200 1600 2000 2400)
+ARRAY_SZ=(400 800 1200 1600 2000 2400)
+ARRAY_PROC=(0 1 2 4 8)
+ARRAY_SHRINK=(1 2 4)
 
-echo Comparing performances when changing number of edges
-for graphSize in "${ARRAY_RC[@]}"; do
-
-    echo -e "\t"Testing executed on a $graphSize vertices graph
-
-    echo 400 edges
-    echo - 1 process
-    ./Source/updateConstants.sh $(($graphSize)) $(($graphSize-10)) $graphSize
-    ./run.sh 1
-
-    echo - 2 processes
-    ./Source/updateConstants.sh $(($graphSize/2)) $(($graphSize-10)) $graphSize
-    ./run.sh 2
-
-    echo - 4 processes
-    ./Source/updateConstants.sh $(($graphSize/4)) $(($graphSize-10)) $graphSize
-    ./run.sh 4
-
-    echo - 8 processes
-    ./Source/updateConstants.sh $(($graphSize/8)) $(($graphSize-10)) $graphSize
-    ./run.sh 8
-
-    echo 200 edges
-    echo - 1 process
-    ./Source/updateConstants.sh $(($graphSize)) $(($graphSize/2-10)) $(($graphSize/2))
-    ./run.sh 1
-
-    echo - 2 processes
-    ./Source/updateConstants.sh $(($graphSize/2)) $(($graphSize/2-10)) $(($graphSize/2))
-    ./run.sh 2
-
-    echo - 4 processes
-    ./Source/updateConstants.sh $(($graphSize/4)) $(($graphSize/2-10)) $(($graphSize/2))
-    ./run.sh 4
-
-    echo - 8 processes
-    ./Source/updateConstants.sh $(($graphSize/8)) $(($graphSize/2-10)) $(($graphSize/2))
-    ./run.sh 8
-
-    echo 100 edges
-    echo - 1 process
-    ./Source/updateConstants.sh $(($graphSize)) $(($graphSize/4-10)) $(($graphSize/4))
-    ./run.sh 1
-
-    echo - 2 processes
-    ./Source/updateConstants.sh $(($graphSize/2)) $(($graphSize/4-10)) $(($graphSize/4))
-    ./run.sh 2
-
-    echo - 4 processes
-    ./Source/updateConstants.sh $(($graphSize/4)) $(($graphSize/4-10)) $(($graphSize/4))
-    ./run.sh 4
-
-    echo - 8 processes
-    ./Source/updateConstants.sh $(($graphSize/8)) $(($graphSize/4-10)) $(($graphSize/4))
-    ./run.sh 8
-
-    echo 50 edges
-    echo - 1 process
-    ./Source/updateConstants.sh $(($graphSize)) $(($graphSize/8-10)) $(($graphSize/8))
-    ./run.sh 1
-
-    echo - 2 processes
-    ./Source/updateConstants.sh $(($graphSize/2)) $(($graphSize/8-10)) $(($graphSize/8))
-    ./run.sh 2
-
-    echo - 4 processes
-    ./Source/updateConstants.sh $(($graphSize/4)) $(($graphSize/8-10)) $(($graphSize/8))
-    ./run.sh 4
-
-    echo - 8 processes
-    ./Source/updateConstants.sh $(($graphSize/8)) $(($graphSize/8-10)) $(($graphSize/8))
-    ./run.sh 8
-
+for graphSize in "${ARRAY_SZ[@]}"; do
+    for proc in "${ARRAY_PROC[@]}"; do
+        for shrink in "${ARRAY_SHRINK[@]}"; do
+            echo -e "\t"Testing executed on a $graphSize vertices graph
+            echo -e "\t"Testing executed with $proc threads
+            echo -e "\t"Testing executed with $shrink shrink factor
+            wl=$(($graphSize/$shrink))
+            min=$(($graphSize/$shrink))
+            min=$min-10
+            max=$(($graphSize/$shrink))
+            ./Source/updateConstants.sh $wl $min $max
+            ./run.sh $proc
+        done
+    done
 done
