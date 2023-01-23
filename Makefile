@@ -61,7 +61,7 @@ parallelObjects := $(foreach object,$(parallelObjects),$(buildDir)$(object))
 compareObjects := $(foreach object,$(compareObjects),$(buildDir)$(object))
 testObjects := $(foreach object,$(testObjects),$(buildDir)$(object))
 
-.PHONY: help test all clean cleanBin cleanObj cleanTxt optimize1 optimize2 optimize3 optimize4 optimize5 optimize6
+.PHONY: help test all clean cleanBin cleanObj cleanTxt optimize1 optimize2 optimize3
 
 all:  $(allObjects) 
 
@@ -107,13 +107,19 @@ updateO2:
 updateO3:
 	$(eval CC = $(CC) -O3)
 
-Build/wg.o :	$(writeGraphObjects)
+Build/wg.o :	$(writeGraphObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(writeGraphObjects) -o Build/wg.o
 
-Build/rg.o :	$(readGraphObjects)
+Build/rg.o :	$(readGraphObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(readGraphObjects) -o Build/rg.o
 
-Build/c.o : 	$(compareObjects)
+Build/s.o : 	$(serialObjects) ./Headers/Constants.h
+	$(CC) $(commonFlags) $(serialObjects) -o Build/s.o 
+    
+Build/p.o : 	$(parallelObjects) ./Headers/Constants.h
+	$(CC) $(commonFlags) $(parallelObjects) -o Build/p.o
+
+Build/c.o : 	$(compareObjects) ./Headers/Constants.h
 	$(CC) $(commonFlags) $(compareObjects) -o Build/c.o
 
 Build/s.o : 	$(serialObjects) Source/Serial/Serial.c

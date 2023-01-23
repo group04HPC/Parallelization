@@ -73,6 +73,6 @@ How to run
             make cleanObj  -cleans the working directory, deleting the object files
             make cleanBin  -cleans the working directory, deleting the binary output files
             make cleanTxt  -cleans the working directory, deleting the textual output files
-            make optimizeX -builds all the required files allpying the specified level of optimization X=[1-6]
+            make optimizeX -builds all the required files allpying the specified level of optimization X=[1-3]
             make help      -prints this output
     "
